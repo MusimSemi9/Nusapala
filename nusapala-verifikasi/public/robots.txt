@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://nusapala-verifikasi.vercel.app/sitemap.xml
