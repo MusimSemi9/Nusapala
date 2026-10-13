@@ -1090,6 +1090,20 @@
       'arus deras': 'olahraga arus deras', 'olahraga arus deras (orad)': 'olahraga arus deras',
       'rockclimbing': 'rock climbing', 'panjat tebing': 'rock climbing'
     };
+    let hitungSementara = {};
+
+    // Jumlah anggota sebuah divisi: nama persis + penulisan lama yang setara
+    // (hanya bila penulisan lama itu sendiri tidak terdaftar sebagai divisi).
+    function jumlahDivisiPublik(nama, daftarMaster) {
+      const target = String(nama || '').toLowerCase();
+      const terdaftar = (daftarMaster || []).map(d => String(d).toLowerCase());
+      return Object.keys(hitungSementara).reduce((total, kunci) => {
+        if (kunci === target) return total + hitungSementara[kunci];
+        const alias = DIVISI_ALIAS_PUBLIK[kunci];
+        if (alias === target && !terdaftar.includes(kunci)) return total + hitungSementara[kunci];
+        return total;
+      }, 0);
+    }
     function metaDivisiPublik(nama) {
       const n = String(nama || '').toLowerCase().trim();
       const std = DIVISI_STANDAR.find(d => d.nama.toLowerCase() === n);
@@ -1112,19 +1126,23 @@
           if (Array.isArray(parsed) && parsed.length) daftar = parsed.map(d => String(d).trim()).filter(Boolean);
         }
         if (memRes && Array.isArray(memRes.data)) {
+          // Hitung apa adanya berdasarkan nama yang tertulis pada data anggota.
+          // Penulisan lama baru dialihkan saat ditampilkan (lihat jumlahDivisi),
+          // supaya divisi tambahan pengurus tidak "dicuri" jumlahnya.
           memRes.data.forEach(m => {
-            let d = String(m['Divisi'] || '').replace(/\s+/g, ' ').trim();
+            const d = String(m['Divisi'] || '').replace(/\s+/g, ' ').trim();
             if (!d) return;
-            const kunci = DIVISI_ALIAS_PUBLIK[d.toLowerCase()] || d.toLowerCase();
+            const kunci = d.toLowerCase();
             hitung[kunci] = (hitung[kunci] || 0) + 1;
           });
         }
       } catch (e) { /* fallback: tampilkan tiga divisi standar */ }
 
+      hitungSementara = hitung;
       const totalAnggota = Object.values(hitung).reduce((a, b) => a + b, 0);
       box.innerHTML = daftar.map((nama, i) => {
         const meta = metaDivisiPublik(nama);
-        const jumlah = hitung[meta.nama.toLowerCase()] || 0;
+        const jumlah = jumlahDivisiPublik(nama, daftar);
         const persen = totalAnggota ? Math.round(jumlah / totalAnggota * 100) : 0;
         return `<div class="col-12 col-md-4" style="animation: nusaFadeUp .5s ease both; animation-delay: ${i * 90}ms;">
             <div class="divisi-card">

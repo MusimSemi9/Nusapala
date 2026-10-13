@@ -19,9 +19,20 @@ nusapala-verifikasi/
 │   ├── cuaca-gunung.html     # Prakiraan cuaca gunung (Open-Meteo)
 │   ├── js/                   # gunung-database.js, weather-service.js
 │   ├── Logo Nusapala.png, robots.txt, sitemap.xml
-├── package.json
+├── tests/                    # pengujian otomatis (jsdom + Supabase tiruan)
+├── package.json              # npm test → tests/run-all.js
 └── vercel.json               # cleanUrls + rewrite /verify → /api/kartu
 ```
+
+## Pengujian
+
+```bash
+cd nusapala-verifikasi
+npm install     # sekali saja
+npm test        # 73 pengujian: divisi, halaman publik, 10 halaman admin, sintaks
+```
+
+Tidak perlu internet maupun database asli — lihat `nusapala-verifikasi/tests/README.md`.
 
 ## Halaman & Akses
 
@@ -52,6 +63,88 @@ Menambah/mengubah divisi: **Portal Admin → Pengaturan → Data Divisi**
 (tombol **Tambah** atau tekan **Enter** pada kolom isian). Bisa juga menyimpan
 divisi tambahan di luar tiga divisi standar; divisi tersebut tetap didukung
 ikon & warna otomatis.
+
+Nama divisi disimpan **persis seperti yang diketik**. Bila nama yang dimasukkan
+sama dengan penulisan lama divisi standar (mis. *Panjat Tebing* untuk Rock
+Climbing, atau *Rafting*/*ORAD* untuk Olahraga Arus Deras), sistem bertanya
+dahulu sebelum menyimpannya sebagai divisi terpisah — tidak lagi hilang diam-diam.
+
+Kolom **Divisi / Lokasi** pada Agenda dan **Kategori / Divisi** pada Galeri
+terhubung ke master data ini (datalist), jadi bisa dipilih tanpa mengetik manual.
+
+---
+
+## Riwayat Pembaruan — 13 Oktober 2026 (putaran 4: akar masalah ditemukan)
+
+Putaran 2 dan 3 memperbaiki *gejala* laporan "gabisa masukin divisi" (izin,
+UI, jalur cadangan simpan, sorotan baris baru, anti-cache). Semuanya tetap
+dipertahankan. Putaran ini menemukan dan memperbaiki **penyebab sebenarnya**,
+yang dijelaskan lewat reproduksi otomatis.
+
+### Penyebab sebenarnya
+
+Pemetaan penulisan lama (`DIVISI_ALIAS`) diterapkan pada **master data** setiap
+kali daftar divisi dibersihkan. Nama-nama ini otomatis diganti ke divisi standar
+lalu **dibuang sebagai duplikat — setelah** notifikasi *"Tersimpan"* muncul:
+
+| Diketik pengurus | Diam-diam diubah jadi | Hasil |
+| --- | --- | --- |
+| `Panjat Tebing` | Rock Climbing | hilang |
+| `Rafting` | Olahraga Arus Deras | hilang |
+| `ORAD` | Olahraga Arus Deras | hilang |
+| `Arus Deras` | Olahraga Arus Deras | hilang |
+| `Rockclimbing` | Rock Climbing | hilang |
+| `Konservasi`, `Susur Goa`, `SAR`, … | — | aman |
+
+Itulah sebabnya bug-nya terasa acak: sebagian nama berhasil, sebagian lenyap
+tanpa pesan apa pun.
+
+### Yang diubah
+
+- **Alias tidak lagi menyentuh master data.** `bersihkanDivisi()` kini hanya
+  merapikan spasi dan membuang duplikat. Alias dipakai untuk dua hal saja:
+  **migrasi sekali jalan** (`divisi_schema_version` dinaikkan ke **3**) dan
+  **menafsirkan data lama pada tabel `members`** lewat `aliasDivisiLama()`,
+  sehingga baris `Rafting/Orad` tetap terhitung sebagai Olahraga Arus Deras.
+- **Verifikasi setelah simpan.** `addKategoriItem()` memeriksa ulang apakah
+  namanya benar-benar bertahan setelah daftar dirender. Bila tidak, perubahan
+  di-*rollback* dan muncul dialog **"Tidak Bisa Disimpan"** — tidak ada lagi
+  notifikasi sukses palsu.
+- **Konfirmasi nama yang mirip divisi lama.** Mengetik `Panjat Tebing` kini
+  memunculkan *"Nama Ini Mirip Divisi Lama"* dengan pilihan **Ya, tambahkan**
+  (disimpan sebagai divisi terpisah) atau **Batal**.
+- **Kunci anti-klik-ganda** hanya selama penulisan ke database, sehingga tombol
+  tidak bisa macet bila sebuah dialog dibiarkan terbuka.
+- **Perhitungan jumlah anggota sadar-alias** (`jumlahAnggotaDivisi()`) pada
+  daftar Data Divisi, kartu Sebaran Divisi, dan pemeriksaan sebelum menghapus
+  divisi. Divisi resmi juga menampilkan chip *"termasuk: rafting, orad, …"*
+  supaya jelas dari mana angkanya berasal.
+- **Rename divisi ikut merapikan penulisan warisan** pada tabel `members`.
+- **Validasi tambahan**: maksimal 60 karakter, dan duplikat dideteksi walau
+  beda spasi/huruf besar.
+- **Bug alias yang sama diperbaiki di halaman lain**: `registrasi.html` (divisi
+  tambahan pengurus tidak hilang lagi dari dropdown pendaftaran) dan
+  `index.html` (jumlah anggota tidak lagi "dicuri" divisi lain).
+- **Datalist divisi** untuk kolom *Divisi / Lokasi* (Agenda) dan
+  *Kategori / Divisi* (Galeri) agar nama divisi konsisten dengan master data.
+
+### Pengujian otomatis (baru)
+
+```
+RINGKASAN: 77 lulus, 0 gagal, 0/5 suite bermasalah
+```
+
+`nusapala-verifikasi/tests/` menjalankan halaman sungguhan di **jsdom** dengan
+**Supabase tiruan** — tanpa internet, tanpa menyentuh database asli. Suite-nya
+mencakup: 9 nama divisi (termasuk yang dulu lenyap), migrasi data lama,
+ketahanan setelah pindah halaman, `upsert` ditolak database, database menolak
+semua penulisan, hak akses tiap role (Super Admin / Admin / Member dengan &
+tanpa akses Pengaturan / Alumni), validasi input, rename & hapus, klik ganda,
+halaman Registrasi & beranda, serta smoke test 10 halaman Portal Admin.
+
+```bash
+cd nusapala-verifikasi && npm install && npm test
+```
 
 ---
 
@@ -158,3 +251,4 @@ ikon & warna otomatis.
 ## Lihat Juga
 
 - `REKOMENDASI.md` — daftar saran pengembangan (fitur, tampilan, animasi, keamanan).
+- `nusapala-verifikasi/tests/README.md` — cara menjalankan & isi pengujian otomatis.

@@ -762,15 +762,27 @@
       'rockclimbing': 'Rock Climbing', 'panjat tebing': 'Rock Climbing'
     };
 
+    // Master data dari Portal Admin adalah sumber kebenaran: nama divisi
+    // ditampilkan APA ADANYA. Alias penulisan lama sengaja TIDAK diterapkan di
+    // sini — sebelumnya divisi baru bernama "Panjat Tebing"/"Rafting"/"ORAD"
+    // otomatis diganti lalu dibuang sebagai duplikat, sehingga hilang dari
+    // dropdown pendaftaran tanpa pesan apa pun.
     function rapikanDaftarDivisi(list) {
       const hasil = [];
       (Array.isArray(list) ? list : []).forEach(item => {
-        let nama = String(item == null ? '' : item).replace(/\s+/g, ' ').trim();
+        const nama = String(item == null ? '' : item).replace(/\s+/g, ' ').trim();
         if (!nama) return;
-        nama = DIVISI_ALIAS[nama.toLowerCase()] || nama;
         if (!hasil.some(d => d.toLowerCase() === nama.toLowerCase())) hasil.push(nama);
       });
       return hasil.length ? hasil : DIVISI_STANDAR.slice();
+    }
+
+    // Menafsirkan divisi warisan milik anggota lama (mis. "Rafting/Orad") agar
+    // tetap dikenali sebagai divisi resminya.
+    function aliasDivisiLama(nama) {
+      const n = String(nama == null ? '' : nama).replace(/\s+/g, ' ').trim();
+      if (!n) return '';
+      return DIVISI_ALIAS[n.toLowerCase()] || n;
     }
 
 async function loadDivisiOptions() {
