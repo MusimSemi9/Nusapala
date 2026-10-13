@@ -226,6 +226,19 @@
       .hero-title { font-size: 1.7rem; }
     }
   </style>
+  <!-- ===== NUSAPALA DESIGN SYSTEM (dimuat terakhir agar menang atas gaya lama) ===== -->
+  <link rel="stylesheet" href="/assets/css/nusapala.css">
+  <script src="/assets/js/nusapala-ui.js" defer></script>
+  <script>
+    /* Jaring pengaman: bila kit UI gagal dimuat, konten tidak boleh tetap tersembunyi */
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        if (window.NusapalaUI) return;
+        document.querySelectorAll('.reveal,.np-reveal,.np-reveal-left,.np-reveal-scale,.np-stagger')
+          .forEach(function (el) { el.classList.add('is-visible'); });
+      }, 1200);
+    });
+  </script>
 </head>
 <body>
 
@@ -262,38 +275,32 @@
       <div class="topo-layer"></div>
       <div class="row g-4 align-items-center position-relative">
         <div class="col-12 col-lg-7">
-          <span class="eyebrow mb-3 d-inline-flex">Formulir Keanggotaan Digital</span>
-          <h1 class="hero-title mb-3 mt-3">Bergabung Menjadi Bagian dari Keluarga Besar <span>Mahasiswa Pecinta Alam</span></h1>
-          <p class="text-muted-soft fs-6 mb-0" style="max-width: 540px;">Daftarkan akun Anda untuk mengakses Dashboard Organisasi, Agenda Kegiatan, Informasi Ekspedisi, dan berbagai layanan internal NUSAPALA.</p>
+          <span class="eyebrow mb-3 d-inline-flex np-hero-in" style="--d:.02s">Formulir Keanggotaan Digital</span>
+          <h1 class="hero-title mb-3 mt-3 np-hero-in" style="--d:.10s">Bergabung Menjadi Bagian dari Keluarga Besar <span>Mahasiswa Pecinta Alam</span></h1>
+          <p class="text-muted-soft fs-6 mb-0 np-hero-in" style="max-width: 540px; --d:.18s">Daftarkan akun Anda untuk mengakses Dashboard Organisasi, Agenda Kegiatan, Informasi Ekspedisi, dan berbagai layanan internal NUSAPALA.</p>
         </div>
         <div class="col-12 col-lg-5">
-          <div class="row g-3">
-            <div class="col-6">
-              <div class="info-mini-card">
-                <div class="info-mini-icon"><i class="fa-solid fa-mountain-sun"></i></div>
-                <div class="fw-bold text-dark small mb-1">Ekspedisi Alam</div>
-                <div class="text-muted-soft" style="font-size:0.76rem;">Gunung, hutan, dan konservasi.</div>
-              </div>
+          <div class="np-divisi-panel np-hero-in" style="--d:.24s">
+            <div class="np-label np-label-brass mb-3"><i class="fa-solid fa-people-group me-1"></i> Pilih jalan petualanganmu</div>
+            <div class="d-flex flex-column gap-2" id="regDivisiPreview">
+              <!-- Diisi otomatis oleh loadDivisiOptions() dari master data divisi -->
+              <div class="np-divisi-row"><span class="skeleton" style="width:34px;height:34px;border-radius:11px;"></span><span class="skeleton" style="flex:1;height:14px;"></span></div>
+              <div class="np-divisi-row"><span class="skeleton" style="width:34px;height:34px;border-radius:11px;"></span><span class="skeleton" style="flex:1;height:14px;"></span></div>
+              <div class="np-divisi-row"><span class="skeleton" style="width:34px;height:34px;border-radius:11px;"></span><span class="skeleton" style="flex:1;height:14px;"></span></div>
             </div>
-            <div class="col-6">
-              <div class="info-mini-card">
-                <div class="info-mini-icon"><i class="fa-solid fa-users"></i></div>
-                <div class="fw-bold text-dark small mb-1">Komunitas Solid</div>
-                <div class="text-muted-soft" style="font-size:0.76rem;">Ikatan lintas angkatan.</div>
+            <hr class="my-3" style="border-color: var(--line-soft);">
+            <div class="row g-2">
+              <div class="col-6">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-shield-halved" style="color:var(--gold-600);"></i>
+                  <small style="color:var(--text-muted); font-size:0.76rem;">Leave No Trace</small>
+                </div>
               </div>
-            </div>
-            <div class="col-6">
-              <div class="info-mini-card">
-                <div class="info-mini-icon"><i class="fa-solid fa-shield-halved"></i></div>
-                <div class="fw-bold text-dark small mb-1">Leave No Trace</div>
-                <div class="text-muted-soft" style="font-size:0.76rem;">Petualangan bertanggung jawab.</div>
-              </div>
-            </div>
-            <div class="col-6">
-              <div class="info-mini-card">
-                <div class="info-mini-icon"><i class="fa-solid fa-sun"></i></div>
-                <div class="fw-bold text-dark small mb-1">Sunrise Hunter</div>
-                <div class="text-muted-soft" style="font-size:0.76rem;">Momen di atas awan.</div>
+              <div class="col-6">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-graduation-cap" style="color:var(--gold-600);"></i>
+                  <small style="color:var(--text-muted); font-size:0.76rem;">Pendidikan Dasar</small>
+                </div>
               </div>
             </div>
           </div>
@@ -413,8 +420,9 @@
                 <div class="col-12 col-md-6">
                     <label class="form-label-reg">Divisi <span class="req">*</span></label>
                     <select class="form-select" id="reg_divisi" required>
-                    <option value="">Memuat data divisi...</option>
+                      <option value="">Memuat data divisi...</option>
                     </select>
+                    <div class="np-combo-hint" id="reg_divisi_hint"><i class="fa-solid fa-compass"></i> Pilih salah satu divisi Nusapala.</div>
                     <div class="reg-feedback" id="fb_divisi"></div>
                 </div>
                 <div class="col-12 col-md-6">
@@ -743,30 +751,92 @@
     // 4. DROPDOWN DIVISI — Diambil dinamis dari data Divisi yang sudah ada
     //    di tabel members (bukan hardcode), sesuai master data sistem berjalan.
     // =======================================================================
+const DIVISI_BAKU = ['Gunung Hutan', 'Rock Climbing', 'Olahraga Arus Deras'];
+const DIVISI_ALIAS = {
+  'rafting/orad': 'Olahraga Arus Deras', 'rafting / orad': 'Olahraga Arus Deras',
+  'rafting': 'Olahraga Arus Deras', 'orad': 'Olahraga Arus Deras', 'arus deras': 'Olahraga Arus Deras',
+  'panjat tebing': 'Rock Climbing', 'gunung-hutan': 'Gunung Hutan'
+};
+function divisiKanonik(nama) {
+  const n = String(nama || '').trim();
+  return DIVISI_ALIAS[n.toLowerCase()] || n;
+}
+
+/**
+ * Memuat pilihan divisi untuk formulir registrasi.
+ *
+ * PERBAIKAN PENTING: versi lama memakai .single() sehingga bila baris
+ * 'kategori_divisi' belum pernah disimpan di tabel settings, query mengembalikan
+ * error dan dropdown hanya berisi "-- Gagal memuat data Divisi --" (pendaftar
+ * tidak bisa memilih/memasukkan divisi sama sekali). Sekarang:
+ *   1. pakai .maybeSingle() — tidak ada baris bukan berarti error;
+ *   2. selalu ada fallback ke tiga divisi baku Nusapala;
+ *   3. nama divisi lama dinormalkan (Rafting/Orad -> Olahraga Arus Deras);
+ *   4. divisi yang dipakai anggota di tabel members ikut digabungkan.
+ */
 async function loadDivisiOptions() {
   const sel = document.getElementById('reg_divisi');
+  if (!sel) return;
+
+  let daftar = [];
+  const pushUnik = (nama) => {
+    const k = divisiKanonik(nama);
+    if (!k) return;
+    if (!daftar.some(x => x.toLowerCase() === k.toLowerCase())) daftar.push(k);
+  };
+
+  // 1. Master data dari tabel settings (opsional, boleh belum ada)
   try {
-    // Membaca master data dari tabel settings
-    const { data, error } = await db.from('settings').select('value').eq('key', 'kategori_divisi').single();
-    if (error) throw error;
-    
-    // Parse JSON array
-    const divisiArray = JSON.parse(data.value || '[]');
-    
-    if (divisiArray.length === 0) {
-      sel.innerHTML = '<option value="">-- Belum ada data Divisi di sistem --</option>';
-      return;
+    const { data } = await db.from('settings').select('value').eq('key', 'kategori_divisi').maybeSingle();
+    if (data && data.value) {
+      let parsed = [];
+      try { parsed = JSON.parse(data.value); }
+      catch (e) { parsed = String(data.value).split(',').map(x => x.trim()).filter(Boolean); }
+      if (Array.isArray(parsed)) parsed.forEach(pushUnik);
     }
-    
-    // Mapping opsi ke dropdown
-    sel.innerHTML = '<option value="">-- Pilih Divisi --</option>' + 
-       divisiArray.map(d => `<option value="${escapeHTML(d)}">${escapeHTML(d)}</option>`).join('');
-         
-  } catch (err) {
-    sel.innerHTML = '<option value="">-- Gagal memuat data Divisi --</option>';
+  } catch (err) { /* lanjut ke fallback */ }
+
+  // 2. Gabungkan divisi yang benar-benar dipakai anggota
+  try {
+    const { data } = await db.from('members').select('Divisi');
+    if (Array.isArray(data)) data.forEach(m => pushUnik(m['Divisi']));
+  } catch (err) { /* abaikan */ }
+
+  // 3. Tiga divisi baku selalu tersedia sebagai jaring pengaman
+  DIVISI_BAKU.forEach(pushUnik);
+
+  const nilaiSebelumnya = sel.value;
+  sel.innerHTML = '<option value="">-- Pilih Divisi --</option>' +
+    daftar.map(d => `<option value="${escapeHTML(d)}">${escapeHTML(d)}</option>`).join('');
+  if (nilaiSebelumnya && daftar.some(d => d === nilaiSebelumnya)) sel.value = nilaiSebelumnya;
+
+  // 4. Keterangan singkat divisi yang dipilih
+  const updateHint = () => {
+    const hint = document.getElementById('reg_divisi_hint');
+    if (!hint) return;
+    const meta = window.NusapalaUI ? NusapalaUI.normalizeDivisi(sel.value) : null;
+    hint.innerHTML = sel.value && meta
+      ? `<i class="fa-solid ${meta.icon}"></i> <b>${escapeHTML(meta.nama)}</b> — ${escapeHTML(meta.tagline)}`
+      : '<i class="fa-solid fa-compass"></i> Pilih salah satu divisi Nusapala.';
+  };
+
+  sel.onchange = function () { updateHint(); if (typeof runValidation === 'function') runValidation(); };
+  updateHint();
+
+  // 5. Pratinjauan divisi di hero (ikut berubah bila master data berubah)
+  const preview = document.getElementById('regDivisiPreview');
+  if (preview) {
+    preview.innerHTML = daftar.slice(0, 4).map(d => {
+      const meta = window.NusapalaUI ? NusapalaUI.normalizeDivisi(d) : { icon: 'fa-compass', theme: '', tagline: '' };
+      return `<div class="np-divisi-row">
+        <span class="np-divisi-mini ${meta.theme}"><i class="fa-solid ${meta.icon}"></i></span>
+        <div style="min-width:0;">
+          <div class="np-divisi-nama">${escapeHTML(d)}</div>
+          <div class="np-divisi-desc">${escapeHTML(meta.tagline || 'Bidang kegiatan Nusapala')}</div>
+        </div>
+      </div>`;
+    }).join('');
   }
-  
-  sel.addEventListener('change', runValidation);
 }
 
     // =======================================================================
@@ -812,17 +882,19 @@ async function loadDivisiOptions() {
         const pct = pw.length === 0 ? 0 : (metCount / 5) * 100;
         fill.style.width = pct + '%';
 
-        let color = '#b3462c', text = 'Sangat Lemah';
-        if (pw.length === 0) { text = 'Kekuatan Password'; color = '#e7e0cf'; }
-        else if (metCount <= 1) { text = 'Sangat Lemah'; color = '#b3462c'; }
-        else if (metCount === 2) { text = 'Lemah'; color = '#d97706'; }
-        else if (metCount === 3) { text = 'Cukup'; color = '#c9a227'; }
-        else if (metCount === 4) { text = 'Kuat'; color = '#2f7d4f'; }
-        else if (metCount === 5) { text = 'Sangat Kuat'; color = '#16603a'; }
+        // 'bar' = warna batang indikator (boleh terang), 'teks' = warna label
+        // yang sudah memenuhi kontras WCAG AA di atas kertas krem.
+        let bar = '#a4482e', teks = '#8d3c26', text = 'Sangat Lemah';
+        if (pw.length === 0) { text = 'Kekuatan Password'; bar = '#ddd4bd'; teks = 'var(--text-muted)'; }
+        else if (metCount <= 1) { text = 'Sangat Lemah'; bar = '#bd5a3c'; teks = '#8d3c26'; }
+        else if (metCount === 2) { text = 'Lemah'; bar = '#c98a1c'; teks = '#8a5a0e'; }
+        else if (metCount === 3) { text = 'Cukup'; bar = '#c9a227'; teks = '#7d5f14'; }
+        else if (metCount === 4) { text = 'Kuat'; bar = '#3d9160'; teks = '#276241'; }
+        else if (metCount === 5) { text = 'Sangat Kuat'; bar = '#2f7d4f'; teks = '#1d5135'; }
 
-        fill.style.background = color;
+        fill.style.background = bar;
         label.textContent = text;
-        label.style.color = pw.length === 0 ? 'var(--text-muted)' : color;
+        label.style.color = teks;
 
         checkPasswordMatch();
         runValidation();

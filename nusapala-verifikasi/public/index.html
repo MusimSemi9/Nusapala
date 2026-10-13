@@ -177,6 +177,20 @@
     .text-primary { color: var(--primary-color) !important; }
     .bg-primary { background-color: var(--primary-color) !important; }
   </style>
+
+  <!-- ===== NUSAPALA DESIGN SYSTEM (dimuat terakhir agar menang atas gaya lama) ===== -->
+  <link rel="stylesheet" href="/assets/css/nusapala.css">
+  <script src="/assets/js/nusapala-ui.js" defer></script>
+  <script>
+    /* Jaring pengaman: bila kit UI gagal dimuat, konten tidak boleh tetap tersembunyi */
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        if (window.NusapalaUI) return;
+        document.querySelectorAll('.reveal,.np-reveal,.np-reveal-left,.np-reveal-scale,.np-stagger')
+          .forEach(function (el) { el.classList.add('is-visible'); });
+      }, 1200);
+    });
+  </script>
 </head>
 <body>
 
@@ -189,7 +203,7 @@
           <img src="/Logo Nusapala.png" alt="Logo Nusapala" style="width: 38px; height: 38px; object-fit: contain;">
         </span>
         <div>
-          <div class="fw-bold text-dark lh-1 brand-org-name"></div>
+          <div class="fw-bold text-dark lh-1 brand-org-name">NUSAPALA</div>
           <small class="text-muted brand-org-sub">Mapala Institut Bisnis Nusantara</small>
         </div>
       </a>
@@ -199,6 +213,7 @@
       <div class="collapse navbar-collapse" id="landingNav">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-3 me-4">
           <li class="nav-item"><a class="nav-link nav-link-landing active" href="#landingPage">Beranda</a></li>
+          <li class="nav-item"><a class="nav-link nav-link-landing" href="#section-divisi">Divisi</a></li>
           <li class="nav-item"><a class="nav-link nav-link-landing" href="#section-jadwal">Agenda</a></li>
           <li class="nav-item"><a class="nav-link nav-link-landing" href="#section-pengumuman">Galeri</a></li>
           <li class="nav-item"><a class="nav-link nav-link-landing" href="/cuaca-gunung">Cuaca Gunung</a></li>
@@ -211,61 +226,82 @@
   </nav>
 
   <!-- Hero Section & Grid Content -->
-  <div class="container py-5">
+  <div class="container py-4 py-lg-5">
 
-    <div class="hero-wrap p-4 p-lg-5 mb-5">
-      <div class="topo-layer"></div>
-      <div class="row g-4 align-items-stretch position-relative">
+    <!-- Ticker agenda berjalan (diisi dari tabel kegiatan) -->
+    <div class="np-ticker mb-4 np-reveal" id="agendaTicker" style="display:none;"></div>
+
+    <div class="hero-wrap p-4 p-lg-5 mb-5 np-grain">
+      <div class="topo-layer topo-layer-ink"></div>
+
+      <!-- Siluet punggungan gunung -->
+      <div class="np-hero-ridge" aria-hidden="true">
+        <svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 150 L0 104 L118 62 L214 96 L330 34 L452 100 L566 58 L690 112 L806 70 L934 118 L1052 66 L1180 108 L1296 52 L1440 110 L1440 150 Z" fill="#123321" fill-opacity="0.10"/>
+          <path d="M0 150 L0 126 L142 96 L268 128 L402 84 L520 130 L660 98 L796 136 L920 104 L1064 140 L1206 100 L1330 134 L1440 116 L1440 150 Z" fill="#0a1f14" fill-opacity="0.14"/>
+        </svg>
+      </div>
+
+      <div class="row g-4 g-lg-5 align-items-stretch position-relative">
         <!-- Left Hero Area -->
         <div class="col-12 col-lg-7 d-flex flex-column justify-content-center">
-          <div class="mb-4">
-            <span class="eyebrow mb-3 d-inline-flex">Dashboard Mahasiswa Pecinta Alam</span>
-            <h1 class="hero-title mb-3 mt-3" id="heroTitle"></h1>
-            <p class="text-muted-soft fs-6 mb-4" id="heroSubtitle" style="max-width: 520px;"></p>
-            <div class="d-flex flex-wrap gap-2 mb-2">
-              <a href="#section-pengumuman" class="btn btn-forest px-4 py-2 d-flex align-items-center gap-2"><i class="fa-solid fa-camera-retro"></i> Lihat Galeri</a>
-              <button onclick="openPublicSuratModal()" class="btn btn-outline-gold px-4 py-2 d-flex align-items-center gap-2"><i class="fa-solid fa-file-signature"></i> Administrasi</button>
+          <div class="mb-2">
+            <span class="eyebrow mb-3 d-inline-flex np-hero-in" style="--d:.02s">Mahasiswa Pecinta Alam · IBN</span>
+            <h1 class="hero-title mb-3 mt-3 np-hero-in" id="heroTitle" style="--d:.10s">Tumbuh di Alam,<br><span>Bertanggung Jawab</span> atas Jejak.</h1>
+            <p class="hero-sub text-muted-soft fs-6 mb-4 np-hero-in" id="heroSubtitle" style="max-width: 540px; --d:.18s">Pusat informasi kegiatan, transparansi kas, inventaris alat, dan peminjaman logistik Nusapala — satu pintu untuk seluruh anggota.</p>
+
+            <!-- Chip tiga divisi -->
+            <div class="d-flex flex-wrap gap-2 mb-4 np-hero-in" id="heroDivisiChips" style="--d:.26s">
+              <span class="np-chip"><i class="fa-solid fa-mountain"></i> Gunung Hutan</span>
+              <span class="np-chip"><i class="fa-solid fa-person-hiking"></i> Rock Climbing</span>
+              <span class="np-chip"><i class="fa-solid fa-water"></i> Olahraga Arus Deras</span>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 mb-2 np-hero-in" style="--d:.34s">
+              <a href="#section-divisi" class="btn btn-forest px-4 py-2 d-flex align-items-center gap-2"><i class="fa-solid fa-compass"></i> Jelajahi Divisi</a>
+              <a href="#section-jadwal" class="btn btn-outline-gold px-4 py-2 d-flex align-items-center gap-2"><i class="fa-solid fa-calendar-day"></i> Agenda Kegiatan</a>
+              <button onclick="openPublicPeminjamanModal()" class="btn btn-brass px-4 py-2 d-flex align-items-center gap-2"><i class="fa-solid fa-boxes-packing"></i> Pinjam Alat</button>
             </div>
           </div>
         </div>
 
         <!-- Right Stats Area -->
         <div class="col-12 col-lg-5 d-flex flex-column justify-content-between">
-          <div class="stat-panel p-4 h-100 mb-0 d-flex flex-column justify-content-between">
+          <div class="stat-panel p-4 h-100 mb-0 d-flex flex-column justify-content-between np-hero-in" style="--d:.22s">
             <div>
-              <div class="fw-bold text-dark mb-3 d-flex align-items-center gap-2"><i class="fa-solid fa-users text-primary"></i>Keanggotaan Nusapala</div>
+              <div class="fw-bold text-dark mb-3 d-flex align-items-center gap-2 font-display"><i class="fa-solid fa-users text-primary"></i>Keanggotaan Nusapala</div>
               <div class="row g-3">
                 <div class="col-6 col-sm-6 border-end">
-                  <small class="text-muted-soft d-block mb-1">Total Anggota Terdaftar</small>
-                  <span id="pub_anggota_total" class="fw-bold text-dark stat-figure fs-3">...</span> <small class="text-muted-soft">Orang</small>
+                  <small class="np-label d-block mb-1">Anggota Terdaftar</small>
+                  <span id="pub_anggota_total" class="fw-bold text-dark stat-figure fs-3">…</span> <small class="text-muted">Orang</small>
                 </div>
                 <div class="col-6 col-sm-6">
-                  <small class="text-muted-soft d-block mb-1">Pengurus (Admin)</small>
-                  <span id="pub_anggota_admin" class="fw-bold stat-figure fs-3" style="color:var(--gold-600);">...</span> <small class="text-muted-soft">Orang</small>
+                  <small class="np-label d-block mb-1">Pengurus Aktif</small>
+                  <span id="pub_anggota_admin" class="fw-bold stat-figure fs-3" style="color:var(--gold-600);">…</span> <small class="text-muted">Orang</small>
                 </div>
               </div>
             </div>
 
             <div>
               <hr class="my-3" style="border-color: var(--line-soft);">
-              <div class="fw-semibold text-dark mb-3" style="font-size:0.85rem;"><i class="fa-solid fa-bolt me-2" style="color:var(--gold-500);"></i>Layanan Cepat</div>
+              <div class="fw-semibold text-dark mb-3 font-display" style="font-size:0.92rem;"><i class="fa-solid fa-bolt me-2" style="color:var(--gold-500);"></i>Layanan Cepat</div>
               <div class="row g-2">
-                <div class="col-4" onclick="openPublicSuratModal()">
+                <div class="col-4" onclick="openPublicSuratModal()" role="button" tabindex="0" aria-label="Ajukan persuratan">
                   <div class="service-grid-btn">
-                    <i class="fa-solid fa-file-invoice fa-lg text-primary d-block mb-2"></i>
-                    <span style="font-size: 0.7rem;" class="fw-medium text-dark d-block text-truncate">Persuratan</span>
+                    <i class="fa-solid fa-file-signature fa-lg d-block mb-2"></i>
+                    <span style="font-size: 0.72rem;" class="fw-medium text-dark d-block text-truncate">Persuratan</span>
                   </div>
                 </div>
-                <div class="col-4" onclick="openPublicPengaduanModal()">
+                <div class="col-4" onclick="openPublicPengaduanModal()" role="button" tabindex="0" aria-label="Buat laporan">
                   <div class="service-grid-btn">
-                    <i class="fa-solid fa-headset fa-lg text-success d-block mb-2"></i>
-                    <span style="font-size: 0.7rem;" class="fw-medium text-dark d-block text-truncate">Laporan</span>
+                    <i class="fa-solid fa-headset fa-lg d-block mb-2"></i>
+                    <span style="font-size: 0.72rem;" class="fw-medium text-dark d-block text-truncate">Laporan</span>
                   </div>
                 </div>
-                <div class="col-4" onclick="openPublicPeminjamanModal()">
+                <div class="col-4" onclick="openPublicPeminjamanModal()" role="button" tabindex="0" aria-label="Pinjam alat">
                   <div class="service-grid-btn">
-                    <i class="fa-solid fa-boxes-packing fa-lg text-primary d-block mb-2"></i>
-                    <span style="font-size: 0.7rem;" class="fw-medium text-dark d-block text-truncate">Pinjam Alat</span>
+                    <i class="fa-solid fa-boxes-packing fa-lg d-block mb-2"></i>
+                    <span style="font-size: 0.72rem;" class="fw-medium text-dark d-block text-truncate">Pinjam Alat</span>
                   </div>
                 </div>
               </div>
@@ -334,6 +370,65 @@
           </div>
           <div class="position-relative">
             <button onclick="openPublicPengaduanModal()" class="btn btn-light text-primary btn-sm rounded-3 fw-bold px-4 py-2 w-100">Buat Laporan</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SEKSI DIVISI (Gunung Hutan · Rock Climbing · ORAD) ============ -->
+    <div id="section-divisi" class="np-section reveal">
+      <div class="np-section-head text-center">
+        <span class="eyebrow justify-content-center d-inline-flex mb-2">Bidang Kegiatan</span>
+        <h2 class="np-section-title mb-2">Tiga Divisi, Satu Semangat Jelajah</h2>
+        <p class="np-section-sub mx-auto">Setiap anggota Nusapala menempuh pendidikan dasar lalu mendalami salah satu divisi. Data jumlah anggota di bawah ini diambil langsung dari database keanggotaan.</p>
+      </div>
+      <div class="np-divisi-grid np-stagger" id="divisiCardsContainer">
+        <!-- Dirender oleh NusapalaUI.renderDivisiCards() -->
+      </div>
+    </div>
+
+    <!-- ============ SEKSI ALUR PEMINJAMAN ALAT ============ -->
+    <div id="section-peminjaman" class="np-section reveal">
+      <div class="row g-4 align-items-center">
+        <div class="col-12 col-lg-4">
+          <span class="eyebrow mb-2 d-inline-flex">Inventaris Logistik</span>
+          <h2 class="np-section-title mb-2">Alur Peminjaman Alat</h2>
+          <p class="np-section-sub">Empat langkah sederhana. Permohonan masuk ke Panel Admin dan diverifikasi oleh pengurus bidang logistik.</p>
+          <div class="d-flex flex-wrap gap-2 mt-3">
+            <button onclick="openPublicPeminjamanModal()" class="btn btn-forest d-flex align-items-center gap-2"><i class="fa-solid fa-boxes-packing"></i> Ajukan Peminjaman</button>
+            <a href="#section-transparansi" class="btn btn-outline-gold d-flex align-items-center gap-2"><i class="fa-solid fa-boxes-stacked"></i> Lihat Inventaris</a>
+          </div>
+        </div>
+        <div class="col-12 col-lg-8">
+          <div class="row g-3 np-stagger">
+            <div class="col-12 col-sm-6 col-lg-3">
+              <div class="np-step">
+                <div class="np-step-num">1</div>
+                <h6>Ajukan</h6>
+                <p>Isi formulir "Pinjam Alat", pilih alat dari daftar inventaris beserta jumlahnya.</p>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+              <div class="np-step">
+                <div class="np-step-num">2</div>
+                <h6>Verifikasi</h6>
+                <p>Pengurus mengecek ketersediaan stok dan kelengkapan syarat kegiatan.</p>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+              <div class="np-step">
+                <div class="np-step-num">3</div>
+                <h6>Ambil</h6>
+                <p>Alat diambil di sekretariat dengan berita acara serah terima kondisi alat.</p>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+              <div class="np-step">
+                <div class="np-step-num">4</div>
+                <h6>Kembali</h6>
+                <p>Alat dikembalikan, dicek ulang, lalu status peminjaman ditutup di sistem.</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -412,6 +507,7 @@
         <div class="col-6 col-lg-2">
           <div class="footer-heading">Navigasi</div>
           <a href="#landingPage" class="footer-link">Beranda</a>
+          <a href="#section-divisi" class="footer-link">Divisi</a>
           <a href="#section-jadwal" class="footer-link">Agenda</a>
           <a href="#section-pengumuman" class="footer-link">Galeri</a>
           <a href="/registrasi" class="footer-link">Daftar Akun</a>
@@ -423,6 +519,7 @@
           <a href="javascript:void(0)" onclick="openPublicSuratModal()" class="footer-link">Persuratan</a>
           <a href="javascript:void(0)" onclick="openPublicPeminjamanModal()" class="footer-link">Pinjam Alat</a>
           <a href="javascript:void(0)" onclick="openPublicPengaduanModal()" class="footer-link">Laporan</a>
+          <a href="/cuaca-gunung" class="footer-link">Cuaca Gunung</a>
         </div>
 
         <div class="col-12 col-lg-4">
@@ -436,7 +533,7 @@
       <div class="footer-bottom pt-3 d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
         <p class="text-white-50 mb-0 small" id="footerCopyright"></p>
         <div class="d-flex align-items-center gap-2">
-          <span class="footer-badge font-mono">v2.0 — Light Premium</span>
+          <span class="footer-badge font-mono">v3.0 — Deep Forest &amp; Brass</span>
           <span class="text-white-50 small">· Dirancang oleh N 3126 - 008 AM</span>
         </div>
       </div>
@@ -638,6 +735,7 @@
     window.onload = function() {
       fetchSupabaseSettings(); // Tarik pengaturan dinamis terlebih dahulu
       fetchSupabaseStats();
+      fetchSupabaseDivisi();   // Sebaran anggota per divisi (Gunung Hutan / Rock Climbing / ORAD)
       fetchSupabaseKegiatan();
       fetchSupabasePosts();
       initScrollReveal();
@@ -645,6 +743,71 @@
       fetchWidgetOperasional();
       subscribeWidgetOperasionalRealtime();
     };
+
+    // ============ Animasi angka (dipakai statistik keanggotaan) ============
+    function animateNumber(el, target) {
+      if (!el) return;
+      const n = parseInt(target, 10) || 0;
+      if (!window.NusapalaUI || window.NusapalaUI.reducedMotion) { el.innerText = n; return; }
+      const dur = 900; let start = null;
+      function step(ts) {
+        if (!start) start = ts;
+        const p = Math.min(1, (ts - start) / dur);
+        el.innerText = Math.round(n * (1 - Math.pow(1 - p, 3)));
+        if (p < 1) requestAnimationFrame(step); else el.innerText = n;
+      }
+      requestAnimationFrame(step);
+    }
+
+    // =======================================================================
+    // DIVISI — master data dari settings.kategori_divisi, dengan fallback ke
+    // tiga divisi baku Nusapala agar seksi ini tidak pernah kosong.
+    // =======================================================================
+    async function fetchSupabaseDivisi() {
+      const container = document.getElementById('divisiCardsContainer');
+      if (!container || !window.NusapalaUI) return;
+
+      // 1. Ambil daftar divisi resmi dari tabel settings
+      let daftar = window.NusapalaUI.DIVISI_DEFAULT.slice();
+      try {
+        const { data } = await db.from('settings').select('value').eq('key', 'kategori_divisi').maybeSingle();
+        if (data && data.value) {
+          let parsed = [];
+          try { parsed = JSON.parse(data.value); }
+          catch (e) { parsed = String(data.value).split(',').map(x => x.trim()).filter(Boolean); }
+          if (Array.isArray(parsed) && parsed.length) daftar = parsed;
+        }
+      } catch (e) { /* pakai fallback */ }
+
+      // 2. Hitung jumlah anggota per divisi dari tabel members
+      const counts = {};
+      daftar.forEach(d => counts[d] = 0);
+      try {
+        const { data, error } = await db.from('members').select('Divisi,status_anggota');
+        if (!error && Array.isArray(data)) {
+          data.forEach(m => {
+            const dv = (m['Divisi'] || '').trim();
+            if (!dv) return;
+            if (counts[dv] === undefined) { daftar.push(dv); counts[dv] = 0; }
+            counts[dv] += 1;
+          });
+        }
+      } catch (e) { /* biarkan 0 */ }
+
+      // 3. Render kartu divisi + animasi muncul
+      window.NusapalaUI.renderDivisiCards(container, daftar, counts, {
+        linkLabel: 'Lihat agenda divisi', link: '#section-jadwal', linkEnabled: true
+      });
+
+      // 4. Chip divisi di hero mengikuti master data
+      const chips = document.getElementById('heroDivisiChips');
+      if (chips) {
+        chips.innerHTML = daftar.map(d => {
+          const meta = window.NusapalaUI.normalizeDivisi(d);
+          return `<a href="#section-divisi" class="np-chip text-decoration-none"><i class="fa-solid ${meta.icon}"></i> ${meta.nama}</a>`;
+        }).join('');
+      }
+    }
 
     // ============ Widget Cuaca Gunung (live, Open-Meteo) ============
     const WIDGET_GUNUNG_ID = 'gede'; // gunung yang ditonjolkan di beranda
@@ -698,7 +861,7 @@
     // seluruh isi widget mengikuti apa yang diinput/diubah Admin secara real-time.
     // =======================================================================
     const OPS_STATUS_KEAMANAN_COLOR = {
-      'Aman': '#2f7d4f', 'Perlu Perhatian': '#c9a227', 'Kendala Lapangan': '#d97706', 'Darurat': '#b3462c'
+      'Aman': '#276241', 'Perlu Perhatian': '#96721c', 'Kendala Lapangan': '#a45a12', 'Darurat': '#a4482e'
     };
 
     async function fetchWidgetOperasional() {
@@ -836,8 +999,8 @@
         if (error) throw error;
         let totalAdmin = 0;
         data.forEach(m => { if(m.role === 'Admin' || m.role === 'Super Admin') totalAdmin++; });
-        document.getElementById('pub_anggota_total').innerText = data.length;
-        document.getElementById('pub_anggota_admin').innerText = totalAdmin;
+        animateNumber(document.getElementById('pub_anggota_total'), data.length);
+        animateNumber(document.getElementById('pub_anggota_admin'), totalAdmin);
       } catch (err) {}
     }
 
@@ -867,6 +1030,15 @@
             </div>`;
         });
         container.innerHTML = html;
+
+        // Ticker agenda berjalan di bagian atas beranda
+        if (window.NusapalaUI) {
+          window.NusapalaUI.buildTicker(document.getElementById('agendaTicker'), data.slice(0, 8).map(item => ({
+            icon: 'calendar-day',
+            title: item.judul,
+            meta: (item.tanggal_kegiatan || '-') + ' · ' + (item.divisi || 'Umum')
+          })));
+        }
       } catch (err) { container.innerHTML = '<div class="text-danger text-center py-3 small">Gagal memuat jadwal.</div>'; }
     }
 

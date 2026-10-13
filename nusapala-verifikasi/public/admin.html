@@ -457,6 +457,19 @@
       .notif-panel-header { padding: 1rem 1.1rem; }
     }
   </style>
+  <!-- ===== NUSAPALA DESIGN SYSTEM (dimuat terakhir agar menang atas gaya lama) ===== -->
+  <link rel="stylesheet" href="/assets/css/nusapala.css">
+  <script src="/assets/js/nusapala-ui.js" defer></script>
+  <script>
+    /* Jaring pengaman: bila kit UI gagal dimuat, konten tidak boleh tetap tersembunyi */
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        if (window.NusapalaUI) return;
+        document.querySelectorAll('.reveal,.np-reveal,.np-reveal-left,.np-reveal-scale,.np-stagger')
+          .forEach(function (el) { el.classList.add('is-visible'); });
+      }, 1200);
+    });
+  </script>
 </head>
 <body>
 
@@ -664,6 +677,18 @@
                     <span class="input-group-text bg-white text-muted border-end-0"><i class="fa-solid fa-magnifying-glass"></i></span>
                     <input type="text" class="form-control border-start-0" id="searchAnggota" placeholder="Cari NPA atau Nama..." oninput="renderAnggotaTable()">
                   </div>
+                </div>
+                <div class="col-12 col-md-4 col-lg-3">
+                  <select class="form-select" id="filterAnggotaDivisi" onchange="renderAnggotaTable()" aria-label="Saring berdasarkan divisi">
+                    <option value="">Semua Divisi</option>
+                  </select>
+                </div>
+                <div class="col-12 col-md-3 col-lg-2">
+                  <select class="form-select" id="filterAnggotaStatus" onchange="renderAnggotaTable()" aria-label="Saring berdasarkan status">
+                    <option value="">Semua Status</option>
+                    <option value="Aktif">Aktif</option>
+                    <option value="Alumni">Alumni</option>
+                  </select>
                 </div>
                 <div class="col-12 col-md-auto ms-auto d-flex gap-2">
                   <button class="btn btn-primary d-flex align-items-center gap-2" onclick="openAnggotaModal()"><i class="fa-solid fa-user-plus"></i> Tambah Anggota</button>
@@ -1085,17 +1110,51 @@
                       <button class="btn btn-outline-primary" type="button" onclick="addKategoriItem('surat')"><i class="fa-solid fa-plus"></i> Tambah</button>
                     </div>
                     <div class="border rounded bg-light-subtle p-2" style="max-height: 150px; overflow-y: auto;" id="settingsKategoriSuratList"></div>
-                    <!-- Kategori Divisi -->
-                    <div class="mb-4 mt-4">
-                      <label class="form-label small fw-semibold text-info"><i class="fa-solid fa-layer-group"></i> Kategori Divisi</label>
-                      <div class="input-group mb-2">
-                        <input type="text" class="form-control" id="addKategoriDivisiInput" placeholder="Ketik divisi baru...">
-                        <button class="btn btn-outline-info" type="button" onclick="addKategoriItem('divisi')"><i class="fa-solid fa-plus"></i> Tambah</button>
-                      </div>
-                      <div class="border rounded bg-light-subtle p-2" style="max-height: 150px; overflow-y: auto;" id="settingsKategoriDivisiList"></div>
-                    </div>
                   </div>
 
+                </div>
+              </div>
+
+              <!-- ============================================================
+                   KARTU: DATA DIVISI ORGANISASI
+                   Dipindah keluar dari kartu "Kategori Sistem" supaya tidak
+                   terkubur, punya identitas ikon per divisi, tombol cepat untuk
+                   tiga divisi baku, dan utilitas perapian nama divisi lama.
+                   ============================================================ -->
+              <div class="card border-0 shadow-sm rounded-3 mb-4" id="cardDataDivisi">
+                <div class="card-header bg-white border-0 pt-4 px-4 d-flex align-items-start justify-content-between gap-3 flex-wrap">
+                  <div>
+                    <h6 class="fw-bold mb-1 text-dark"><i class="fa-solid fa-people-group me-2 text-success"></i>Data Divisi Organisasi</h6>
+                    <p class="small mb-0" style="color:var(--text-muted); font-size:0.8rem;">Master data divisi yang dipakai di form anggota, registrasi mandiri, dan agenda kegiatan.</p>
+                  </div>
+                  <span class="np-chip np-chip-brass"><i class="fa-solid fa-database"></i> <span id="divisiCountChip">0 divisi</span></span>
+                </div>
+                <div class="card-body px-4 pb-4">
+
+                  <!-- Tombol cepat tiga divisi baku -->
+                  <label class="form-label small fw-semibold">Tambah cepat divisi baku</label>
+                  <div class="d-flex flex-wrap gap-2 mb-3" id="divisiQuickAdd">
+                    <button type="button" class="btn btn-sm btn-outline-success d-flex align-items-center gap-2" onclick="addDivisiCepat('Gunung Hutan')"><i class="fa-solid fa-mountain"></i> Gunung Hutan</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-2" onclick="addDivisiCepat('Rock Climbing')"><i class="fa-solid fa-person-hiking"></i> Rock Climbing</button>
+                    <button type="button" class="btn btn-sm btn-outline-info d-flex align-items-center gap-2" onclick="addDivisiCepat('Olahraga Arus Deras')"><i class="fa-solid fa-water"></i> Olahraga Arus Deras</button>
+                  </div>
+
+                  <!-- Input divisi bebas -->
+                  <label class="form-label small fw-semibold text-info" for="addKategoriDivisiInput"><i class="fa-solid fa-layer-group"></i> Tambah divisi lain</label>
+                  <div class="input-group mb-2">
+                    <input type="text" class="form-control" id="addKategoriDivisiInput" placeholder="Ketik nama divisi baru, lalu tekan Enter..." onkeydown="if(event.key==='Enter'){event.preventDefault();addKategoriItem('divisi');}">
+                    <button class="btn btn-outline-info" type="button" onclick="addKategoriItem('divisi')"><i class="fa-solid fa-plus"></i> Tambah</button>
+                  </div>
+                  <div class="np-combo-hint mb-3" id="divisiPermissionHint"></div>
+
+                  <!-- Daftar divisi -->
+                  <label class="form-label small fw-semibold">Daftar divisi aktif</label>
+                  <div class="border rounded bg-light-subtle p-2" style="max-height: 260px; overflow-y: auto;" id="settingsKategoriDivisiList"></div>
+
+                  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3 pt-3 border-top">
+                    <small style="color:var(--text-muted); font-size:0.76rem;"><i class="fa-solid fa-circle-info me-1"></i>Masih ada penamaan lama seperti <b>Rafting/Orad</b>? Rapikan menjadi <b>Olahraga Arus Deras</b> sekaligus memperbarui data anggota.</small>
+                    <button type="button" class="btn btn-sm btn-outline-warning d-flex align-items-center gap-2" onclick="migrasiNamaDivisi()"><i class="fa-solid fa-wand-magic-sparkles"></i> Rapikan Nama Divisi</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1396,7 +1455,7 @@
   <div class="modal fade" id="actionModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title fw-bold">Update Status</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><form id="actionForm"><input type="hidden" id="action_id"><input type="hidden" id="action_table"><div class="modal-body"><label class="form-label">Status Baru</label><select class="form-select" id="action_status"><option value="Pending">Pending</option><option value="Disetujui">Disetujui / Diproses</option><option value="Selesai">Selesai / Dikembalikan</option><option value="Ditolak">Ditolak</option></select></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button><button type="submit" class="btn btn-primary">Simpan</button></div></form></div></div></div>
 
   <!-- Modal Agenda & Postingan -->
-  <div class="modal fade" id="kegiatanModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title fw-bold" id="kegiatanModalTitle">Form Agenda</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><form id="kegiatanForm"><input type="hidden" id="kegiatan_id"><div class="modal-body"><div class="mb-3"><label class="form-label small">Judul Kegiatan</label><input type="text" class="form-control" id="keg_judul" required></div><div class="mb-3"><label class="form-label small">Tanggal</label><input type="date" class="form-control" id="keg_tgl" required></div><div class="mb-3"><label class="form-label small">Divisi / Lokasi</label><input type="text" class="form-control" id="keg_divisi"></div><div class="mb-3"><label class="form-label small">Deskripsi</label><textarea class="form-control" id="keg_desc"></textarea></div></div><div class="modal-footer"><button type="submit" class="btn btn-primary">Simpan</button></div></form></div></div></div>
+  <div class="modal fade" id="kegiatanModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title fw-bold" id="kegiatanModalTitle">Form Agenda</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><form id="kegiatanForm"><input type="hidden" id="kegiatan_id"><div class="modal-body"><div class="mb-3"><label class="form-label small">Judul Kegiatan</label><input type="text" class="form-control" id="keg_judul" required></div><div class="mb-3"><label class="form-label small">Tanggal</label><input type="date" class="form-control" id="keg_tgl" required></div><div class="mb-3"><label class="form-label small">Divisi Penyelenggara</label><select class="form-select" id="keg_divisi"></select></div><div class="mb-3"><label class="form-label small">Deskripsi</label><textarea class="form-control" id="keg_desc"></textarea></div></div><div class="modal-footer"><button type="submit" class="btn btn-primary">Simpan</button></div></form></div></div></div>
   
   <div class="modal fade" id="postModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title fw-bold" id="postModalTitle">Form Galeri</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><form id="postForm"><input type="hidden" id="post_id"><div class="modal-body"><div class="mb-3"><label class="form-label small">Judul Post</label><input type="text" class="form-control" id="post_judul" required></div><div class="mb-3"><label class="form-label small">URL Foto</label><input type="text" class="form-control" id="post_url"></div><div class="mb-3"><label class="form-label small">Kategori / Divisi</label><input type="text" class="form-control" id="post_kategori"></div><div class="mb-3"><label class="form-label small">Deskripsi</label><textarea class="form-control" id="post_desc"></textarea></div></div><div class="modal-footer"><button type="submit" class="btn btn-primary">Simpan</button></div></form></div></div></div>
 
@@ -1428,7 +1487,7 @@
     const NOTIF_CATEGORIES = {
       'Registrasi':    { icon: 'fa-user-plus',      color: '#2f7d4f' },
       'Data Anggota':  { icon: 'fa-id-card-clip',   color: '#1d4a2d' },
-      'Kepengurusan':  { icon: 'fa-sitemap',        color: '#a9821c' },
+      'Kepengurusan':  { icon: 'fa-sitemap',        color: '#8a6a12' },
       'Hak Akses':     { icon: 'fa-user-shield',    color: '#b3462c' },
       'Informasi':     { icon: 'fa-circle-info',    color: '#2b6cb0' },
       'Agenda':        { icon: 'fa-calendar-days',  color: '#6b46c1' },
@@ -1466,11 +1525,11 @@
       kategori_pengeluaran: ["Operasional Sekre", "Kegiatan Alam", "Rapat", "Lain-lain"],
       kategori_aset: ["Alat Gunung Hutan", "Alat Rock Climbing", "Alat ORAD (Olahraga Arus Deras)", "Logistik", "Lain-lain"],
       kategori_surat: ["Surat Izin Kegiatan", "Surat Peminjaman Tempat", "Surat Undangan", "Lainnya"],
-      kategori_kepengurusan: ["Ketua Umum", "Wakil Ketua Umum", "Sekretaris", "Bendahara", "MSDM", "Kepala Divisi Gunung Hutan", "Kepala Divisi Rock Climbing", "Kepala Divisi Rafting"],
+      kategori_kepengurusan: ["Ketua Umum", "Wakil Ketua Umum", "Sekretaris", "Bendahara", "MSDM", "Kepala Divisi Gunung Hutan", "Kepala Divisi Rock Climbing", "Kepala Divisi Olahraga Arus Deras"],
       kategori_jenis_kegiatan: ["Pendakian", "Pendidikan Dasar", "Jungle Trekking", "Survival Camp", "Susur Sungai", "Panjat Tebing", "Konservasi", "Penanaman Pohon", "Bersih Gunung", "Latihan SAR", "Ekspedisi", "Bakti Sosial", "Rapat", "Kegiatan Lainnya"],
       daftar_status_kegiatan: ["Perencanaan", "Persiapan", "Berlangsung", "Selesai", "Ditunda", "Dibatalkan", "Darurat"],
       daftar_status_keamanan: ["Aman", "Perlu Perhatian", "Kendala Lapangan", "Darurat"],
-      kategori_divisi: ["Gunung Hutan", "Rock Climbing", "Rafting/Orad"]
+      kategori_divisi: ["Gunung Hutan", "Rock Climbing", "Olahraga Arus Deras"]
     };
 
     // ================== HELPER FUNCTIONS ==================
@@ -1522,6 +1581,7 @@
             'toggleCeklistIuran', 'openAsetModal', 'deleteAset',
             'openActionModal', 'deleteLayanan', 'openAgendaModal', 'deleteAgenda',
             'saveSystemSettings', 'saveLayoutSettings', 'addKategoriItem', 'removeKategoriItem', 'editKategoriItem',
+            'addDivisiCepat', 'migrasiNamaDivisi',
             'openOperasionalModal', 'deleteOperasionalKegiatan', 'toggleArsipOperasional'
         ];
 
@@ -1790,8 +1850,10 @@
         });
         
         hideFullPageLoading();
+        ensureDivisiDefaults();
         updateCategoryDropdowns();
-        
+        initDivisiCombos();
+
         if (page === 'dashboard') calculateAndRenderDashboard();
         else if (page === 'anggota') { renderAnggotaTable(); renderPengurusTable(); }
         else if (page === 'registrasi') renderRegistrasiTable();
@@ -1844,7 +1906,7 @@
       renderList('kategori_pengeluaran', 'settingsKategoriPengeluaranList');
       renderList('kategori_aset', 'settingsKategoriAsetList');
       renderList('kategori_surat', 'settingsKategoriSuratList');
-      renderList('kategori_divisi', 'settingsKategoriDivisiList');
+      renderDivisiList();
 
       if (Auth.getUser().role === 'Super Admin') {
           let panelContainer = document.getElementById('settingsKategoriKepengurusanList');
@@ -1865,6 +1927,229 @@
           renderList('kategori_kepengurusan', 'settingsKategoriKepengurusanList');
       }
       applyAlumniRestrictions();
+    };
+
+    // =======================================================================
+    //  MANAJEMEN DATA DIVISI
+    //  Tiga divisi baku Nusapala: Gunung Hutan, Rock Climbing, dan Olahraga
+    //  Arus Deras. Nama lama (Rafting/Orad, Panjat Tebing, dsb.) dikenali
+    //  sebagai alias sehingga data lawas tetap terbaca.
+    // =======================================================================
+    const DIVISI_BAKU = ['Gunung Hutan', 'Rock Climbing', 'Olahraga Arus Deras'];
+    const DIVISI_ALIAS_MAP = {
+      'rafting/orad': 'Olahraga Arus Deras',
+      'rafting / orad': 'Olahraga Arus Deras',
+      'rafting': 'Olahraga Arus Deras',
+      'orad': 'Olahraga Arus Deras',
+      'arus deras': 'Olahraga Arus Deras',
+      'panjat tebing': 'Rock Climbing',
+      'gunung-hutan': 'Gunung Hutan',
+      'gunung  hutan': 'Gunung Hutan'
+    };
+    const divisiKanonik = (nama) => {
+      const n = String(nama || '').trim();
+      return DIVISI_ALIAS_MAP[n.toLowerCase()] || n;
+    };
+
+    // Pastikan tiga divisi baku selalu ada di master data (tanpa menghapus yang lain)
+    function ensureDivisiDefaults() {
+      if (!Array.isArray(dbSettings.kategori_divisi)) dbSettings.kategori_divisi = [];
+      let berubah = false;
+      dbSettings.kategori_divisi = dbSettings.kategori_divisi.map(x => divisiKanonik(x));
+      DIVISI_BAKU.forEach(d => {
+        const ada = dbSettings.kategori_divisi.some(x => x.toLowerCase() === d.toLowerCase());
+        if (!ada) { dbSettings.kategori_divisi.push(d); berubah = true; }
+      });
+      // buang duplikat & entri kosong
+      const seen = {};
+      dbSettings.kategori_divisi = dbSettings.kategori_divisi.filter(x => {
+        const k = String(x || '').trim().toLowerCase();
+        if (!k || seen[k]) return false;
+        seen[k] = true; return true;
+      });
+      if (berubah) {
+        // Simpan diam-diam hanya bila Super Admin (menghindari error izin utk role lain)
+        if (Auth.isVerified() && Auth.getUser().role === 'Super Admin') {
+          upsertSetting('kategori_divisi', JSON.stringify(dbSettings.kategori_divisi)).catch(() => {});
+        }
+        updateCategoryDropdowns();
+      }
+      return dbSettings.kategori_divisi;
+    }
+
+    // Isi nilai <select> walaupun opsinya belum ada (data lama) -> opsi ditambahkan
+    function setSelectValueAllowNew(sel, val) {
+      if (!sel) return;
+      const v = String(val || '').trim();
+      if (!v) { sel.value = ''; return; }
+      const ada = Array.prototype.some.call(sel.options, o => o.value === v);
+      if (!ada) { const o = document.createElement('option'); o.value = v; o.text = v; sel.appendChild(o); }
+      sel.value = v;
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    // Ubah <select> divisi menjadi combobox yang bisa diketik nilai baru
+    function initDivisiCombos() {
+      if (!window.NusapalaUI) return;
+      const isSuper = Auth.isVerified() && Auth.getUser().role === 'Super Admin';
+
+      const selAnggota = document.getElementById('anggota_divisi');
+      if (selAnggota) {
+        NusapalaUI.enhanceSelect(selAnggota, {
+          placeholder: 'Pilih atau ketik divisi baru…',
+          creatable: isSuper,
+          onCreate: async (nama) => {
+            const kanonik = divisiKanonik(nama);
+            if (!dbSettings.kategori_divisi.some(x => x.toLowerCase() === kanonik.toLowerCase())) {
+              dbSettings.kategori_divisi.push(kanonik);
+            }
+            try {
+              await upsertSetting('kategori_divisi', JSON.stringify(dbSettings.kategori_divisi));
+              NusapalaUI.toast('Divisi "' + kanonik + '" ditambahkan ke master data', 'success');
+              renderDivisiList();
+            } catch (err) {
+              NusapalaUI.toast('Divisi dipakai di form, tetapi gagal disimpan ke master data', 'warning');
+            }
+          }
+        });
+      }
+
+      const selKeg = document.getElementById('keg_divisi');
+      if (selKeg && selKeg.tagName === 'SELECT') {
+        NusapalaUI.enhanceSelect(selKeg, {
+          placeholder: 'Pilih divisi penyelenggara…',
+          creatable: isSuper,
+          onCreate: async (nama) => {
+            const kanonik = divisiKanonik(nama);
+            if (!dbSettings.kategori_divisi.some(x => x.toLowerCase() === kanonik.toLowerCase())) {
+              dbSettings.kategori_divisi.push(kanonik);
+              try { await upsertSetting('kategori_divisi', JSON.stringify(dbSettings.kategori_divisi)); renderDivisiList(); } catch (e) {}
+            }
+          }
+        });
+      }
+    }
+
+    // Renderer daftar divisi di halaman Pengaturan (dengan ikon & jumlah anggota)
+    window.renderDivisiList = function() {
+      const el = document.getElementById('settingsKategoriDivisiList');
+      if (!el) return;
+      const isSuper = Auth.isVerified() && Auth.getUser().role === 'Super Admin';
+      const list = ensureDivisiDefaults();
+
+      const chip = document.getElementById('divisiCountChip');
+      if (chip) chip.innerText = list.length + (list.length === 1 ? ' divisi' : ' divisi');
+
+      const hint = document.getElementById('divisiPermissionHint');
+      if (hint) {
+        hint.innerHTML = isSuper
+          ? '<i class="fa-solid fa-circle-check"></i> Anda <b>Super Admin</b> — boleh menambah, mengubah, dan menghapus divisi.'
+          : '<i class="fa-solid fa-lock"></i> Hanya <b>Super Admin</b> yang dapat mengubah master data divisi. Silakan hubungi Super Admin Anda.';
+      }
+
+      // Tombol cepat: nonaktif bila divisi sudah ada
+      DIVISI_BAKU.forEach(nama => {
+        const btns = document.querySelectorAll('#divisiQuickAdd button');
+        btns.forEach(b => {
+          if (b.innerText.trim().indexOf(nama) === -1) return;
+          const ada = list.some(x => x.toLowerCase() === nama.toLowerCase());
+          b.disabled = ada;
+          b.classList.toggle('opacity-50', ada);
+          b.title = ada ? 'Divisi ini sudah terdaftar' : 'Tambahkan ' + nama;
+        });
+      });
+
+      if (!list.length) {
+        el.innerHTML = '<div class="text-center py-3 small" style="color:var(--text-muted);">Belum ada divisi terdaftar.</div>';
+        return;
+      }
+
+      el.innerHTML = list.map((c, i) => {
+        const meta = window.NusapalaUI ? NusapalaUI.normalizeDivisi(c) : { icon: 'fa-compass', kode: 'DIV' };
+        const jml = dbAnggota.filter(a => String(a.divisi || '').trim().toLowerCase() === String(c).trim().toLowerCase()).length;
+        const btnEdit = isSuper ? '<button type="button" class="btn btn-sm btn-link text-primary p-0 me-2" title="Ubah nama divisi" onclick="editKategoriItem(\'kategori_divisi\', ' + i + ')"><i class="fa-solid fa-pen"></i></button>' : '';
+        const btnDel  = isSuper ? '<button type="button" class="btn btn-sm btn-link text-danger p-0" title="Hapus divisi" onclick="removeKategoriItem(\'kategori_divisi\', ' + i + ')"><i class="fa-solid fa-trash"></i></button>' : '';
+        return '' +
+          '<div class="d-flex align-items-center justify-content-between gap-2 p-2 mb-2 border rounded bg-white">' +
+            '<div class="d-flex align-items-center gap-3" style="min-width:0;">' +
+              '<span class="np-divisi-mini ' + meta.theme + '"><i class="fa-solid ' + meta.icon + '"></i></span>' +
+              '<div style="min-width:0;">' +
+                '<div class="fw-semibold text-truncate" style="color:var(--ink-900); font-size:0.9rem;">' + escapeHTML(c) + '</div>' +
+                '<div class="np-label" style="font-size:0.6rem;">' + meta.kode + ' &middot; ' + jml + ' anggota</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="d-flex align-items-center flex-shrink-0">' + btnEdit + btnDel + '</div>' +
+          '</div>';
+      }).join('');
+    };
+
+    // Tambah satu divisi baku dengan sekali klik
+    window.addDivisiCepat = async function(nama) {
+      if (Auth.getUser().role !== 'Super Admin') {
+        return Swal.fire('Ditolak', 'Hanya Super Admin yang bisa menambah data divisi. Hubungi Super Admin organisasi Anda.', 'error');
+      }
+      if (checkAlumni()) return;
+      const kanonik = divisiKanonik(nama);
+      if (!Array.isArray(dbSettings.kategori_divisi)) dbSettings.kategori_divisi = [];
+      if (dbSettings.kategori_divisi.some(x => x.toLowerCase() === kanonik.toLowerCase())) {
+        return Swal.fire('Sudah Ada', 'Divisi "' + kanonik + '" sudah terdaftar di master data.', 'info');
+      }
+      dbSettings.kategori_divisi.push(kanonik);
+      showFullPageLoading('Menambahkan divisi...');
+      try {
+        await upsertSetting('kategori_divisi', JSON.stringify(dbSettings.kategori_divisi));
+        hideFullPageLoading();
+        updateCategoryDropdowns();
+        renderDivisiList();
+        Swal.fire('Berhasil', 'Divisi "' + kanonik + '" ditambahkan.', 'success');
+      } catch (err) {
+        hideFullPageLoading();
+        dbSettings.kategori_divisi = dbSettings.kategori_divisi.filter(x => x !== kanonik);
+        Swal.fire('Gagal', err.message, 'error');
+      }
+    };
+
+    // Rapikan penamaan divisi lama -> nama baku, sekaligus data anggotanya
+    window.migrasiNamaDivisi = async function() {
+      if (Auth.getUser().role !== 'Super Admin') return Swal.fire('Ditolak', 'Hanya Super Admin yang dapat merapikan master data divisi.', 'error');
+      if (checkAlumni()) return;
+
+      const pasangan = Object.keys(DIVISI_ALIAS_MAP)
+        .map(alias => ({ dari: alias, ke: DIVISI_ALIAS_MAP[alias] }))
+        .filter(p => dbSettings.kategori_divisi.some(x => x.toLowerCase() === p.dari) ||
+                     dbAnggota.some(a => String(a.divisi || '').trim().toLowerCase() === p.dari));
+
+      if (!pasangan.length) return Swal.fire('Sudah Rapi', 'Tidak ditemukan penamaan divisi lama yang perlu dirapikan.', 'info');
+
+      const rincian = pasangan.map(p => '<li><b>' + escapeHTML(p.dari) + '</b> &rarr; ' + escapeHTML(p.ke) + '</li>').join('');
+      const res = await Swal.fire({
+        title: 'Rapikan Nama Divisi',
+        html: '<div class="text-start small">Perubahan berikut akan diterapkan pada master data <b>dan</b> data anggota:<ul class="mb-0 ps-3">' + rincian + '</ul></div>',
+        icon: 'question', showCancelButton: true, confirmButtonText: 'Ya, rapikan', cancelButtonText: 'Batal'
+      });
+      if (!res.isConfirmed) return;
+
+      showFullPageLoading('Merapikan data divisi...');
+      try {
+        for (const p of pasangan) {
+          const anggotaTerdampak = dbAnggota.filter(a => String(a.divisi || '').trim().toLowerCase() === p.dari);
+          for (const a of anggotaTerdampak) {
+            const { error } = await db.from('members').update({ 'Divisi': p.ke }).eq('id_anggota', a.id_anggota);
+            if (error) throw error;
+            a.divisi = p.ke;
+          }
+        }
+        dbSettings.kategori_divisi = Array.from(new Set(dbSettings.kategori_divisi.map(divisiKanonik)));
+        DIVISI_BAKU.forEach(d => { if (!dbSettings.kategori_divisi.some(x => x.toLowerCase() === d.toLowerCase())) dbSettings.kategori_divisi.push(d); });
+        await upsertSetting('kategori_divisi', JSON.stringify(dbSettings.kategori_divisi));
+        hideFullPageLoading();
+        updateCategoryDropdowns();
+        renderDivisiList();
+        Swal.fire('Selesai', 'Penamaan divisi berhasil dirapikan.', 'success');
+      } catch (err) {
+        hideFullPageLoading();
+        Swal.fire('Gagal', err.message, 'error');
+      }
     };
 
     window.addKategoriItem = async function(type) { 
@@ -2096,29 +2381,122 @@
         html += `<div class="p-3 border rounded-3 mb-2 bg-light-subtle"><div class="d-flex justify-content-between"><b>${escapeHTML(p.nama_pengadu)}</b><span class="badge bg-danger">${p.status}</span></div><p class="small mb-1 text-muted">${escapeHTML(p.detail_pengaduan)}</p></div>`;
       });
       html += `</div></div></div></div></div>`;
+
+      // ===== Sebaran anggota per divisi (Gunung Hutan / Rock Climbing / ORAD) =====
+      const divisiDash = ensureDivisiDefaults();
+      const totalDash = dbAnggota.length || 0;
+      const hitungDivisi = (nama) => dbAnggota.filter(a => String(a.divisi || '').trim().toLowerCase() === String(nama).trim().toLowerCase()).length;
+      let kartuDivisi = '';
+      divisiDash.forEach(d => {
+        const jml = hitungDivisi(d);
+        const pct = totalDash ? Math.round((jml / totalDash) * 100) : 0;
+        const meta = window.NusapalaUI ? NusapalaUI.normalizeDivisi(d) : { icon: 'fa-compass', kode: 'DIV', theme: '' };
+        kartuDivisi += `
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="p-3 rounded-3 h-100 np-lift" style="background:var(--paper-50); border:1px solid var(--line-soft);">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="np-divisi-mini ${meta.theme}"><i class="fa-solid ${meta.icon}"></i></span>
+                <div class="min-w-0">
+                  <div class="fw-bold text-truncate" style="color:var(--ink-900); font-size:0.9rem;">${escapeHTML(d)}</div>
+                  <div class="np-label" style="font-size:0.58rem;">${meta.kode}</div>
+                </div>
+                <span class="badge bg-primary-subtle ms-auto">${pct}%</span>
+              </div>
+              <div class="np-bar mb-2"><div class="np-bar-fill" style="width:${pct}%;"></div></div>
+              <div class="d-flex justify-content-between align-items-center">
+                <small style="color:var(--text-muted); font-size:0.75rem;">${jml} anggota terdaftar</small>
+                <button class="btn btn-sm btn-link p-0" onclick="filterAnggotaByDivisi('${escapeHTML(d).replace(/'/g, "\\'")}')">Lihat <i class="fa-solid fa-arrow-right ms-1"></i></button>
+              </div>
+            </div>
+          </div>`;
+      });
+      const tanpaDivisi = dbAnggota.filter(a => !String(a.divisi || '').trim()).length;
+      html += `<div class="row g-4 mt-1"><div class="col-12"><div class="card shadow-sm border-0">
+        <div class="card-header bg-white pt-4 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <h6 class="fw-bold mb-0"><i class="fa-solid fa-people-group me-2 text-success"></i>Sebaran Anggota per Divisi</h6>
+          <button class="btn btn-sm btn-outline-primary" onclick="showPage('settings')"><i class="fa-solid fa-sliders me-1"></i>Kelola Divisi</button>
+        </div>
+        <div class="card-body px-4 pb-4">
+          <div class="row g-3">${kartuDivisi || '<div class="col-12 text-center py-4 text-muted">Belum ada data divisi.</div>'}</div>
+          <div class="small mt-3 pt-3 border-top" style="color:var(--text-muted);">
+            <i class="fa-solid fa-circle-info me-1"></i>${tanpaDivisi} anggota belum memiliki divisi. Total anggota: <b>${totalDash}</b> orang.
+          </div>
+        </div></div></div></div>`;
+
       c.innerHTML = html;
+      if (window.NusapalaUI) NusapalaUI.scan(c);
     }
+
+    // Lompat ke Database Anggota dengan filter divisi tertentu.
+    // Nilainya dititipkan dulu, lalu dipasang saat tabel dirender ulang
+    // (karena showPage memicu pemuatan data async dari Supabase).
+    let pendingDivisiFilter = null;
+    window.filterAnggotaByDivisi = function(namaDivisi) {
+      pendingDivisiFilter = namaDivisi;
+      const sel = document.getElementById('filterAnggotaDivisi');
+      if (sel) setSelectValueAllowNew(sel, namaDivisi);
+      showPage('anggota');
+    };
 
     // ================== RENDER KESELURUHAN & PENGURUS ==================
     window.renderAnggotaTable = function() {
+      // Terapkan filter divisi yang diminta dari Dashboard (bila ada)
+      if (pendingDivisiFilter !== null) {
+        const selF = document.getElementById('filterAnggotaDivisi');
+        if (selF) setSelectValueAllowNew(selF, pendingDivisiFilter);
+        pendingDivisiFilter = null;
+      }
       const elSearch = document.getElementById('searchAnggota');
       const q = elSearch ? elSearch.value.toLowerCase() : '';
-      const filtered = dbAnggota.filter(i => (i.nama||'').toLowerCase().includes(q) || (i.id_angkatan||'').toLowerCase().includes(q));
+      const fDivisi = document.getElementById('filterAnggotaDivisi') ? document.getElementById('filterAnggotaDivisi').value : '';
+      const fStatus = document.getElementById('filterAnggotaStatus') ? document.getElementById('filterAnggotaStatus').value : '';
+
+      const filtered = dbAnggota.filter(i => {
+        const cocokQ = (i.nama||'').toLowerCase().includes(q) || (i.id_angkatan||'').toLowerCase().includes(q) || (i.nama_angkatan||'').toLowerCase().includes(q);
+        const cocokD = !fDivisi || String(i.divisi||'').trim().toLowerCase() === fDivisi.toLowerCase();
+        const cocokS = !fStatus || String(i.status_anggota||'') === fStatus;
+        return cocokQ && cocokD && cocokS;
+      });
       const isSuperAdmin = Auth.getUser().role === 'Super Admin';
-      
-      let h = `<div class="table-responsive bg-white shadow-sm"><table class="table align-middle"><thead><tr><th>No</th><th>ID Angkatan</th><th>Nama</th><th>Angkatan</th><th>Status</th><th>Aksi</th></tr></thead><tbody>`;
+
+      let h = `<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                 <small class="np-label" style="font-size:0.64rem;">Menampilkan ${filtered.length} dari ${dbAnggota.length} anggota</small>
+                 ${(fDivisi || fStatus || q) ? `<button class="btn btn-sm btn-link p-0" onclick="resetFilterAnggota()"><i class="fa-solid fa-rotate-left me-1"></i>Reset filter</button>` : ''}
+               </div>`;
+      h += `<div class="table-responsive bg-white shadow-sm"><table class="table align-middle"><thead><tr><th>No</th><th>ID Angkatan</th><th>Nama</th><th>Angkatan</th><th>Divisi</th><th>Status</th><th class="text-end">Aksi</th></tr></thead><tbody>`;
+      if (!filtered.length) {
+        h += `<tr><td colspan="7"><div class="text-center py-5">
+                <i class="fa-solid fa-binoculars mb-2" style="font-size:1.6rem; color:var(--gold-500);"></i>
+                <div class="fw-semibold" style="color:var(--ink-900);">Tidak ada anggota yang cocok</div>
+                <small style="color:var(--text-muted);">Coba ubah kata kunci atau reset filter divisi/status.</small>
+              </div></td></tr>`;
+      }
       filtered.forEach((x, idx) => {
-        h += `<tr><td>${idx+1}</td><td><span class="text-muted small fw-mono">${escapeHTML(x.id_angkatan)}</span></td><td class="fw-bold">${escapeHTML(x.nama)}</td><td>${escapeHTML(x.nama_angkatan)}</td><td><span class="badge border text-dark">${escapeHTML(x.status_anggota)}</span></td>
-              <td>
-                <button class="btn btn-sm btn-outline-primary" onclick="openAnggotaModal('${x.id_anggota}')"><i class="fa-solid fa-pen"></i></button> 
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteAnggota('${x.id_anggota}')"><i class="fa-solid fa-trash"></i></button>
-                ${isSuperAdmin ? `<button class="btn btn-sm btn-info text-white ms-1" onclick="openPermissionModal('${x.id_anggota}')" title="Pengaturan Hak Akses"><i class="fa-solid fa-user-shield"></i></button>` : ''}
+        const meta = window.NusapalaUI ? NusapalaUI.normalizeDivisi(x.divisi) : { icon: 'fa-compass', theme: '' };
+        const badgeDivisi = x.divisi
+          ? `<span class="np-chip np-chip-forest" style="font-size:0.68rem; padding:0.22rem 0.6rem;"><i class="fa-solid ${meta.icon}" style="font-size:0.62rem;"></i>${escapeHTML(x.divisi)}</span>`
+          : `<span class="badge border text-dark">Belum diatur</span>`;
+        const badgeStatus = x.status_anggota === 'Alumni'
+          ? `<span class="badge bg-secondary">Alumni</span>`
+          : `<span class="badge bg-success-subtle">${escapeHTML(x.status_anggota || 'Aktif')}</span>`;
+        h += `<tr><td>${idx+1}</td><td><span class="text-muted small font-mono">${escapeHTML(x.id_angkatan)}</span></td><td class="fw-bold">${escapeHTML(x.nama)}</td><td>${escapeHTML(x.nama_angkatan)}</td><td>${badgeDivisi}</td><td>${badgeStatus}</td>
+              <td class="text-end">
+                <button class="btn btn-sm btn-outline-primary" onclick="openAnggotaModal('${x.id_anggota}')" title="Ubah data"><i class="fa-solid fa-pen"></i></button> 
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteAnggota('${x.id_anggota}')" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+                ${isSuperAdmin ? `<button class="btn btn-sm btn-outline-info ms-1" onclick="openPermissionModal('${x.id_anggota}')" title="Pengaturan Hak Akses"><i class="fa-solid fa-user-shield"></i></button>` : ''}
               </td></tr>`;
       });
       h += `</tbody></table></div>`;
       const c = document.getElementById('anggotaContainer');
       if(c) c.innerHTML = h;
       applyAlumniRestrictions();
+    };
+
+    window.resetFilterAnggota = function() {
+      ['searchAnggota', 'filterAnggotaDivisi', 'filterAnggotaStatus'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = '';
+      });
+      renderAnggotaTable();
     };
 
     window.renderPengurusTable = function() {
@@ -2584,7 +2962,7 @@
           if(document.getElementById('anggota_nik')) document.getElementById('anggota_nik').value = d.id_angkatan; 
           if(document.getElementById('anggota_nama')) document.getElementById('anggota_nama').value = d.nama;
           if(document.getElementById('anggota_no_rumah')) document.getElementById('anggota_no_rumah').value = d.nama_angkatan; 
-          if(document.getElementById('anggota_divisi')) document.getElementById('anggota_divisi').value = d.divisi;
+          setSelectValueAllowNew(document.getElementById('anggota_divisi'), d.divisi);
           if(document.getElementById('anggota_tanggal_lahir')) document.getElementById('anggota_tanggal_lahir').value = d.tanggal_lahir || '';
           if(document.getElementById('anggota_status_anggota')) document.getElementById('anggota_status_anggota').value = d.status_anggota || 'Aktif';
         }
@@ -2696,8 +3074,25 @@
         dbSettings.kategori_aset.forEach(c => sel.innerHTML += `<option value="${c}">${c}</option>`);
       });
       ['anggota_divisi'].forEach(id => {
-        const sel = document.getElementById(id); if(!sel) return; sel.innerHTML = '';
-        (dbSettings.kategori_divisi || []).forEach(c => sel.innerHTML += `<option value="${c}">${c}</option>`);
+        const sel = document.getElementById(id); if(!sel) return;
+        const cur = sel.value;
+        sel.innerHTML = '<option value="">-- Belum memilih divisi --</option>';
+        (dbSettings.kategori_divisi || []).forEach(c => sel.innerHTML += `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`);
+        if (cur) setSelectValueAllowNew(sel, cur);
+      });
+      ['filterAnggotaDivisi'].forEach(id => {
+        const sel = document.getElementById(id); if(!sel) return;
+        const cur = sel.value;
+        sel.innerHTML = '<option value="">Semua Divisi</option>';
+        (dbSettings.kategori_divisi || []).forEach(c => sel.innerHTML += `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`);
+        sel.value = cur;
+      });
+      ['keg_divisi'].forEach(id => {
+        const sel = document.getElementById(id); if(!sel) return;
+        const cur = sel.value;
+        sel.innerHTML = '<option value="">-- Umum / Lintas Divisi --</option>';
+        (dbSettings.kategori_divisi || []).forEach(c => sel.innerHTML += `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`);
+        if (cur) setSelectValueAllowNew(sel, cur);
       });
 
       // ===== Dropdown modul Operasional Lapangan =====
@@ -3082,7 +3477,7 @@
     }
     function opsBadgeKeamanan(status) {
       const cls = OPS_STATUS_KEAMANAN_BADGE[status] || 'bg-secondary-subtle text-secondary border';
-      const style = status === 'Kendala Lapangan' ? ' style="background-color:#d97706;"' : '';
+      const style = status === 'Kendala Lapangan' ? ' style="background-color:#96721c;"' : '';
       return `<span class="badge ${cls}"${style}>${escapeHTML(status || '-')}</span>`;
     }
 
@@ -3486,7 +3881,7 @@
            if(document.getElementById('kegiatan_id')) document.getElementById('kegiatan_id').value = id;
            if(document.getElementById('keg_judul')) document.getElementById('keg_judul').value = a.judul;
            if(document.getElementById('keg_tgl')) document.getElementById('keg_tgl').value = a.tanggal_kegiatan;
-           if(document.getElementById('keg_divisi')) document.getElementById('keg_divisi').value = a.divisi;
+           setSelectValueAllowNew(document.getElementById('keg_divisi'), a.divisi);
            if(document.getElementById('keg_desc')) document.getElementById('keg_desc').value = a.deskripsi;
          } 
        } else { if(document.getElementById('kegiatan_id')) document.getElementById('kegiatan_id').value = ''; }

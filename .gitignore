@@ -1,0 +1,22 @@
+# Dependensi (dipasang ulang dengan `npm install`)
+node_modules/
+npm-debug.log*
+
+# Build & tooling
+dist/
+build/
+.vercel/
+.turbo/
+.cache/
+
+# Sistem operasi & editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Lingkungan lokal
+.env
+.env.local
+.env.*.local
