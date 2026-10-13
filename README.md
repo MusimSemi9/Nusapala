@@ -129,6 +129,22 @@ ikon & warna otomatis.
 - **Null-safety**: `checkAlumni` & render Pengaturan tidak lagi error saat
   sesi login kadaluarsa/tersingkir.
 
+**7. Penyempurnaan dialog "Tambah Divisi" (laporan pengguna, putaran 3)**
+- Dialog cadangan tambah kategori kini tampil persis seperti yang familiar
+  bagi pengurus: judul **"Tambah Divisi"**, label kolom **"Nama Divisi"**,
+  tombol **Simpan / Batal** (sebelumnya judul huruf kecil "Tambah divisi"
+  tanpa label). Berlaku juga untuk kategori lain (Kas, Alat, Surat, Jabatan).
+- **Validasi di dalam dialog**: klik *Simpan* dengan isian kosong tidak lagi
+  menutup dialog diam-diam — muncul pesan "Nama tidak boleh kosong."
+- Skrip Supabase JS yang **termuat dua kali** di `admin.html` kini dimuat
+  sekali (halaman lebih ringan & lebih cepat).
+
+> 💡 **Cara menambah divisi (terbaru)**: Portal Admin → **Pengaturan** →
+> blok **Data Divisi Organisasi** → ketik nama divisi → tekan **Enter** atau
+> klik **Tambah**. Divisi baru langsung tersorot animasi emas di daftar.
+> Bila situs terasa "masih versi lama", muat ulang keras: **Ctrl + Shift + R**
+> (Cmd + Shift + R di Mac) dan pastikan Vercel sudah men-deploy ulang `main`.
+
 > ⚠️ **Catatan pemulihan**: bila Anda tidak dapat login setelah pembaruan ini,
 > perbarui kolom `password` pada tabel `members` di dashboard Supabase untuk akun
 > Anda, contoh:
