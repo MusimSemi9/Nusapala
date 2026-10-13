@@ -72,6 +72,28 @@
     };
   }
 
+  /**
+   * Melebur daftar divisi mentah menjadi daftar kanonik:
+   *  - nama alias/lama (Rafting/Orad, Panjat Tebing, ...) digabung ke nama baku;
+   *  - duplikat karena beda huruf besar/kecil atau spasi dibuang;
+   *  - jumlah anggota dari semua varian dijumlahkan.
+   * countsByRaw bersifat opsional: { namaMentah: jumlah }.
+   */
+  function foldDivisi(list, countsByRaw) {
+    var order = [], seen = {}, counts = {};
+    (list || []).forEach(function (raw) {
+      var nama = normalizeDivisi(raw).nama;
+      var key = String(nama).toLowerCase();
+      if (seen[key] === undefined) {
+        seen[key] = true;
+        order.push(nama);
+        counts[nama] = 0;
+      }
+      if (countsByRaw && countsByRaw[raw] !== undefined) counts[nama] += countsByRaw[raw];
+    });
+    return { names: order, counts: counts };
+  }
+
   /* ============================ 2. UTILITAS =============================== */
   function esc(str) {
     if (str === null || str === undefined) return '';
@@ -465,8 +487,11 @@
   function renderDivisiCards(container, names, counts, opts) {
     if (!container) return;
     opts = opts || {};
-    var list = (names && names.length) ? names : DIVISI_DEFAULT.slice();
-    var total = list.reduce(function (a, n) { return a + (counts && counts[n] ? counts[n] : 0); }, 0);
+    // Lebur alias & duplikat terlebih dahulu (mis. "Rafting/Orad" + "Olahraga Arus Deras")
+    var folded = foldDivisi((names && names.length) ? names : DIVISI_DEFAULT.slice(), counts);
+    var list = folded.names;
+    counts = folded.counts;
+    var total = list.reduce(function (a, n) { return a + (counts[n] || 0); }, 0);
 
     container.innerHTML = list.map(function (name) {
       var m = normalizeDivisi(name);
@@ -512,6 +537,7 @@
     DIVISI_DEFAULT: DIVISI_DEFAULT,
     DIVISI_META: DIVISI_META,
     normalizeDivisi: normalizeDivisi,
+    foldDivisi: foldDivisi,
     renderDivisiCards: renderDivisiCards,
     enhanceSelect: enhanceSelect,
     buildTicker: buildTicker,

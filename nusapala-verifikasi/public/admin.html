@@ -1977,11 +1977,13 @@
       return dbSettings.kategori_divisi;
     }
 
-    // Isi nilai <select> walaupun opsinya belum ada (data lama) -> opsi ditambahkan
+    // Isi nilai <select> walaupun opsinya belum ada (data lama) -> opsi ditambahkan.
+    // Nilai lama (alias) dinormalkan dulu ke nama kanonik supaya tidak muncul ganda.
     function setSelectValueAllowNew(sel, val) {
       if (!sel) return;
-      const v = String(val || '').trim();
+      let v = String(val || '').trim();
       if (!v) { sel.value = ''; return; }
+      if (window.NusapalaUI) v = window.NusapalaUI.normalizeDivisi(v).nama || v;
       const ada = Array.prototype.some.call(sel.options, o => o.value === v);
       if (!ada) { const o = document.createElement('option'); o.value = v; o.text = v; sel.appendChild(o); }
       sel.value = v;
@@ -2035,10 +2037,20 @@
       const el = document.getElementById('settingsKategoriDivisiList');
       if (!el) return;
       const isSuper = Auth.isVerified() && Auth.getUser().role === 'Super Admin';
-      const list = ensureDivisiDefaults();
+      const raw = ensureDivisiDefaults();
+
+      // Lebur alias/duplikat menjadi satu baris per divisi (nama kanonik),
+      // sambil mengingat nama mentah pertama sebagai target edit/hapus.
+      const rows = []; const seen = {};
+      raw.forEach((c, i) => {
+        const nm = window.NusapalaUI ? NusapalaUI.normalizeDivisi(c).nama : String(c);
+        const key = nm.toLowerCase();
+        if (seen[key] === undefined) { seen[key] = rows.length; rows.push({ index: i, nama: nm, alias: [] }); }
+        else if (String(c) !== rows[seen[key]].nama) { rows[seen[key]].alias.push(String(c)); }
+      });
 
       const chip = document.getElementById('divisiCountChip');
-      if (chip) chip.innerText = list.length + (list.length === 1 ? ' divisi' : ' divisi');
+      if (chip) chip.innerText = rows.length + (rows.length === 1 ? ' divisi' : ' divisi');
 
       const hint = document.getElementById('divisiPermissionHint');
       if (hint) {
@@ -2052,35 +2064,53 @@
         const btns = document.querySelectorAll('#divisiQuickAdd button');
         btns.forEach(b => {
           if (b.innerText.trim().indexOf(nama) === -1) return;
-          const ada = list.some(x => x.toLowerCase() === nama.toLowerCase());
+          const ada = rows.some(r => r.nama.toLowerCase() === nama.toLowerCase());
           b.disabled = ada;
           b.classList.toggle('opacity-50', ada);
           b.title = ada ? 'Divisi ini sudah terdaftar' : 'Tambahkan ' + nama;
         });
       });
 
-      if (!list.length) {
+      if (!rows.length) {
         el.innerHTML = '<div class="text-center py-3 small" style="color:var(--text-muted);">Belum ada divisi terdaftar.</div>';
         return;
       }
 
-      el.innerHTML = list.map((c, i) => {
-        const meta = window.NusapalaUI ? NusapalaUI.normalizeDivisi(c) : { icon: 'fa-compass', kode: 'DIV' };
-        const jml = dbAnggota.filter(a => String(a.divisi || '').trim().toLowerCase() === String(c).trim().toLowerCase()).length;
-        const btnEdit = isSuper ? '<button type="button" class="btn btn-sm btn-link text-primary p-0 me-2" title="Ubah nama divisi" onclick="editKategoriItem(\'kategori_divisi\', ' + i + ')"><i class="fa-solid fa-pen"></i></button>' : '';
-        const btnDel  = isSuper ? '<button type="button" class="btn btn-sm btn-link text-danger p-0" title="Hapus divisi" onclick="removeKategoriItem(\'kategori_divisi\', ' + i + ')"><i class="fa-solid fa-trash"></i></button>' : '';
+      el.innerHTML = rows.map(r => {
+        const meta = window.NusapalaUI ? NusapalaUI.normalizeDivisi(r.nama) : { icon: 'fa-compass', kode: 'DIV', theme: '' };
+        // Jumlah anggota dihitung dari nama kanonik, sehingga anggota dengan
+        // penamaan lama tetap terhitung pada divisi yang benar.
+        const jml = dbAnggota.filter(a => {
+          const an = window.NusapalaUI ? NusapalaUI.normalizeDivisi(a.divisi).nama : String(a.divisi || '').trim();
+          return an.toLowerCase() === r.nama.toLowerCase();
+        }).length;
+        const aliasTxt = r.alias.length
+          ? ' &middot; <span title="Penamaan lama yang tersimpan di database" style="color:var(--gold-700);">alias: ' + r.alias.map(escapeHTML).join(', ') + '</span>'
+          : '';
+        const btnEdit = isSuper ? '<button type="button" class="btn btn-sm btn-link text-primary p-0 me-2" title="Ubah nama divisi" onclick="editKategoriItem(\'kategori_divisi\', ' + r.index + ')"><i class="fa-solid fa-pen"></i></button>' : '';
+        const btnDel  = isSuper ? '<button type="button" class="btn btn-sm btn-link text-danger p-0" title="Hapus divisi" onclick="removeKategoriItem(\'kategori_divisi\', ' + r.index + ')"><i class="fa-solid fa-trash"></i></button>' : '';
         return '' +
           '<div class="d-flex align-items-center justify-content-between gap-2 p-2 mb-2 border rounded bg-white">' +
             '<div class="d-flex align-items-center gap-3" style="min-width:0;">' +
               '<span class="np-divisi-mini ' + meta.theme + '"><i class="fa-solid ' + meta.icon + '"></i></span>' +
               '<div style="min-width:0;">' +
-                '<div class="fw-semibold text-truncate" style="color:var(--ink-900); font-size:0.9rem;">' + escapeHTML(c) + '</div>' +
-                '<div class="np-label" style="font-size:0.6rem;">' + meta.kode + ' &middot; ' + jml + ' anggota</div>' +
+                '<div class="fw-semibold text-truncate" style="color:var(--ink-900); font-size:0.9rem;">' + escapeHTML(r.nama) + '</div>' +
+                '<div class="np-label" style="font-size:0.6rem;">' + meta.kode + ' &middot; ' + jml + ' anggota' + aliasTxt + '</div>' +
               '</div>' +
             '</div>' +
             '<div class="d-flex align-items-center flex-shrink-0">' + btnEdit + btnDel + '</div>' +
           '</div>';
       }).join('');
+
+      // Ingatkan (sekali per sesi) bila masih ada penamaan lama tersimpan,
+      // lalu sorot tombol perapian supaya mudah ditemukan.
+      const adaAlias = rows.some(r => r.alias.length);
+      const migrasiBtn = document.querySelector('#cardDataDivisi .btn-outline-warning');
+      if (migrasiBtn) migrasiBtn.classList.toggle('np-attention', adaAlias);
+      if (adaAlias && window.NusapalaUI && !window.__npAliasWarned) {
+        window.__npAliasWarned = true;
+        NusapalaUI.toast('Masih ada penamaan divisi lama tersimpan — klik "Rapikan Nama Divisi" untuk membereskannya', 'warning');
+      }
     };
 
     // Tambah satu divisi baku dengan sekali klik
@@ -3073,25 +3103,31 @@
         const sel = document.getElementById(id); if(!sel) return; sel.innerHTML = '';
         dbSettings.kategori_aset.forEach(c => sel.innerHTML += `<option value="${c}">${c}</option>`);
       });
+      // Daftar divisi dilebur dulu (alias lama digabung ke nama kanonik) agar
+      // dropdown tidak pernah menampilkan dua pilihan untuk divisi yang sama.
+      const daftarDivisi = window.NusapalaUI
+        ? NusapalaUI.foldDivisi(dbSettings.kategori_divisi || [], null).names
+        : (dbSettings.kategori_divisi || []);
+
       ['anggota_divisi'].forEach(id => {
         const sel = document.getElementById(id); if(!sel) return;
         const cur = sel.value;
         sel.innerHTML = '<option value="">-- Belum memilih divisi --</option>';
-        (dbSettings.kategori_divisi || []).forEach(c => sel.innerHTML += `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`);
+        daftarDivisi.forEach(c => sel.innerHTML += `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`);
         if (cur) setSelectValueAllowNew(sel, cur);
       });
       ['filterAnggotaDivisi'].forEach(id => {
         const sel = document.getElementById(id); if(!sel) return;
         const cur = sel.value;
         sel.innerHTML = '<option value="">Semua Divisi</option>';
-        (dbSettings.kategori_divisi || []).forEach(c => sel.innerHTML += `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`);
-        sel.value = cur;
+        daftarDivisi.forEach(c => sel.innerHTML += `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`);
+        if (cur) setSelectValueAllowNew(sel, cur);
       });
       ['keg_divisi'].forEach(id => {
         const sel = document.getElementById(id); if(!sel) return;
         const cur = sel.value;
         sel.innerHTML = '<option value="">-- Umum / Lintas Divisi --</option>';
-        (dbSettings.kategori_divisi || []).forEach(c => sel.innerHTML += `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`);
+        daftarDivisi.forEach(c => sel.innerHTML += `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`);
         if (cur) setSelectValueAllowNew(sel, cur);
       });
 

@@ -799,10 +799,11 @@
         linkLabel: 'Lihat agenda divisi', link: '#section-jadwal', linkEnabled: true
       });
 
-      // 4. Chip divisi di hero mengikuti master data
+      // 4. Chip divisi di hero mengikuti master data (sudah dilebur dari alias/duplikat)
       const chips = document.getElementById('heroDivisiChips');
       if (chips) {
-        chips.innerHTML = daftar.map(d => {
+        const daftarLebur = window.NusapalaUI.foldDivisi(daftar, counts).names;
+        chips.innerHTML = daftarLebur.map(d => {
           const meta = window.NusapalaUI.normalizeDivisi(d);
           return `<a href="#section-divisi" class="np-chip text-decoration-none"><i class="fa-solid ${meta.icon}"></i> ${meta.nama}</a>`;
         }).join('');
