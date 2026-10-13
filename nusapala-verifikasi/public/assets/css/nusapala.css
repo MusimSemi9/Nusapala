@@ -2049,3 +2049,93 @@ html.np-theme-anim .form-control, html.np-theme-anim .form-select {
 [data-np-theme="dark"] .info-mini-icon,
 [data-np-theme="dark"] .sync-icon,
 [data-np-theme="dark"] .breadcrumb-item.active { color: var(--pine-ink); }
+
+/* ==========================================================================
+   28. ORNAMEN TEYVAT LANJUTAN — detail yang paling terasa "Genshin"
+   ========================================================================== */
+
+/* Sudut berfiligri emas pada banner hero (dipakai juga halaman pendaftaran) */
+.hero-wrap::before {
+  content: ''; position: absolute; inset: 7px; pointer-events: none; z-index: 3;
+  background:
+    linear-gradient(var(--gold-500), var(--gold-500)) left top / 28px 1px no-repeat,
+    linear-gradient(var(--gold-500), var(--gold-500)) left top / 1px 28px no-repeat,
+    linear-gradient(var(--gold-500), var(--gold-500)) right top / 28px 1px no-repeat,
+    linear-gradient(var(--gold-500), var(--gold-500)) right top / 1px 28px no-repeat,
+    linear-gradient(var(--gold-500), var(--gold-500)) left bottom / 28px 1px no-repeat,
+    linear-gradient(var(--gold-500), var(--gold-500)) left bottom / 1px 28px no-repeat,
+    linear-gradient(var(--gold-500), var(--gold-500)) right bottom / 28px 1px no-repeat,
+    linear-gradient(var(--gold-500), var(--gold-500)) right bottom / 1px 28px no-repeat;
+  opacity: 0.6;
+}
+
+/* Label kecil jadi plakat bergaris emas */
+.eyebrow {
+  border: 1px solid var(--line-brass); border-radius: var(--radius-pill);
+  padding: 0.32rem 0.9rem; background: var(--gold-100);
+}
+
+/* Kartu divisi dibuat lebih tinggi seperti kartu karakter */
+.np-divisi-card { min-height: 336px; }
+.np-divisi-icon { box-shadow: 0 0 0 1px rgba(220, 199, 155, 0.16), 0 12px 26px -16px rgba(0, 0, 0, 0.85); }
+.np-divisi-nama { font-size: 1.45rem; }
+
+/* Baris agenda: aksen emas di kiri saat disentuh, tanggal jadi plakat */
+.hover-bg-light { border-left: 2px solid transparent; }
+.hover-bg-light:hover { background-color: var(--paper-50); border-left-color: var(--gold-500); }
+.date-badge { box-shadow: inset 0 0 0 1px rgba(220, 199, 155, 0.35); }
+
+/* Judul halaman (cuaca gunung, dsb.) dapat garis emas + berlian */
+.page-title::after {
+  content: ''; display: block; width: 150px; height: 9px; margin-top: 0.6rem;
+  background:
+    conic-gradient(from 45deg, var(--gold-500) 0 25%, transparent 0 100%) left center / 9px 9px no-repeat,
+    linear-gradient(90deg, var(--gold-400), rgba(201, 171, 114, 0)) 15px center / calc(100% - 15px) 1px no-repeat;
+}
+
+/* Layar pemuat admin ala layar loading game: navy pekat + berlian emas berputar */
+#fullPageLoader { background: linear-gradient(160deg, var(--forest-950) 0%, #060d15 100%) !important; }
+#fullPageLoader .spinner-border {
+  color: var(--gold-400) !important; border-width: 2px; border-radius: 4px;
+  animation: npDiamondSpin 1.5s linear infinite;
+}
+#fullPageLoader p { color: var(--gold-200) !important; }
+@keyframes npDiamondSpin { from { transform: rotate(45deg); } to { transform: rotate(405deg); } }
+
+/* --- Banner penuh di layar kecil, seperti beranda situs Genshin versi HP --- */
+@media (max-width: 575.98px) {
+  .hero-wrap {
+    margin-left: -0.75rem; margin-right: -0.75rem;
+    border-radius: 0; border-left: 0; border-right: 0; outline: none;
+  }
+  .hero-wrap::before { inset: 5px; opacity: 0.5; }
+  .hero-wrap .col-12:first-child { text-align: center; }
+  .hero-wrap .np-hero-in.d-flex { justify-content: center; }
+  .hero-wrap .eyebrow { justify-content: center; }
+  .np-divisi-card { min-height: 0; }
+  .page-title::after { margin-left: auto; margin-right: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #fullPageLoader .spinner-border { animation: none; transform: rotate(45deg); }
+  .hero-wrap::before { opacity: 0.45; }
+}
+
+/* Halaman pendaftaran: lencana langkah jadi plakat navy bernomor emas,
+   kartu formulir berbingkai emas ganda (menimpa gaya inline lama). */
+.reg-step-badge {
+  background: var(--forest-900) !important; color: var(--gold-300) !important;
+  border: 1px solid var(--gold-500); border-radius: 4px; box-shadow: var(--shadow-sm);
+}
+.reg-card { outline: 1px solid rgba(179, 148, 90, 0.18); outline-offset: -10px; }
+.reg-section-label { font-family: var(--font-display); letter-spacing: 0.18em; }
+
+/* Halaman cuaca: judul berhuruf renggang, ikon satelit jadi belah ketupat */
+.page-title { letter-spacing: 0.05em; }
+.sync-icon { border-radius: 4px; transform: rotate(45deg); border-color: var(--line-brass); }
+.sync-icon i { transform: rotate(-45deg); }
+
+@media (max-width: 575.98px) {
+  .reg-card { outline-offset: -6px; }
+  .sync-icon { width: 42px; height: 42px; }
+}
