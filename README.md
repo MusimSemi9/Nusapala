@@ -19,9 +19,20 @@ nusapala-verifikasi/
 │   ├── cuaca-gunung.html     # Prakiraan cuaca gunung (Open-Meteo)
 │   ├── js/                   # gunung-database.js, weather-service.js
 │   ├── Logo Nusapala.png, robots.txt, sitemap.xml
-├── package.json
+├── tests/                    # pengujian otomatis (jsdom + Supabase tiruan)
+├── package.json              # npm test → tests/run-all.js
 └── vercel.json               # cleanUrls + rewrite /verify → /api/kartu
 ```
+
+## Pengujian
+
+```bash
+cd nusapala-verifikasi
+npm install     # sekali saja
+npm test        # 73 pengujian: divisi, halaman publik, 10 halaman admin, sintaks
+```
+
+Tidak perlu internet maupun database asli — lihat `nusapala-verifikasi/tests/README.md`.
 
 ## Halaman & Akses
 
@@ -52,6 +63,60 @@ Menambah/mengubah divisi: **Portal Admin → Pengaturan → Data Divisi**
 (tombol **Tambah** atau tekan **Enter** pada kolom isian). Bisa juga menyimpan
 divisi tambahan di luar tiga divisi standar; divisi tersebut tetap didukung
 ikon & warna otomatis.
+
+Nama divisi disimpan **persis seperti yang diketik**. Bila nama yang dimasukkan
+sama dengan penulisan lama divisi standar (mis. *Panjat Tebing* untuk Rock
+Climbing, atau *Rafting*/*ORAD* untuk Olahraga Arus Deras), sistem bertanya
+dahulu sebelum menyimpannya sebagai divisi terpisah — tidak lagi hilang diam-diam.
+
+Kolom **Divisi / Lokasi** pada Agenda dan **Kategori / Divisi** pada Galeri
+terhubung ke master data ini (datalist), jadi bisa dipilih tanpa mengetik manual.
+
+---
+
+## Riwayat Pembaruan — 13 Oktober 2026 (tahap 2)
+
+**Perbaikan bug: divisi baru tidak bisa masuk**
+
+Gejala: nama divisi diketik → tombol **Tambah** diklik → muncul *"Tersimpan"*,
+tetapi divisi tidak pernah muncul di daftar dan hilang lagi setelah halaman
+dimuat ulang.
+
+Penyebab: pemetaan penulisan lama (`DIVISI_ALIAS`) diterapkan pada **master
+data** setiap kali daftar divisi dibersihkan. Nama seperti `Panjat Tebing`,
+`Rafting`, `ORAD`, `Arus Deras`, dan `Rockclimbing` otomatis diganti ke nama
+divisi standar lalu dibuang sebagai duplikat — **setelah** notifikasi sukses
+tampil. Jadi penyimpanannya "berhasil", tetapi hasilnya langsung dihapus.
+
+Yang diubah:
+
+- Alias penulisan lama kini hanya dipakai untuk **migrasi sekali jalan**
+  (`divisi_schema_version` dinaikkan ke **3**) dan untuk **menafsirkan data
+  lama pada tabel `members`** (`Rafting/Orad` tetap terhitung sebagai Olahraga
+  Arus Deras). Master data tidak pernah diubah diam-diam lagi.
+- `addKategoriItem()` memverifikasi hasilnya setelah daftar dirender ulang.
+  Bila namanya ternyata tidak bertahan, perubahan dibatalkan dan muncul pesan
+  **"Tidak Bisa Disimpan"** — tidak ada lagi notifikasi sukses palsu.
+- Menambah nama yang sama artinya dengan divisi standar memunculkan konfirmasi
+  *"Nama Ini Mirip Divisi Lama"* dengan pilihan **Ya, tambahkan** / **Batal**.
+- Divisi yang baru ditambahkan **disorot + digulirkan ke tampilan** agar
+  perubahan benar-benar terlihat.
+- `upsertSetting()` punya **jalur cadangan** (select → update/insert) bila kolom
+  `key` pada tabel `settings` tidak punya UNIQUE constraint — penyebab lain
+  semua master data gagal disimpan (error Postgres `42P10`).
+- Pesan **Akses Ditolak** kini menjelaskan cara memperoleh hak akses (role akun
+  harus dinaikkan menjadi Admin oleh Super Admin), bukan sekadar menolak.
+- Validasi tambahan: nama kosong, duplikat (termasuk beda spasi/huruf besar),
+  dan maksimal 60 karakter.
+- Perbaikan yang sama diterapkan di **halaman Registrasi** (divisi tambahan
+  tidak hilang lagi dari dropdown) dan **beranda publik** (jumlah anggota tidak
+  "dicuri" oleh divisi lain).
+- Klik ganda pada tombol **Tambah** tidak lagi memicu dua kali simpan.
+
+Seluruh perbaikan diverifikasi dengan 73 pengujian otomatis (jsdom + mock
+Supabase): penambahan 9 nama divisi berbeda, migrasi data lama, ketahanan
+setelah pindah halaman, kegagalan database, hak akses per role, validasi input,
+rename/hapus divisi, serta smoke test 10 halaman Portal Admin.
 
 ---
 
@@ -117,3 +182,4 @@ ikon & warna otomatis.
 ## Lihat Juga
 
 - `REKOMENDASI.md` — daftar saran pengembangan (fitur, tampilan, animasi, keamanan).
+- `nusapala-verifikasi/tests/README.md` — cara menjalankan & isi pengujian otomatis.

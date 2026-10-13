@@ -64,7 +64,10 @@ paling mendesak.
 ## 🔵 Prioritas 5 — Data & operasional
 
 22. **Normalisasi data divisi lama** pada tabel `members`
-    (`Rafting/Orad` → `Olahraga Arus Deras`) — bisa dijalankan sekali:
+    (`Rafting/Orad` → `Olahraga Arus Deras`) — **sudah otomatis** pada master
+    data (migrasi `divisi_schema_version` 3) dan saat mengubah nama divisi dari
+    Portal Admin. Untuk merapikan baris `members` yang sudah terlanjur lama
+    secara massal, tetap bisa dijalankan sekali:
     ```sql
     update members set "Divisi" = 'Olahraga Arus Deras'
     where "Divisi" in ('Rafting/Orad','ORAD','Rafting');
@@ -75,3 +78,19 @@ paling mendesak.
     tetap terbuka tanpa sinyal).
 26. **Panel "integritas data"** di Pengaturan: mendeteksi anggota tanpa divisi,
     alat tanpa kategori, kas tanpa kategori, dsb.
+
+---
+
+## Ditambahkan 13 Oktober 2026 (tahap 2)
+
+27. **Pengujian otomatis** (`nusapala-verifikasi/tests/`, 73 assertion) —
+    menjaga regresi bug "divisi baru tidak bisa masuk" serta memastikan 10
+    halaman Portal Admin tetap terbuka tanpa error. Jalankan dengan `npm test`
+    sebelum `git push`.
+28. **Datalist divisi** pada kolom *Divisi / Lokasi* (Agenda) dan
+    *Kategori / Divisi* (Galeri) supaya nama divisi konsisten dengan master data.
+29. **Pesan error yang menjelaskan** (bukan sekadar "Gagal"): sebutkan pesan
+    sistem dari database, dan beri tahu cara memperoleh hak akses bila role
+    akun belum đủ.
+30. Selanjutnya yang paling terasa manfaatnya: **notifikasi jatuh tempo**
+    (poin 4) dan **ekspor laporan kas/inventaris** (poin 5).

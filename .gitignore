@@ -1,0 +1,16 @@
+# Dependensi pengujian (jsdom) berukuran besar dan tidak boleh masuk Git.
+# Catatan: node_modules/papaparse sudah terlanjur di-commit sebelum aturan ini
+# ada, jadi berkas itu tetap terlacak dan tidak dihapus oleh .gitignore ini.
+node_modules/
+npm-debug.log*
+
+# Artefak sistem & editor
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+
+# Hasil pengujian / cakupan
+coverage/
+.nyc_output/
