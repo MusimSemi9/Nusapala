@@ -74,49 +74,77 @@ terhubung ke master data ini (datalist), jadi bisa dipilih tanpa mengetik manual
 
 ---
 
-## Riwayat Pembaruan — 13 Oktober 2026 (tahap 2)
+## Riwayat Pembaruan — 13 Oktober 2026 (putaran 4: akar masalah ditemukan)
 
-**Perbaikan bug: divisi baru tidak bisa masuk**
+Putaran 2 dan 3 memperbaiki *gejala* laporan "gabisa masukin divisi" (izin,
+UI, jalur cadangan simpan, sorotan baris baru, anti-cache). Semuanya tetap
+dipertahankan. Putaran ini menemukan dan memperbaiki **penyebab sebenarnya**,
+yang dijelaskan lewat reproduksi otomatis.
 
-Gejala: nama divisi diketik → tombol **Tambah** diklik → muncul *"Tersimpan"*,
-tetapi divisi tidak pernah muncul di daftar dan hilang lagi setelah halaman
-dimuat ulang.
+### Penyebab sebenarnya
 
-Penyebab: pemetaan penulisan lama (`DIVISI_ALIAS`) diterapkan pada **master
-data** setiap kali daftar divisi dibersihkan. Nama seperti `Panjat Tebing`,
-`Rafting`, `ORAD`, `Arus Deras`, dan `Rockclimbing` otomatis diganti ke nama
-divisi standar lalu dibuang sebagai duplikat — **setelah** notifikasi sukses
-tampil. Jadi penyimpanannya "berhasil", tetapi hasilnya langsung dihapus.
+Pemetaan penulisan lama (`DIVISI_ALIAS`) diterapkan pada **master data** setiap
+kali daftar divisi dibersihkan. Nama-nama ini otomatis diganti ke divisi standar
+lalu **dibuang sebagai duplikat — setelah** notifikasi *"Tersimpan"* muncul:
 
-Yang diubah:
+| Diketik pengurus | Diam-diam diubah jadi | Hasil |
+| --- | --- | --- |
+| `Panjat Tebing` | Rock Climbing | hilang |
+| `Rafting` | Olahraga Arus Deras | hilang |
+| `ORAD` | Olahraga Arus Deras | hilang |
+| `Arus Deras` | Olahraga Arus Deras | hilang |
+| `Rockclimbing` | Rock Climbing | hilang |
+| `Konservasi`, `Susur Goa`, `SAR`, … | — | aman |
 
-- Alias penulisan lama kini hanya dipakai untuk **migrasi sekali jalan**
-  (`divisi_schema_version` dinaikkan ke **3**) dan untuk **menafsirkan data
-  lama pada tabel `members`** (`Rafting/Orad` tetap terhitung sebagai Olahraga
-  Arus Deras). Master data tidak pernah diubah diam-diam lagi.
-- `addKategoriItem()` memverifikasi hasilnya setelah daftar dirender ulang.
-  Bila namanya ternyata tidak bertahan, perubahan dibatalkan dan muncul pesan
-  **"Tidak Bisa Disimpan"** — tidak ada lagi notifikasi sukses palsu.
-- Menambah nama yang sama artinya dengan divisi standar memunculkan konfirmasi
-  *"Nama Ini Mirip Divisi Lama"* dengan pilihan **Ya, tambahkan** / **Batal**.
-- Divisi yang baru ditambahkan **disorot + digulirkan ke tampilan** agar
-  perubahan benar-benar terlihat.
-- `upsertSetting()` punya **jalur cadangan** (select → update/insert) bila kolom
-  `key` pada tabel `settings` tidak punya UNIQUE constraint — penyebab lain
-  semua master data gagal disimpan (error Postgres `42P10`).
-- Pesan **Akses Ditolak** kini menjelaskan cara memperoleh hak akses (role akun
-  harus dinaikkan menjadi Admin oleh Super Admin), bukan sekadar menolak.
-- Validasi tambahan: nama kosong, duplikat (termasuk beda spasi/huruf besar),
-  dan maksimal 60 karakter.
-- Perbaikan yang sama diterapkan di **halaman Registrasi** (divisi tambahan
-  tidak hilang lagi dari dropdown) dan **beranda publik** (jumlah anggota tidak
-  "dicuri" oleh divisi lain).
-- Klik ganda pada tombol **Tambah** tidak lagi memicu dua kali simpan.
+Itulah sebabnya bug-nya terasa acak: sebagian nama berhasil, sebagian lenyap
+tanpa pesan apa pun.
 
-Seluruh perbaikan diverifikasi dengan 73 pengujian otomatis (jsdom + mock
-Supabase): penambahan 9 nama divisi berbeda, migrasi data lama, ketahanan
-setelah pindah halaman, kegagalan database, hak akses per role, validasi input,
-rename/hapus divisi, serta smoke test 10 halaman Portal Admin.
+### Yang diubah
+
+- **Alias tidak lagi menyentuh master data.** `bersihkanDivisi()` kini hanya
+  merapikan spasi dan membuang duplikat. Alias dipakai untuk dua hal saja:
+  **migrasi sekali jalan** (`divisi_schema_version` dinaikkan ke **3**) dan
+  **menafsirkan data lama pada tabel `members`** lewat `aliasDivisiLama()`,
+  sehingga baris `Rafting/Orad` tetap terhitung sebagai Olahraga Arus Deras.
+- **Verifikasi setelah simpan.** `addKategoriItem()` memeriksa ulang apakah
+  namanya benar-benar bertahan setelah daftar dirender. Bila tidak, perubahan
+  di-*rollback* dan muncul dialog **"Tidak Bisa Disimpan"** — tidak ada lagi
+  notifikasi sukses palsu.
+- **Konfirmasi nama yang mirip divisi lama.** Mengetik `Panjat Tebing` kini
+  memunculkan *"Nama Ini Mirip Divisi Lama"* dengan pilihan **Ya, tambahkan**
+  (disimpan sebagai divisi terpisah) atau **Batal**.
+- **Kunci anti-klik-ganda** hanya selama penulisan ke database, sehingga tombol
+  tidak bisa macet bila sebuah dialog dibiarkan terbuka.
+- **Perhitungan jumlah anggota sadar-alias** (`jumlahAnggotaDivisi()`) pada
+  daftar Data Divisi, kartu Sebaran Divisi, dan pemeriksaan sebelum menghapus
+  divisi. Divisi resmi juga menampilkan chip *"termasuk: rafting, orad, …"*
+  supaya jelas dari mana angkanya berasal.
+- **Rename divisi ikut merapikan penulisan warisan** pada tabel `members`.
+- **Validasi tambahan**: maksimal 60 karakter, dan duplikat dideteksi walau
+  beda spasi/huruf besar.
+- **Bug alias yang sama diperbaiki di halaman lain**: `registrasi.html` (divisi
+  tambahan pengurus tidak hilang lagi dari dropdown pendaftaran) dan
+  `index.html` (jumlah anggota tidak lagi "dicuri" divisi lain).
+- **Datalist divisi** untuk kolom *Divisi / Lokasi* (Agenda) dan
+  *Kategori / Divisi* (Galeri) agar nama divisi konsisten dengan master data.
+
+### Pengujian otomatis (baru)
+
+```
+RINGKASAN: 77 lulus, 0 gagal, 0/5 suite bermasalah
+```
+
+`nusapala-verifikasi/tests/` menjalankan halaman sungguhan di **jsdom** dengan
+**Supabase tiruan** — tanpa internet, tanpa menyentuh database asli. Suite-nya
+mencakup: 9 nama divisi (termasuk yang dulu lenyap), migrasi data lama,
+ketahanan setelah pindah halaman, `upsert` ditolak database, database menolak
+semua penulisan, hak akses tiap role (Super Admin / Admin / Member dengan &
+tanpa akses Pengaturan / Alumni), validasi input, rename & hapus, klik ganda,
+halaman Registrasi & beranda, serta smoke test 10 halaman Portal Admin.
+
+```bash
+cd nusapala-verifikasi && npm install && npm test
+```
 
 ---
 
@@ -168,6 +196,47 @@ rename/hapus divisi, serta smoke test 10 halaman Portal Admin.
   diambil dari form tetapi tidak pernah dibandingkan, sehingga siapa pun yang
   mengetahui Nomor Angkatan dapat masuk ke Portal Admin. Lihat `REKOMENDASI.md`
   untuk langkah pengamanan lanjutan (kunci Supabase, RLS, hashing password).
+
+**6. Perbaikan menyeluruh "gabisa masukin divisi" (laporan pengguna, putaran 2)**
+- **Izin diperjelas & dilonggarkan secara aman**: selain Super Admin/Admin, akun
+  non-Admin yang **secara eksplisit diberi akses halaman Pengaturan** kini boleh
+  menambah/mengubah/menghapus divisi. Alumni tetap read-only (diblokir di inti
+  izin, termasuk sinkronisasi latar).
+- **UI konsisten dengan izin**: bila pengguna tidak berhak, kolom isian & tombol
+  *Tambah* langsung **dinonaktifkan** disertai catatan yang menjelaskan role
+  saat ini dan cara memperbaikinya. (Sebelumnya kolom terlihat aktif lalu
+  ditolak saat diklik — pengurus mengira fiturnya rusak.)
+- **Penyimpanan lebih tahan gagal**: `upsertSetting` kini punya jalur cadangan
+  (update-by-key → insert) bila `upsert(onConflict: 'key')` ditolak karena
+  tabel `settings` tidak punya unique constraint pada kolom `key`.
+- **Kegagalan tulis (RLS/jaringan) transparan**: dialog berisi pesan error
+  asli + langkah memperbaikinya, teks yang diketik pengguna **dikembalikan**,
+  data lokal di-*rollback*, dan detail lengkap dicatat di console browser.
+- **Divisi baru langsung terlihat**: baris baru otomatis di-*scroll* ke tampilan
+  dan disorot dengan animasi emas (menghormati `prefers-reduced-motion`);
+  toast sukses 2,4 detik. Baris sebelumnya memang ditambahkan di **paling
+  bawah** daftar yang bisa di-scroll — mudah terlewat sehingga terasa "gagal".
+- **Anti cache basi**: `vercel.json` kini menetapkan
+  `Cache-Control: public, max-age=0, must-revalidate` agar browser selalu
+  memuat `admin.html` terbaru (versi lama yang rusak tidak tertinggal di cache).
+- **Null-safety**: `checkAlumni` & render Pengaturan tidak lagi error saat
+  sesi login kadaluarsa/tersingkir.
+
+**7. Penyempurnaan dialog "Tambah Divisi" (laporan pengguna, putaran 3)**
+- Dialog cadangan tambah kategori kini tampil persis seperti yang familiar
+  bagi pengurus: judul **"Tambah Divisi"**, label kolom **"Nama Divisi"**,
+  tombol **Simpan / Batal** (sebelumnya judul huruf kecil "Tambah divisi"
+  tanpa label). Berlaku juga untuk kategori lain (Kas, Alat, Surat, Jabatan).
+- **Validasi di dalam dialog**: klik *Simpan* dengan isian kosong tidak lagi
+  menutup dialog diam-diam — muncul pesan "Nama tidak boleh kosong."
+- Skrip Supabase JS yang **termuat dua kali** di `admin.html` kini dimuat
+  sekali (halaman lebih ringan & lebih cepat).
+
+> 💡 **Cara menambah divisi (terbaru)**: Portal Admin → **Pengaturan** →
+> blok **Data Divisi Organisasi** → ketik nama divisi → tekan **Enter** atau
+> klik **Tambah**. Divisi baru langsung tersorot animasi emas di daftar.
+> Bila situs terasa "masih versi lama", muat ulang keras: **Ctrl + Shift + R**
+> (Cmd + Shift + R di Mac) dan pastikan Vercel sudah men-deploy ulang `main`.
 
 > ⚠️ **Catatan pemulihan**: bila Anda tidak dapat login setelah pembaruan ini,
 > perbarui kolom `password` pada tabel `members` di dashboard Supabase untuk akun

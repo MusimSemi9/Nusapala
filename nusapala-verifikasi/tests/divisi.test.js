@@ -80,7 +80,7 @@ async function bukaSettings(window, page = 'settings') {
   cek('nilai di DB ikut ter-update', row && row.value.includes('Divisi SAR'), row && row.value);
   h.dbMock.setFail(null);
 
-  // ============ SKENARIO 4: role Admin boleh, Member ditolak dengan pesan jelas ============
+  // ============ SKENARIO 4: hak akses per role ============
   console.log('\n[4] Hak akses per role');
   h = await boot({ user: mk('Admin'), db: { members: MEMBERS, settings: SETTINGS_AWAL.map(s => ({ ...s })) } });
   await bukaSettings(h.window);
@@ -90,15 +90,41 @@ async function bukaSettings(window, page = 'settings') {
   await sleep(500);
   cek('role Admin bisa menambah divisi', h.window.__internals().dbSettings.kategori_divisi.includes('Ekspedisi'));
 
-  h = await boot({ user: mk('Member'), db: { members: MEMBERS, settings: SETTINGS_AWAL.map(s => ({ ...s })) } });
+  // Akun non-Admin yang diberi akses halaman Pengaturan ikut boleh (aturan dari main)
+  h = await boot({ user: mk('Member', { permissions: ['dashboard', 'settings'] }), db: { members: MEMBERS, settings: SETTINGS_AWAL.map(s => ({ ...s })) } });
+  await bukaSettings(h.window);
+  h.swalCalls.length = 0;
+  h.window.document.getElementById('addKategoriDivisiInput').value = 'Bakti Sosial';
+  h.window.addKategoriItem('divisi');
+  await sleep(500);
+  cek('role Member DENGAN akses Pengaturan boleh menambah divisi',
+    h.window.__internals().dbSettings.kategori_divisi.includes('Bakti Sosial'),
+    JSON.stringify(h.swalCalls.map(judul)));
+
+  // Akun tanpa akses Pengaturan ditolak dengan pesan yang menjelaskan
+  h = await boot({ user: mk('Member', { permissions: ['dashboard'] }), db: { members: MEMBERS, settings: SETTINGS_AWAL.map(s => ({ ...s })) } });
   await bukaSettings(h.window);
   h.swalCalls.length = 0;
   h.window.document.getElementById('addKategoriDivisiInput').value = 'Coba';
   h.window.addKategoriItem('divisi');
   await sleep(400);
-  const tolak = h.swalCalls.find(c => judul(c) === 'Akses Ditolak');
-  cek('role Member ditolak + diberi penjelasan', !!tolak && /Anggota/.test(tolak.html || ''), JSON.stringify(tolak));
+  cek('role Member TANPA akses Pengaturan ditolak + diberi penjelasan',
+    adaPopup(h.swalCalls, 'Akses Ditolak') && /role/.test(h.swalCalls.map(c => (c && c.html) || '').join(' ')),
+    JSON.stringify(h.swalCalls.map(c => (typeof c === 'string' ? c : (c && (c.title + '|' + (c.html || '').slice(0, 60)))))));
   cek('tidak ada data yang berubah', !h.window.__internals().dbSettings.kategori_divisi.includes('Coba'));
+
+  // Alumni selalu read-only
+  h = await boot({ user: mk('Super Admin', { status_anggota: 'Alumni' }), db: { members: MEMBERS, settings: SETTINGS_AWAL.map(s => ({ ...s })) } });
+  await bukaSettings(h.window);
+  h.swalCalls.length = 0;
+  const inpAlumni = h.window.document.getElementById('addKategoriDivisiInput');
+  h.window.addKategoriItem('divisi');
+  await sleep(400);
+  const htmlAlumni = h.swalCalls.map(c => (c && c.html) || (typeof c === 'string' ? c : '')).join(' ');
+  cek('Alumni ditolak walau role Super Admin',
+    (adaPopup(h.swalCalls, 'Akses Dibatasi') || adaPopup(h.swalCalls, 'Akses Ditolak')) && /Alumni|read-only/i.test(htmlAlumni),
+    JSON.stringify(h.swalCalls.map(judul)) + ' | ' + htmlAlumni.slice(0, 90));
+  cek('kolom isian dinonaktifkan untuk Alumni', inpAlumni && inpAlumni.disabled === true);
 
   // ============ SKENARIO 5: input kosong, duplikat, terlalu panjang ============
   console.log('\n[5] Validasi input');
@@ -179,30 +205,36 @@ async function bukaSettings(window, page = 'settings') {
   cek('penulisan ke DB hanya terjadi untuk daftar final', writes.length >= 1 && writes.every(w => String(w[2].value).split('Mountaineering').length === 2),
     JSON.stringify(writes.map(w => w[2].value)));
 
-  // ============ SKENARIO 9: DB menolak total (tidak ada jalur yang berhasil) ============
-  console.log('\n[9] Database menolak semua penulisan -> pesan jujur, tidak ada "Tersimpan" palsu');
+  // ============ SKENARIO 9: DB menolak semua penulisan -> pesan jujur ============
+  console.log('\n[9] Database menolak semua penulisan -> tidak ada "Tersimpan" palsu');
   h = await boot({ user: mk('Super Admin'), db: { members: [], settings: SETTINGS_AWAL.map(s => ({ ...s })) } });
   await bukaSettings(h.window);
-  const SwalAsli = h.window.Swal.fire;
   h.dbMock.setFail('settings:upsert');
-  const updAsli = h.dbMock.client.from;
-  // paksa update & insert juga gagal
-  h.dbMock.client.from = function (t) { const b = updAsli.call(this, t); const up = b.update, ins = b.insert;
-    b.update = () => { b._op = 'update'; b._payload = {}; return { then: (res) => res({ data: null, error: { message: 'RLS menolak update' } }) }; };
-    b.insert = () => ({ then: (res) => res({ data: null, error: { message: 'RLS menolak insert' } }) });
-    return b; };
+  const dariAsli = h.dbMock.client.from.bind(h.dbMock.client);
+  // Bentuk builder yang selalu menolak (meniru RLS yang menutup UPDATE/INSERT).
+  const builderGagal = pesan => ({
+    eq() { return this; }, then(res) { return res({ data: null, error: { message: pesan } }); }
+  });
+  h.dbMock.client.from = function (t) {
+    const b = dariAsli(t);
+    b.update = () => builderGagal('RLS menolak update');
+    b.insert = () => builderGagal('RLS menolak insert');
+    return b;
+  };
   h.swalCalls.length = 0;
   h.window.document.getElementById('addKategoriDivisiInput').value = 'Divisi Gagal';
   h.window.addKategoriItem('divisi');
   await sleep(700);
-  const judulAll = h.swalCalls.map(c => (typeof c === 'string' ? c : (c && c.title)));
+  const judulAll = h.swalCalls.map(judul);
   cek('muncul "Gagal Menyimpan"', judulAll.includes('Gagal Menyimpan'), JSON.stringify(judulAll));
   cek('TIDAK ada popup "Tersimpan"', !judulAll.includes('Tersimpan'), JSON.stringify(judulAll));
-  cek('daftar divisi tidak berubah (rollback)', !h.window.__internals().dbSettings.kategori_divisi.includes('Divisi Gagal'),
+  cek('daftar divisi tidak berubah (rollback)',
+    !h.window.__internals().dbSettings.kategori_divisi.includes('Divisi Gagal'),
     JSON.stringify(h.window.__internals().dbSettings.kategori_divisi));
-  h.dbMock.client.from = updAsli;
+  const inpGagal = h.window.document.getElementById('addKategoriDivisiInput');
+  cek('teks yang diketik dikembalikan ke kolom isian', inpGagal && inpGagal.value === 'Divisi Gagal', inpGagal && inpGagal.value);
+  h.dbMock.client.from = dariAsli;
   h.dbMock.setFail(null);
-  h.window.Swal.fire = SwalAsli;
 
   console.log('\n' + '='.repeat(60));
   console.log(`HASIL: ${lulus} lulus, ${gagal} gagal`);

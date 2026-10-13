@@ -16,9 +16,7 @@
   <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.min.css" rel="stylesheet">
   <!-- Untuk favicon tab browser -->
 <link rel="icon" type="image/png" href="/Logo Nusapala.png">
-  <!-- Supabase JS Client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Supabase JS Client -->
+  <!-- Supabase JS Client (dimuat sekali; sebelumnya ganda dan memperlambat halaman) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Library QR Scanner Nusapala -->
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
@@ -525,15 +523,17 @@
     }
     .divisi-list-item:hover { border-color: var(--gold-500); box-shadow: 0 10px 22px -16px rgba(15,30,20,.45); transform: translateY(-1px); }
     .divisi-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 0 3px rgba(0,0,0,0.05); }
-    /* Divisi yang baru saja ditambahkan: disorot sebentar supaya pengurus
-       benar-benar melihat hasilnya (sebelumnya data tersimpan tetapi tidak
-       pernah tampak berubah). */
-    .divisi-list-item.divisi-baru { border-color: var(--forest-500, #2f7d4f); background: #f2fbf5; animation: divisiSorot 1.8s var(--ease-smooth, ease) both; }
-    @keyframes divisiSorot {
-      0%   { box-shadow: 0 0 0 0 rgba(47,125,79,.45); transform: translateY(-3px); opacity: .4; }
-      35%  { box-shadow: 0 0 0 6px rgba(47,125,79,.10); transform: translateY(0); opacity: 1; }
-      100% { box-shadow: 0 0 0 0 rgba(47,125,79,0); }
+    /* Sorotan halus pada divisi yang baru saja ditambahkan */
+    @keyframes divisiBaruFlash {
+      0%   { box-shadow: 0 0 0 0 rgba(201,162,39,.55); background-color: rgba(201,162,39,.18); }
+      55%  { box-shadow: 0 0 0 7px rgba(201,162,39,0);  background-color: rgba(201,162,39,.08); }
+      100% { box-shadow: none; background-color: #fff; }
     }
+    .divisi-list-item.divisi-baru { border-color: var(--gold-500); animation: divisiBaruFlash 2.4s var(--ease-smooth) both; }
+    @media (prefers-reduced-motion: reduce) {
+      .divisi-list-item.divisi-baru { animation: none; border-color: var(--gold-500); background-color: rgba(201,162,39,.12); }
+    }
+    /* Penanda divisi yang namanya juga merupakan penulisan lama divisi lain */
     .divisi-list-item .badge-nama-lama { font-size: .62rem; letter-spacing: .02em; }
     .progress { background-color: var(--cream-100); border-radius: 999px; }
     .progress-bar { transition: width .6s var(--ease-smooth); }
@@ -1223,6 +1223,9 @@
                       <input type="text" class="form-control" id="addKategoriDivisiInput" placeholder="Contoh: Rock Climbing" autocomplete="off">
                       <button class="btn btn-outline-info" type="button" onclick="addKategoriItem('divisi')"><i class="fa-solid fa-plus"></i> Tambah</button>
                     </div>
+                    <div class="alert alert-light border d-none mt-0 mb-2 py-2 px-3 small" id="divisiAksesNote" role="note" style="font-size:0.76rem;line-height:1.5;">
+                      <i class="fa-solid fa-circle-info me-1 text-warning"></i><span id="divisiAksesNoteText"></span>
+                    </div>
                     <div class="border rounded bg-light-subtle p-2" style="max-height: 210px; overflow-y: auto;" id="settingsKategoriDivisiList"></div>
                     <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
                       <button class="btn btn-sm btn-outline-secondary" type="button" onclick="syncDivisiMaster(true)">
@@ -1711,6 +1714,13 @@
       return (dbAnggota || []).filter(a => String(aliasDivisiLama(a.divisi) || '').toLowerCase() === target).length;
     }
 
+    // escapeHTML() memakai innerText sehingga tidak aman untuk atribut; ini
+    // versi ringan khusus untuk dipakai di dalam tanda kutip atribut HTML.
+    function escapeHtmlAttr(str) {
+      return String(str == null ? '' : str).replace(/&/g, '&amp;').replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
     // Daftar yang dipakai formulir: bila master data kosong, pakai tiga divisi
     // standar supaya tidak ada formulir (registrasi/edit anggota) yang buntu.
     function daftarDivisiEfektif(list) {
@@ -1747,8 +1757,9 @@
       const perluMigrasi = versiDB < DIVISI_SCHEMA_VERSION;
       const sebelum = bersihkanDivisi(dbSettings.kategori_divisi || []);
 
-      // Migrasi nama lama hanya saat versi skema belum terbaru. Setelah itu
-      // daftar divisi hanya dirapikan (spasi & duplikat), TIDAK dialihkan.
+      // Migrasi nama lama HANYA saat versi skema belum terbaru. Setelah itu
+      // daftar divisi cuma dirapikan (spasi & duplikat), tidak pernah dialihkan
+      // — inilah yang dulu membuat divisi baru hilang setelah "Tersimpan".
       const sumber = perluMigrasi
         ? migrasikanAliasDivisi(dbSettings.kategori_divisi || [])
         : sebelum;
@@ -1759,8 +1770,11 @@
       );
       dbSettings.kategori_divisi = gabungan;
 
-      const role = (Auth.getUser() || {}).role || '';
-      const bolehTulis = role === 'Admin' || role === 'Super Admin';
+      // Izin tulis mengikuti aturan yang sama dengan tombol Tambah divisi,
+      // supaya migrasi tidak di-skip diam-diam untuk pengurus yang berhak.
+      const bolehTulis = (typeof bolehKelolaKategori === 'function')
+        ? bolehKelolaKategori('kategori_divisi')
+        : ['Admin', 'Super Admin'].includes(((Auth.getUser() || {}).role || ''));
       const berubah = JSON.stringify(gabungan) !== JSON.stringify(sebelum);
       const perluTulis = paksa || perluMigrasi || berubah;
 
@@ -1848,7 +1862,8 @@
 
     // Security Check: Mencegah eksekusi backend oleh Alumni
     window.checkAlumni = function() {
-        if (Auth.getUser().status_anggota === 'Alumni') {
+        const userSekarang = Auth.getUser() || {};
+        if (userSekarang.status_anggota === 'Alumni') {
             Swal.fire('Akses Dibatasi', 'Sebagai Alumni, Anda hanya dapat melihat data (Read-Only).', 'error');
             return true;
         }
@@ -2192,45 +2207,69 @@
     }
 
     // ================= PENGATURAN (SETTINGS) LOGIC =================
+    // Simpan satu baris settings. Bila upsert(onConflict) gagal (mis. tabel
+    // tidak punya unique constraint pada kolom `key`), otomatis mencoba jalur
+    // update-by-key lalu insert — sehingga penyimpanan tidak langsung buntu.
     async function upsertSetting(key, value) {
-      const nilai = String(value);
-      const { error } = await db.from('settings').upsert({ key: key, value: nilai }, { onConflict: 'key' });
+      const payload = { key: key, value: String(value) };
+      const { error } = await db.from('settings').upsert(payload, { onConflict: 'key' });
       if (!error) return;
 
-      // CADANGAN: bila kolom `key` pada tabel settings tidak punya UNIQUE
-      // constraint, Postgres menolak ON CONFLICT (kode 42P10) sehingga SEMUA
-      // master data — termasuk divisi — gagal disimpan. Kita lanjutkan dengan
-      // pola select -> update/insert agar pengurus tetap bisa bekerja.
-      console.warn('[Nusapala] upsert settings gagal, mencoba jalur cadangan:', error.message || error);
-      let ada = null;
+      console.warn('[Nusapala] upsert settings gagal, mencoba jalur cadangan:', error.message);
       try {
-        const cek = await db.from('settings').select('*').eq('key', key).maybeSingle();
-        ada = cek && cek.data ? cek.data : null;
-      } catch (e) { ada = null; }
-
-      if (ada) {
-        const { error: errUpd } = await db.from('settings').update({ value: nilai }).eq('key', key);
-        if (errUpd) throw errUpd;
-        return;
+        const probe = await db.from('settings').select('key').eq('key', key).limit(1);
+        const ada = !probe.error && Array.isArray(probe.data) && probe.data.length > 0;
+        if (ada) {
+          const upd = await db.from('settings').update({ value: String(value) }).eq('key', key);
+          if (!upd.error) return;
+          console.error('[Nusapala] update settings gagal:', upd.error.message);
+        } else {
+          const ins = await db.from('settings').insert(payload);
+          if (!ins.error) return;
+          console.error('[Nusapala] insert settings gagal:', ins.error.message);
+        }
+      } catch (e) {
+        console.error('[Nusapala] jalur cadangan settings gagal:', e && e.message);
       }
-      const { error: errIns } = await db.from('settings').insert({ key: key, value: nilai });
-      if (errIns) throw errIns;
+      throw error; // lempar error asli agar pesan di UI tetap akurat
     }
 
     // Render khusus daftar Data Divisi: menampilkan ikon, warna divisi, dan
     // jumlah anggota per divisi supaya pengurus tahu dampak sebelum mengubahnya.
-    window.renderDivisiList = function(elementId, opsi) {
+    window.renderDivisiList = function(elementId) {
       const el = document.getElementById(elementId);
       if (!el) return;
 
       // Hanya rapikan spasi/duplikat — nama tidak pernah diubah di sini.
       const list = bersihkanDivisi(dbSettings.kategori_divisi || []);
       dbSettings.kategori_divisi = list; // samakan urutan & indeks dengan tombol aksi
-      const boleh = bolehKelolaKategori('kategori_divisi');
-      const sorot = String((opsi && opsi.sorot) || '').toLowerCase();
+      const userSekarang = Auth.getUser() || {};
+      const boleh = bolehKelolaKategori('kategori_divisi') && userSekarang.status_anggota !== 'Alumni';
 
       const counter = document.getElementById('divisiCounter');
       if (counter) counter.innerText = `${list.length} divisi`;
+
+      // Konsistensi UI: bila pengguna tidak berhak mengelola divisi, kolom isian
+      // dan tombol Tambah dinonaktifkan SEKARANG juga. (Sebelumnya kolom tetap
+      // terlihat aktif lalu ditolak saat diklik — pengurus mengira fiturnya rusak.)
+      const inputDivisi = document.getElementById('addKategoriDivisiInput');
+      const tombolTambah = inputDivisi && inputDivisi.parentElement ? inputDivisi.parentElement.querySelector('button') : null;
+      const tombolSinkron = document.querySelector('#blokDataDivisi button[onclick*="syncDivisiMaster"]');
+      const catatanAkses = document.getElementById('divisiAksesNote');
+      const teksAkses = document.getElementById('divisiAksesNoteText');
+      if (inputDivisi) {
+        inputDivisi.disabled = !boleh;
+        if (!boleh) inputDivisi.placeholder = 'Hanya Admin / Super Admin / akun dengan akses Pengaturan';
+      } else if (document.getElementById('blokDataDivisi')) {
+        // Jalur cadangan: kolom belum ter-render → sediakan dialog agar tidak buntu.
+        if (tombolTambah) tombolTambah.setAttribute('data-fallback-dialog', '1');
+      }
+      if (tombolTambah) tombolTambah.disabled = !boleh;
+      if (tombolSinkron) tombolSinkron.disabled = !boleh;
+      if (catatanAkses && teksAkses) {
+        if (boleh) catatanAkses.classList.add('d-none');
+        else { catatanAkses.classList.remove('d-none'); teksAkses.innerHTML = pesanTolakKelola('kategori_divisi'); }
+      }
 
       if (!list.length) {
         el.innerHTML = '<div class="small text-muted p-2">Belum ada divisi. Tambahkan minimal satu divisi agar formulir registrasi dapat diisi.</div>';
@@ -2240,31 +2279,29 @@
       el.innerHTML = list.map((c, i) => {
         const m = divisiMeta(c);
         const jumlah = jumlahAnggotaDivisi(c);
-        const isBaru = !!sorot && sorot === c.toLowerCase();
-        const namaLama = DIVISI_ALIAS[String(c).toLowerCase()];
-        const chipLama = (namaLama && namaLama.toLowerCase() !== String(c).toLowerCase())
-          ? `<span class="badge bg-white text-muted border badge-nama-lama ms-1" title="Penulisan ini sama artinya dengan ${escapeHTML(namaLama)} di data lama anggota">nama lama: ${escapeHTML(namaLama)}</span>`
+        // Penulisan lama yang ikut terhitung pada divisi ini. Hanya ditampilkan
+        // bila penulisan lama itu sendiri TIDAK terdaftar sebagai divisi tersendiri,
+        // supaya pengurus paham dari mana angka "N anggota" berasal.
+        const warisan = Object.keys(DIVISI_ALIAS).filter(k =>
+          DIVISI_ALIAS[k].toLowerCase() === String(c).toLowerCase() &&
+          !list.some(d => d.toLowerCase() === k));
+        const chipLama = warisan.length
+          ? `<span class="badge bg-white text-muted border badge-nama-lama ms-1" title="Anggota dengan penulisan lama ini ikut terhitung pada divisi ${escapeHtmlAttr(c)}">termasuk: ${escapeHTML(warisan.join(', '))}</span>`
           : '';
         const aksi = boleh
           ? `<button type="button" class="btn btn-sm btn-link text-primary p-0 me-2" title="Ubah nama divisi" onclick="editKategoriItem('kategori_divisi', ${i})"><i class="fa-solid fa-pen"></i></button>
              <button type="button" class="btn btn-sm btn-link text-danger p-0" title="Hapus divisi" onclick="removeKategoriItem('kategori_divisi', ${i})"><i class="fa-solid fa-trash"></i></button>`
           : '<span class="badge bg-white text-muted border">hanya lihat</span>';
-        return `<div class="divisi-list-item${isBaru ? ' divisi-baru' : ''}"${isBaru ? ' id="divisiBaruDitambahkan"' : ''}>
+        return `<div class="divisi-list-item">
             <div class="d-flex align-items-center gap-2" style="min-width:0;">
               <span class="divisi-dot" style="background:${m.warna};"></span>
               <span class="fw-semibold text-truncate" style="color:${m.warna};">${escapeHTML(c)}</span>
               ${chipLama}
               <span class="badge bg-white text-dark border ms-1" title="Jumlah anggota pada divisi ini">${jumlah} anggota</span>
-              ${isBaru ? '<span class="badge bg-success-subtle text-success-emphasis border border-success-subtle ms-1">baru</span>' : ''}
             </div>
             <div class="d-flex align-items-center flex-shrink-0">${aksi}</div>
           </div>`;
       }).join('');
-
-      if (sorot) {
-        const item = document.getElementById('divisiBaruDitambahkan');
-        if (item && item.scrollIntoView) item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-      }
     };
 
     window.renderSettings = function() {
@@ -2285,8 +2322,9 @@
         if (!el) return;
         el.innerHTML = '';
         (dbSettings[key] || []).forEach((c, i) => { 
-           const btnEdit = Auth.getUser().role === 'Super Admin' ? `<button type="button" class="btn btn-sm btn-link text-primary p-0 me-2" onclick="editKategoriItem('${key}', ${i})"><i class="fa-solid fa-pen"></i></button>` : '';
-           const btnDelete = Auth.getUser().role === 'Super Admin' ? `<button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="removeKategoriItem('${key}', ${i})"><i class="fa-solid fa-trash"></i></button>` : '';
+           const roleSekarang = ((Auth.getUser() || {}).role || '');
+           const btnEdit = roleSekarang === 'Super Admin' ? `<button type="button" class="btn btn-sm btn-link text-primary p-0 me-2" onclick="editKategoriItem('${key}', ${i})"><i class="fa-solid fa-pen"></i></button>` : '';
+           const btnDelete = roleSekarang === 'Super Admin' ? `<button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="removeKategoriItem('${key}', ${i})"><i class="fa-solid fa-trash"></i></button>` : '';
            el.innerHTML += `<div class="d-flex justify-content-between p-2 mb-1 border rounded bg-white"><span>${escapeHTML(c)}</span><div>${btnEdit}${btnDelete}</div></div>`; 
          });
       };
@@ -2297,7 +2335,7 @@
       renderList('kategori_surat', 'settingsKategoriSuratList');
       renderDivisiList('settingsKategoriDivisiList');
 
-      if (Auth.getUser().role === 'Super Admin') {
+      if (((Auth.getUser() || {}).role || '') === 'Super Admin') {
           let panelContainer = document.getElementById('settingsKategoriKepengurusanList');
           if (!panelContainer) {
               const divKategori = document.createElement('div');
@@ -2321,20 +2359,45 @@
       applyAlumniRestrictions();
     };
 
-    // ---- Izin kelola kategori: Divisi boleh dikelola Admin & Super Admin ----
+    // ---- Izin kelola kategori ----
+    // Kategori kas/alat/surat/jabatan: Super Admin saja.
+    // Data Divisi: Super Admin, Admin, atau akun non-Admin yang secara eksplisit
+    // diberi akses halaman Pengaturan oleh Super Admin (gerbang kepercayaan =
+    // halaman Pengaturan itu sendiri). Akun Alumni tetap read-only (checkAlumni).
     window.bolehKelolaKategori = function(key) {
-      const role = (Auth.getUser() || {}).role || '';
+      const user = Auth.getUser() || {};
+      const role = user.role || '';
+      if (user.status_anggota === 'Alumni') return false; // Alumni selalu read-only
       if (role === 'Super Admin') return true;
-      return role === 'Admin' && key === 'kategori_divisi';
+      if (key !== 'kategori_divisi') return false;
+      if (role === 'Admin') return true;
+      return Array.isArray(user.permissions) && user.permissions.includes('settings');
     };
 
+    // Pesan penolakan yang menjelaskan role pengguna saat ini + cara memperbaikinya
+    // (sebelumnya hanya "Akses Ditolak" tanpa keterangan, pengurus bingung).
+    function pesanTolakKelola(key) {
+      const user = Auth.getUser() || {};
+      const role = user.role || 'Tamu';
+      if (user.status_anggota === 'Alumni') {
+        return 'Akun Alumni bersifat <b>read-only</b> (hanya dapat melihat data).';
+      }
+      if (key === 'kategori_divisi') {
+        return `Anda login dengan role <b>${escapeHTML(role)}</b>. Menambah/mengubah/menghapus divisi hanya bisa dilakukan <b>Super Admin</b>, <b>Admin</b>, atau akun yang diberi akses halaman <b>Pengaturan</b>. Bila Anda pengurus utama, minta Super Admin membuka menu <b>Daftar Pengurus → Edit Akun</b> untuk memperbarui role Anda, atau minta akun Super Admin menambahkan divisi.`;
+      }
+      return `Anda login dengan role <b>${escapeHTML(role)}</b>. Hanya <b>Super Admin</b> yang dapat mengubah master data ini.`;
+    }
+
+    // `label`  : nama santai untuk kalimat pesan ("Tulis nama divisi terlebih dahulu...").
+    // `judul`  : nama resmi berkapital untuk judul dialog ("Tambah Divisi").
+    // `labelInput`: label kolom isian pada dialog ("Nama Divisi").
     const KATEGORI_META = {
-      pemasukan:    { input: 'addKategoriPemasukanInput',    key: 'kategori_pemasukan',    label: 'kategori pemasukan' },
-      pengeluaran:  { input: 'addKategoriPengeluaranInput',  key: 'kategori_pengeluaran',  label: 'kategori pengeluaran' },
-      aset:         { input: 'addKategoriAsetInput',         key: 'kategori_aset',         label: 'kategori alat' },
-      surat:        { input: 'addKategoriSuratInput',        key: 'kategori_surat',        label: 'kategori surat' },
-      kepengurusan: { input: 'addKategoriKepengurusanInput', key: 'kategori_kepengurusan', label: 'kategori kepengurusan' },
-      divisi:       { input: 'addKategoriDivisiInput',       key: 'kategori_divisi',       label: 'divisi' }
+      pemasukan:    { input: 'addKategoriPemasukanInput',    key: 'kategori_pemasukan',    label: 'kategori pemasukan',    judul: 'Kategori Pemasukan',    labelInput: 'Nama Kategori' },
+      pengeluaran:  { input: 'addKategoriPengeluaranInput',  key: 'kategori_pengeluaran',  label: 'kategori pengeluaran',  judul: 'Kategori Pengeluaran',  labelInput: 'Nama Kategori' },
+      aset:         { input: 'addKategoriAsetInput',         key: 'kategori_aset',         label: 'kategori alat',         judul: 'Kategori Alat',         labelInput: 'Nama Kategori' },
+      surat:        { input: 'addKategoriSuratInput',        key: 'kategori_surat',        label: 'kategori surat',        judul: 'Kategori Surat',        labelInput: 'Nama Kategori' },
+      kepengurusan: { input: 'addKategoriKepengurusanInput', key: 'kategori_kepengurusan', label: 'kategori kepengurusan', judul: 'Kategori Kepengurusan', labelInput: 'Nama Jabatan' },
+      divisi:       { input: 'addKategoriDivisiInput',       key: 'kategori_divisi',       label: 'divisi',                judul: 'Divisi',                labelInput: 'Nama Divisi' }
     };
 
     // Tekan Enter pada kolom kategori = tombol Tambah (mempercepat kerja pengurus).
@@ -2349,8 +2412,27 @@
       });
     };
 
-    // Kunci anti-klik-ganda: hanya dipakai selama penulisan ke database, agar
-    // tombol tidak pernah "macet" bila sebuah dialog tidak ditutup pengguna.
+    // Sorot & gulir ke divisi yang baru ditambahkan agar pengurus langsung
+    // melihatnya (daftar panjang & area scroll sering membuat pengguna mengira
+    // penyimpanan gagal karena baris baru berada di paling bawah).
+    function sorotItemDivisi(nama) {
+      try {
+        const wrap = document.getElementById('settingsKategoriDivisiList');
+        if (!wrap) return;
+        const items = Array.from(wrap.querySelectorAll('.divisi-list-item'));
+        const target = items.slice().reverse().find(el =>
+          (el.textContent || '').toLowerCase().includes(String(nama || '').toLowerCase())
+        );
+        if (!target) return;
+        target.classList.add('divisi-baru');
+        wrap.scrollTop = Math.max(0, target.offsetTop - wrap.offsetTop - 6);
+        if (typeof target.scrollIntoView === 'function') target.scrollIntoView({ block: 'nearest' });
+        setTimeout(() => target.classList.remove('divisi-baru'), 2600);
+      } catch (e) { /* non-fatal */ }
+    }
+
+    // Kunci anti-klik-ganda: hanya aktif selama penulisan ke database, supaya
+    // tombol tidak pernah "macet" bila sebuah dialog dibiarkan terbuka.
     let kategoriSedangDisimpan = false;
 
     window.addKategoriItem = async function(type) {
@@ -2360,15 +2442,10 @@
       const role = (Auth.getUser() || {}).role || '';
 
       if (!bolehKelolaKategori(key)) {
-        return Swal.fire({
-          icon: 'error',
-          title: 'Akses Ditolak',
-          html: role === 'Admin'
-            ? 'Admin hanya dapat mengelola <b>Data Divisi</b>. Kategori kas, alat, surat, dan jabatan hanya bisa diubah Super Admin.'
-            : (role === 'Member' || !role)
-              ? 'Akun Anda berstatus <b>Anggota</b>. Minta Super Admin menaikkan role akun Anda menjadi <b>Admin</b> lewat menu <b>Database Anggota &rarr; Daftar Pengurus</b> agar dapat mengelola Data Divisi.'
-              : 'Hanya <b>Super Admin</b> (dan <b>Admin</b> untuk Data Divisi) yang dapat mengubah master data ini.'
-        });
+        if (role === 'Admin' && key !== 'kategori_divisi') {
+          return Swal.fire('Akses Ditolak', 'Admin hanya dapat mengelola Data Divisi. Kategori kas, alat, surat, dan jabatan hanya bisa diubah Super Admin.', 'error');
+        }
+        return Swal.fire({ icon: 'error', title: 'Akses Ditolak', html: pesanTolakKelola(key) });
       }
       if (checkAlumni()) return;
       if (kategoriSedangDisimpan) return;
@@ -2376,19 +2453,36 @@
       const inputEl = document.getElementById(meta.input);
       if (inputEl && inputEl.disabled) return;
 
-      let v = key === 'kategori_divisi'
-        ? rapikanNamaDivisi(inputEl ? inputEl.value : '')
-        : String(inputEl ? inputEl.value : '').replace(/\s+/g, ' ').trim();
+      // Nama divisi dirapikan TANPA alias supaya tersimpan apa adanya.
+      const rapikan = (teks) => key === 'kategori_divisi'
+        ? rapikanNamaDivisi(teks)
+        : String(teks == null ? '' : teks).replace(/\s+/g, ' ').trim();
 
-      // Jalur cadangan: jika kolom input tidak ditemukan (mis. panel belum
-      // ter-render), pengurus tetap bisa menambah lewat dialog.
+      let v = rapikan(inputEl ? inputEl.value : '');
+
+      // Jalur cadangan: jika kolom input tidak ditemukan (mis. panel belum ter-render),
+      // pengurus tetap bisa menambah lewat dialog agar prosesnya tidak buntu.
+      // Tampilan dialog disamakan dengan yang familiar bagi pengurus:
+      // judul "Tambah Divisi", label "Nama Divisi", tombol Simpan / Batal.
       if (!inputEl) {
         const res = await Swal.fire({
-          title: `Tambah ${meta.label}`, input: 'text', inputPlaceholder: 'Ketik di sini...',
-          showCancelButton: true, confirmButtonText: 'Simpan', cancelButtonText: 'Batal'
+          title: `Tambah ${meta.judul || meta.label}`,
+          input: 'text',
+          inputLabel: meta.labelInput || `Nama ${meta.judul || meta.label}`,
+          inputPlaceholder: 'Ketik di sini...',
+          showCancelButton: true,
+          confirmButtonText: 'Simpan',
+          cancelButtonText: 'Batal',
+          // Validasi langsung di dalam dialog: tombol Simpan tidak menutup
+          // dialog saat isian kosong, agar tidak terasa "gagal tanpa sebab".
+          preConfirm: (nilai) => {
+            const bersih = String(nilai || '').replace(/\s+/g, ' ').trim();
+            if (!bersih) { Swal.showValidationMessage('Nama tidak boleh kosong.'); return false; }
+            return bersih;
+          }
         });
         if (!res.isConfirmed) return;
-        v = key === 'kategori_divisi' ? rapikanNamaDivisi(res.value) : String(res.value || '').replace(/\s+/g, ' ').trim();
+        v = rapikan(res.value);
       }
 
       if (!v) {
@@ -2411,7 +2505,7 @@
 
       // Nama yang identik dengan penulisan lama divisi standar tetap BOLEH
       // disimpan sebagai divisi tersendiri, tetapi pengurus diberi tahu lebih
-      // dulu supaya tidak ada dua divisi yang sebenarnya sama.
+      // dulu supaya tidak tanpa sengaja membuat dua divisi yang sama.
       if (key === 'kategori_divisi') {
         const resmi = DIVISI_ALIAS[v.toLowerCase()];
         if (resmi && daftar.some(d => d.toLowerCase() === resmi.toLowerCase())) {
@@ -2427,10 +2521,10 @@
         }
       }
 
-      // ===== Bagian kritis: tulis ke database, render ulang, lalu verifikasi =====
+      // ===== Bagian kritis: tulis ke database, render ulang, lalu VERIFIKASI =====
       const nilaiLama = dbSettings[key].slice();
       let tersimpan = false;
-      let pesanGagal = '';
+      let errSimpan = null;
 
       kategoriSedangDisimpan = true;
       try {
@@ -2441,48 +2535,54 @@
         try {
           await upsertSetting(key, JSON.stringify(dbSettings[key]));
         } catch (err) {
-          dbSettings[key] = nilaiLama; // batalkan agar tampilan tidak menipu
-          console.error('[Nusapala] Gagal menyimpan ' + key + ':', err);
-          pesanGagal = (err && err.message)
-            ? `Pesan sistem: ${err.message}`
-            : 'Periksa koneksi internet dan izin tulis tabel `settings`.';
+          errSimpan = err;
         }
 
-        if (!pesanGagal) {
+        if (!errSimpan) {
           hideFullPageLoading();
           updateCategoryDropdowns();
           renderSettings();
-          if (key === 'kategori_divisi') renderDivisiList('settingsKategoriDivisiList', { sorot: v });
+          if (key === 'kategori_divisi') sorotItemDivisi(v);
 
           // Verifikasi: pastikan namanya benar-benar bertahan setelah daftar
-          // dibersihkan & dirender ulang. Tanpa ini, kegagalan senyap (nama
-          // terbuang saat pembersihan) terlihat seperti "berhasil disimpan".
-          tersimpan = bersihkanDivisi(dbSettings[key]).some(d => d.toLowerCase() === v.toLowerCase());
-          if (!tersimpan) {
-            dbSettings[key] = nilaiLama;
-            renderSettings();
-            console.error('[Nusapala] Nama hilang setelah render ulang:', v, dbSettings[key]);
-          }
+          // dibersihkan & dirender ulang. Tanpa langkah ini, kegagalan senyap
+          // (nama terbuang saat pembersihan) tetap terlihat "berhasil".
+          tersimpan = key === 'kategori_divisi'
+            ? bersihkanDivisi(dbSettings[key]).some(d => d.toLowerCase() === v.toLowerCase())
+            : dbSettings[key].some(d => String(d).toLowerCase() === v.toLowerCase());
         }
       } finally {
         hideFullPageLoading();
         kategoriSedangDisimpan = false;
       }
 
-      if (pesanGagal) return Swal.fire('Gagal Menyimpan', pesanGagal, 'error');
-      if (!tersimpan) {
-        return Swal.fire('Tidak Bisa Disimpan',
-          `"${escapeHTML(v)}" tidak dapat ditambahkan ke daftar ${meta.label}. ` +
-          'Silakan muat ulang halaman lalu coba lagi; bila masih gagal, laporkan nama yang dipakai agar kami perbaiki.',
-          'error');
+      if (errSimpan || !tersimpan) {
+        dbSettings[key] = nilaiLama;              // batalkan agar tampilan tidak menipu
+        if (inputEl && !inputEl.value) inputEl.value = v; // kembalikan teks pengguna
+        updateCategoryDropdowns();
+        renderSettings();
+        console.error('[Nusapala] Gagal menyimpan', key, errSimpan || 'nama hilang setelah render ulang', v);
+
+        if (errSimpan) {
+          return Swal.fire({
+            icon: 'error',
+            title: 'Gagal Menyimpan',
+            html: `${escapeHTML((errSimpan && errSimpan.message) || 'Tidak ada detail kesalahan.')}<hr class="my-2"><small class="text-muted">Periksa koneksi internet Anda. Bila terus gagal, buka dashboard Supabase &rarr; tabel <b>settings</b> dan pastikan baris dengan kolom <b>key</b> = ${escapeHTML(key)} boleh di-update (izinkan UPDATE/INSERT, mis. pada kebijakan RLS), lalu muat ulang halaman.</small>`
+          });
+        }
+        return Swal.fire({
+          icon: 'error',
+          title: 'Tidak Bisa Disimpan',
+          html: `"<b>${escapeHTML(v)}</b>" tidak dapat ditambahkan ke daftar ${meta.label}.<hr class="my-2"><small class="text-muted">Silakan muat ulang halaman lalu coba lagi. Bila masih gagal, laporkan nama yang dipakai agar kami perbaiki — sebelumnya sistem pernah menampilkan "Tersimpan" padahal datanya dibuang.</small>`
+        });
       }
 
       if (inputEl) inputEl.focus();
-      Swal.fire({ icon: 'success', title: 'Tersimpan', text: `"${v}" berhasil ditambahkan ke ${meta.label}.`, timer: 1600, showConfirmButton: false });
+      Swal.fire({ icon: 'success', title: 'Tersimpan', text: `"${v}" berhasil ditambahkan ke ${meta.label}.`, timer: 2400, showConfirmButton: false });
     };
 
     window.editKategoriItem = async function(key, index) {
-      if (!bolehKelolaKategori(key)) return Swal.fire('Akses Ditolak', 'Hanya Super Admin yang dapat mengubah master data ini.', 'error');
+      if (!bolehKelolaKategori(key)) return Swal.fire({ icon: 'error', title: 'Akses Ditolak', html: pesanTolakKelola(key) });
       if (checkAlumni()) return;
 
       const oldValue = dbSettings[key][index];
@@ -2528,7 +2628,7 @@
     };
 
     window.removeKategoriItem = async function(key, index) {
-      if (!bolehKelolaKategori(key)) return Swal.fire('Akses Ditolak', 'Hanya Super Admin yang dapat menghapus master data ini.', 'error');
+      if (!bolehKelolaKategori(key)) return Swal.fire({ icon: 'error', title: 'Akses Ditolak', html: pesanTolakKelola(key) });
       if (checkAlumni()) return;
 
       const nama = dbSettings[key][index];

@@ -83,7 +83,7 @@ paling mendesak.
 
 ## Ditambahkan 13 Oktober 2026 (tahap 2)
 
-27. **Pengujian otomatis** (`nusapala-verifikasi/tests/`, 73 assertion) —
+27. **Pengujian otomatis** (`nusapala-verifikasi/tests/`, 77 assertion) —
     menjaga regresi bug "divisi baru tidak bisa masuk" serta memastikan 10
     halaman Portal Admin tetap terbuka tanpa error. Jalankan dengan `npm test`
     sebelum `git push`.
