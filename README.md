@@ -24,12 +24,17 @@ laporan/aduan, operasional lapangan, cuaca gunung, hingga verifikasi KTA berbasi
   `iuran`, `kas_keluar`, `aset`, `peminjaman_aset`, `pengaduan_saran`, `surat`, `kegiatan_operasional`, `notifikasi`
 - **Hosting:** Vercel (`vercel.json` mengaktifkan `cleanUrls` dan rewrite `/verify`)
 
-## 3. Design System "Deep Forest & Brass"
+## 3. Design System "Parchment & Teyvat"
+
+Bahasa visualnya mengambil referensi dari situs resmi **Genshin Impact** — perkamen hangat,
+navy Teyvat yang dalam, garis emas antik, ornamen berlian, dan judul serif berhuruf renggang —
+tetapi seluruh isinya tetap Nusapala (teks, data, divisi, fitur tidak berubah).
 
 Seluruh halaman memakai satu sumber gaya bersama:
 
 ```
-public/assets/css/nusapala.css   ← token warna, tipografi, komponen, animasi, tema gelap
+public/assets/css/nusapala.css   ← token warna, tipografi, komponen, animasi, tema gelap,
+                                   lapisan "Kulit Teyvat"
 public/assets/js/nusapala-ui.js  ← master data divisi, reveal/stagger, counter,
                                    scroll progress, combobox, ticker, toast, pengalih tema
 ```
@@ -40,16 +45,28 @@ Berkas CSS dimuat **setelah** `<style>` bawaan tiap halaman sehingga design syst
 
 | Tema | Suasana | Contoh token |
 | --- | --- | --- |
-| **Pagi di Kanopi** (bawaan) | kabut hijau muda, kertas sejuk, kuningan hangat | `--paper-50 #f4f7f2`, `--surface #ffffff`, `--forest-800 #103722`, `--gold-500 #b8912a`, `--text-main #2f3a2c` |
-| **Malam di Kanopi** (gelap) | hijau pinus pekat, aksen kuningan menyala | `--paper-50 #0c1510`, `--surface #131f18`, `--forest-800 #22694a`, `--gold-400 #e3c377`, `--text-main #d7e2d2` |
+| **Parchment & Teyvat** (bawaan) | perkamen hangat, navy dalam, emas antik | `--paper-50 #f8f3e7`, `--surface #fffdf7`, `--forest-800 #1f3648`, `--gold-500 #b3945a`, `--text-main #33404f` |
+| **Malam Teyvat** (gelap) | navy malam, teks perkamen, emas menyala | `--paper-50 #0c1420`, `--surface #131e2c`, `--forest-800 #2f5371`, `--gold-400 #dcc79b`, `--text-main #e4e8ea` |
 
-Latar halaman berlapis (tiga sapuan radial + gradasi vertikal) agar tidak datar, dan kartu
-divisi memakai pendar radial sesuai karakter divisinya.
+Tipografi: **Cinzel** (serif megah, dipakai judul & label plakat) + **Inter** (isi) +
+**IBM Plex Mono** (label teknis). Sudut komponen dibuat tegas (4–14 px) mengikuti UI game,
+bukan membulat besar.
 
-Semua warna diturunkan dari **token**, termasuk alias untuk token lama yang masih dipakai
-gaya inline tiap halaman (`--light-bg`, `--paper`, `--cream-*`, `--primary-color`,
-`--success-600`, `--danger-600`). Karena itu satu atribut `data-np-theme="dark"` pada `<html>`
-sudah cukup untuk menukar seluruh tampilan.
+Ciri khas yang ditiru dari Genshin:
+
+* bingkai emas ganda pada hero, kartu divisi, dan kartu login (`outline` + `border`);
+* pembatas seksi berupa garis emas dengan berlian di tengah (`conic-gradient`);
+* ikon divisi berbentuk belah ketupat (kotak diputar 45°, ikonnya diputar balik);
+* lapisan bintang berkedip halus (`.np-stars`) di hero, halaman login, dan footer;
+* tombol berbentuk pil dengan kilau menyapu saat hover;
+* kartu divisi memakai warna elemen: Gunung Hutan = dendro (hijau), Rock Climbing = geo
+  (kuningan), Olahraga Arus Deras = hydro (biru);
+* navbar transparan di atas, berubah perkamen + garis emas saat digulir.
+
+Semua warna diturunkan dari **token**, termasuk alias untuk token lama yang masih dipakai gaya
+inline tiap halaman (`--light-bg`, `--paper`, `--cream-*`, `--primary-color`, `--success-600`,
+`--danger-600`). Karena itu satu atribut `data-np-theme="dark"` pada `<html>` sudah cukup
+untuk menukar seluruh tampilan.
 
 ### Pengalih tema
 
@@ -60,7 +77,7 @@ registrasi, halaman cuaca gunung, header panel admin, dan pojok kanan atas halam
 * Bila belum pernah memilih, tema mengikuti `prefers-color-scheme` sistem dan ikut berubah
   saat sistem berganti.
 * Skrip kecil di `<head>` memasang tema sebelum halaman digambar supaya tidak ada kedipan
-  warna putih (FOUC), lengkap dengan `<meta name="theme-color">` untuk bilah alamat HP.
+  warna (FOUC), lengkap dengan `<meta name="theme-color">` untuk bilah alamat HP.
 * API: `NusapalaUI.applyTheme('dark' | 'light' | 'auto')`, `NusapalaUI.getTheme()`.
 
 Prinsip yang dipegang:
@@ -68,12 +85,14 @@ Prinsip yang dipegang:
 1. **Kontras aman** — setiap pasangan warna teks/latar memenuhi WCAG AA
    (≥ 4.5:1 teks normal, ≥ 3:1 teks besar & ikon) **di kedua tema**. Kelas Bootstrap yang rawan
    (`text-warning`, `text-info`, `text-white-50`, dsb.) dipetakan ulang; badge di tema gelap
-   memakai gaya *tinted* (latar tipis + teks terang) alih-alih warna pekat.
-2. **Identitas mapala** — hijau kanopi dalam, aksen kuningan, kertas sejuk, motif garis
-   kontur topografi, dan siluet punggungan gunung.
+   memakai gaya *tinted* (latar tipis + teks terang). Judul hero bergradasi emas punya
+   jaring pengaman `@supports` bila peramban tidak mendukung `background-clip: text`.
+2. **Identitas mapala** — siluet punggungan gunung, garis kontur topografi, dan kompas tetap
+   dipertahankan; hanya palet dan ornamennya yang berganti baju.
 3. **Gerak halus** — easing `cubic-bezier(0.22, 1, 0.36, 1)`, reveal berjenjang (stagger),
-   counter angka, sheen kuningan, ripple tombol, ticker agenda, plus transisi 0,4 detik saat
-   tema berganti. Semuanya otomatis nonaktif pada `prefers-reduced-motion`.
+   counter angka, kilau menyapu, ripple tombol, ticker agenda, bintang berkedip, plus
+   transisi 0,4 detik saat tema berganti. Semuanya otomatis nonaktif pada
+   `prefers-reduced-motion`.
 
 ## 4. Master Data Divisi
 

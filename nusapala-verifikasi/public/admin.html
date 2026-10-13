@@ -7,7 +7,7 @@
 
   <!-- Google Fonts: Fraunces (display) + Inter (UI) + IBM Plex Mono (mono accents) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- FontAwesome 6 -->
@@ -26,25 +26,25 @@
   <style>
     :root {
       /* Palette premium: forest / gold / cream / ink - konsisten dengan index.html */
-      --forest-950: #0a1810;
-      --forest-900: #0f2e1a;
-      --forest-800: #163b23;
-      --forest-700: #1d4a2d;
-      --primary-color: #0f2e1a;
-      --primary-hover: #123821;
-      --gold-600: #a9821c;
-      --gold-500: #c9a227;
-      --gold-300: #e3c360;
-      --secondary-color: #c9a227;
-      --cream-50: #faf8f2;
-      --cream-100: #f4efe3;
-      --light-bg: #f6f3ea;
+      --forest-950: #0b1622;
+      --forest-900: #12212f;
+      --forest-800: #1f3648;
+      --forest-700: #2a475e;
+      --primary-color: #12212f;
+      --primary-hover: #1f3648;
+      --gold-600: #86692f;
+      --gold-500: #b3945a;
+      --gold-300: #dcc79b;
+      --secondary-color: #b3945a;
+      --cream-50: #f8f3e7;
+      --cream-100: #f2ebda;
+      --light-bg: #f8f3e7;
       --card-bg: #ffffff;
-      --border-color: #e7e0cf;
-      --line-soft: rgba(15, 46, 26, 0.10);
-      --ink-900: #1b1f1a;
-      --text-main: #3c4238;
-      --text-muted: #746c58;
+      --border-color: #e0d5bd;
+      --line-soft: rgba(18, 33, 47, 0.10);
+      --ink-900: #16202c;
+      --text-main: #33404f;
+      --text-muted: #5d6874;
       --sidebar-width: 264px;
       --radius-lg: 18px;
       --radius-md: 12px;
@@ -69,10 +69,10 @@
     .stat-card h4 { font-family: 'Fraunces', serif; }
 
     /* Login Style */
-    .login-page-bg { min-height: 100vh; background: radial-gradient(circle at 100% 0%, rgba(227,195,96,0.10), transparent 45%), linear-gradient(150deg, var(--forest-950) 0%, #0a0a0a 100%); position: relative; overflow: hidden; }
-    .login-card { border: none; border-radius: var(--radius-lg); box-shadow: 0 25px 60px -20px rgba(0,0,0,0.5); width: 100%; max-width: 420px; background: rgba(251, 249, 244, 0.98); position: relative; z-index: 1; }
-    .login-brand-mark { width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(155deg, var(--forest-900), var(--forest-700)); display:flex; align-items:center; justify-content:center; margin: 0 auto; box-shadow: 0 10px 24px -8px rgba(15,46,26,0.5); position: relative; }
-    .login-brand-mark::after { content:''; position:absolute; inset:3px; border:1px solid rgba(227,195,96,0.4); border-radius: 12px; }
+    .login-page-bg { min-height: 100vh; background: radial-gradient(circle at 100% 0%, rgba(220,199,155,0.10), transparent 45%), linear-gradient(150deg, var(--forest-950) 0%, #0a0a0a 100%); position: relative; overflow: hidden; }
+    .login-card { border: none; border-radius: var(--radius-lg); box-shadow: 0 25px 60px -20px rgba(0,0,0,0.5); width: 100%; max-width: 420px; background: rgba(248, 243, 231, 0.98); position: relative; z-index: 1; }
+    .login-brand-mark { width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(155deg, var(--forest-900), var(--forest-700)); display:flex; align-items:center; justify-content:center; margin: 0 auto; box-shadow: 0 10px 24px -8px rgba(18,33,47,0.5); position: relative; }
+    .login-brand-mark::after { content:''; position:absolute; inset:3px; border:1px solid rgba(220,199,155,0.4); border-radius: 12px; }
     .login-brand-mark img { width: 34px; height: 34px; object-fit: contain; }
     .login-eyebrow { font-family:'IBM Plex Mono', monospace; font-size:0.65rem; letter-spacing:0.14em; text-transform:uppercase; color: var(--gold-600); }
 
@@ -88,13 +88,13 @@
     .btn-primary:hover { background-color: var(--primary-hover); border-color: var(--primary-hover); }
     .btn-outline-primary { color: var(--primary-color); border-color: var(--primary-color); }
     .btn-outline-primary:hover { background-color: var(--primary-color); color: #fff; }
-    .btn-success { background-color: #2f7d4f; border-color: #2f7d4f; }
-    .btn-danger { background-color: #b3462c; border-color: #b3462c; }
-    .btn-outline-danger { color: #b3462c; border-color: #b3462c; }
-    .btn-outline-danger:hover { background-color: #b3462c; }
+    .btn-success { background-color: #457f51; border-color: #457f51; }
+    .btn-danger { background-color: #a94a37; border-color: #a94a37; }
+    .btn-outline-danger { color: #a94a37; border-color: #a94a37; }
+    .btn-outline-danger:hover { background-color: #a94a37; }
     .text-primary { color: var(--primary-color) !important; }
     .bg-primary { background-color: var(--primary-color) !important; }
-    .bg-primary-subtle { background-color: rgba(15, 46, 26, 0.08) !important; }
+    .bg-primary-subtle { background-color: rgba(18, 33, 47, 0.08) !important; }
 
     /* Card / Table / Badge / Tabs — dipakai di seluruh page-view & modal */
     .card { border-radius: var(--radius-lg) !important; }
@@ -110,7 +110,7 @@
     /* Sidebar Layout */
     .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; top: 0; left: 0; background: linear-gradient(190deg, var(--forest-950), var(--forest-900)); z-index: 1000; transition: all 0.3s ease; display: flex; flex-direction: column; }
     .sidebar-brand { padding: 1.5rem 1.4rem; color: var(--secondary-color); font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 12px; position: relative; }
-    .sidebar-brand-mark { width: 38px; height: 38px; border-radius: 10px; background: rgba(227,195,96,0.12); display:flex; align-items:center; justify-content:center; border: 1px solid rgba(227,195,96,0.3); flex-shrink: 0; }
+    .sidebar-brand-mark { width: 38px; height: 38px; border-radius: 10px; background: rgba(220,199,155,0.12); display:flex; align-items:center; justify-content:center; border: 1px solid rgba(220,199,155,0.3); flex-shrink: 0; }
     .sidebar-brand-text { line-height: 1.15; }
     .sidebar-brand-text .name { font-family:'Fraunces', serif; font-size: 0.95rem; color: #fff; }
     .sidebar-brand-text .sub { font-family:'IBM Plex Mono', monospace; font-size: 0.55rem; letter-spacing: 0.08em; color: rgba(255,255,255,0.45); text-transform: uppercase; }
@@ -120,7 +120,7 @@
     .nav-item-custom { padding: 0.68rem 1rem; color: #cbd5c9; display: flex; align-items: center; gap: 12px; text-decoration: none; font-weight: 500; font-size: 0.88rem; transition: all 0.2s; border-left: 3px solid transparent; cursor: pointer; border-radius: 10px; margin-bottom: 2px; }
     .nav-item-custom i { width: 18px; text-align: center; opacity: 0.85; }
     .nav-item-custom:hover { background-color: rgba(255,255,255,0.05); color: #fff; }
-    .nav-item-custom.active { background: rgba(227,195,96,0.12); color: #fff; border-left-color: var(--gold-500); }
+    .nav-item-custom.active { background: rgba(220,199,155,0.12); color: #fff; border-left-color: var(--gold-500); }
 
     .menu-disabled {
       filter: blur(2px);
@@ -130,7 +130,7 @@
     }
 
     .main-content { margin-left: var(--sidebar-width); min-height: 100vh; transition: all 0.3s ease; }
-    .main-header { background-color: rgba(251,249,244,0.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line-soft); padding: 1rem 1.75rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 99; }
+    .main-header { background-color: rgba(248,243,231,0.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line-soft); padding: 1rem 1.75rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 99; }
     #headerTitle { font-family: 'Fraunces', serif; font-weight: 600; }
 
     .content-body { padding: 1.75rem; }
@@ -147,7 +147,7 @@
     .cursor-pointer { cursor: pointer; }
 
     .ceklist-checkbox { width: 24px; height: 24px; cursor: pointer; appearance: none; border: 2px solid #cbd5e1; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; position: relative; background-color: #fff; }
-    .ceklist-checkbox:checked { background-color: #2f7d4f; border-color: #2f7d4f; }
+    .ceklist-checkbox:checked { background-color: #457f51; border-color: #457f51; }
     .ceklist-checkbox:checked::after { content: "\f00c"; font-family: "Font Awesome 6 Free"; font-weight: 900; color: #fff; font-size: 11px; position: absolute; }
 
     /* Modal — berlaku global untuk seluruh modal di sistem */
@@ -214,7 +214,7 @@
       background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.75); display: flex; align-items: center; justify-content: center;
       cursor: pointer; flex-shrink: 0; margin-left: auto; transition: all .2s var(--ease-smooth);
     }
-    .sidebar-collapse-btn:hover { background: rgba(227,195,96,0.18); color: var(--gold-300); }
+    .sidebar-collapse-btn:hover { background: rgba(220,199,155,0.18); color: var(--gold-300); }
     .sidebar-collapse-btn i { transition: transform .3s var(--ease-smooth); }
 
     .sidebar-mobile-close { display: none; width: 30px; height: 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.75); align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
@@ -226,10 +226,10 @@
     .main-header-collapse-btn:hover { background: var(--cream-100); border-color: var(--gold-500); color: var(--forest-900); }
 
     .header-logout-btn {
-      width: 38px; height: 38px; border-radius: 10px; border: 1px solid rgba(179,70,44,0.25); background: rgba(179,70,44,0.08);
-      color: #b3462c; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+      width: 38px; height: 38px; border-radius: 10px; border: 1px solid rgba(169,74,55,0.25); background: rgba(169,74,55,0.08);
+      color: #a94a37; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
     }
-    .header-logout-btn:hover { background: #b3462c; color: #fff; border-color: #b3462c; transform: translateY(-1px); }
+    .header-logout-btn:hover { background: #a94a37; color: #fff; border-color: #a94a37; transform: translateY(-1px); }
     .header-logout-btn:active { transform: translateY(0) scale(0.96); }
 
     @media (min-width: 992px) {
@@ -366,8 +366,8 @@
     }
     .notif-badge {
       position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 4px;
-      border-radius: 999px; background: #b3462c; color: #fff; font-size: 0.62rem; font-weight: 700;
-      display: flex; align-items: center; justify-content: center; border: 2px solid var(--cream-50, #faf8f2);
+      border-radius: 999px; background: #a94a37; color: #fff; font-size: 0.62rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; border: 2px solid var(--cream-50, #f8f3e7);
       font-family: 'IBM Plex Mono', monospace;
     }
     .notif-overlay {
@@ -378,7 +378,7 @@
     .notif-panel {
       position: absolute; top: calc(100% + 12px); right: 0; width: 380px; max-width: 92vw;
       background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md, 14px);
-      box-shadow: 0 20px 45px -14px rgba(15,46,26,0.35); z-index: 1999; overflow: hidden;
+      box-shadow: 0 20px 45px -14px rgba(18,33,47,0.35); z-index: 1999; overflow: hidden;
       display: flex; flex-direction: column; max-height: 70vh;
       animation: notifPanelPop .18s var(--ease-smooth, ease);
       transform-origin: top right;
@@ -406,7 +406,7 @@
     .notif-filter-tabs { display: flex; gap: 0.3rem; background: #fff; border-radius: 999px; padding: 3px; border: 1px solid var(--border-color); }
     .notif-tab {
       border: none; background: none; font-size: 0.72rem; font-weight: 600; padding: 0.32rem 0.7rem; border-radius: 999px;
-      color: var(--text-muted, #6b7a70); cursor: pointer; transition: all .15s ease; white-space: nowrap;
+      color: var(--text-muted, #5d6874); cursor: pointer; transition: all .15s ease; white-space: nowrap;
     }
     .notif-tab.active { background: var(--forest-900); color: #fff; }
     .notif-category-select { font-size: 0.72rem !important; padding: 0.3rem 0.5rem !important; border-radius: 999px !important; max-width: 130px; }
@@ -428,9 +428,9 @@
     .notif-content { min-width: 0; flex: 1 1 auto; }
     .notif-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; }
     .notif-item-title { font-weight: 700; font-size: 0.82rem; color: var(--forest-900); margin: 0; line-height: 1.3; }
-    .notif-item-msg { font-size: 0.76rem; color: var(--text-muted, #6b7a70); margin: 0.15rem 0 0.35rem; line-height: 1.4; }
+    .notif-item-msg { font-size: 0.76rem; color: var(--text-muted, #5d6874); margin: 0.15rem 0 0.35rem; line-height: 1.4; }
     .notif-item-meta { display: flex; align-items: center; gap: 0.5rem; }
-    .notif-item-time { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: #9aa79e; }
+    .notif-item-time { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: #9aa3ad; }
     .notif-category-badge {
       font-size: 0.6rem; font-weight: 700; padding: 0.14rem 0.5rem; border-radius: 999px; text-transform: uppercase;
       letter-spacing: 0.03em;
@@ -440,8 +440,8 @@
       transition: opacity .12s ease, color .12s ease; cursor: pointer; font-size: 0.78rem;
     }
     .notif-item:hover .notif-delete-btn { opacity: 1; }
-    .notif-delete-btn:hover { color: #b3462c; }
-    .notif-empty-state { padding: 2.6rem 1.2rem; text-align: center; color: #9aa79e; }
+    .notif-delete-btn:hover { color: #a94a37; }
+    .notif-empty-state { padding: 2.6rem 1.2rem; text-align: center; color: #9aa3ad; }
     .notif-empty-state i { font-size: 1.9rem; margin-bottom: 0.6rem; display: block; opacity: 0.5; }
     .notif-empty-state p { font-size: 0.8rem; margin: 0; }
     .notif-skeleton-row { display: flex; gap: 0.7rem; padding: 0.85rem 1.1rem; border-bottom: 1px solid var(--cream-100); }
@@ -458,7 +458,7 @@
     }
   </style>
   <!-- ===== NUSAPALA DESIGN SYSTEM (dimuat terakhir agar menang atas gaya lama) ===== -->
-  <meta name="theme-color" content="#f4f7f2">
+  <meta name="theme-color" content="#f8f3e7">
   <script>
     /* Pasang tema sebelum halaman digambar supaya tidak ada kedipan warna */
     (function () {
@@ -468,7 +468,7 @@
         if (t === 'dark') {
           document.documentElement.setAttribute('data-np-theme', 'dark');
           var m = document.querySelector('meta[name="theme-color"]');
-          if (m) m.setAttribute('content', '#0c1510');
+          if (m) m.setAttribute('content', '#0c1420');
         }
       } catch (e) {}
     })();
@@ -497,6 +497,7 @@
   <!-- LOGIN PAGE -->
   <div id="loginPage" class="login-page-bg d-flex align-items-center justify-content-center">
     <div class="topo-layer"></div>
+    <div class="np-stars" aria-hidden="true"></div>
     <button class="np-theme-toggle np-theme-toggle-login" type="button" data-np-theme-toggle aria-pressed="false" title="Ganti tema"><i class="fa-solid fa-moon np-icon-moon"></i><i class="fa-solid fa-sun np-icon-sun"></i></button>
     <div class="login-card p-4 p-md-5 mx-3">
       <div class="text-center mb-4">
@@ -1502,10 +1503,10 @@
     let notifLoaded = false;
 
     const NOTIF_CATEGORIES = {
-      'Registrasi':    { icon: 'fa-user-plus',      color: '#2f7d4f' },
-      'Data Anggota':  { icon: 'fa-id-card-clip',   color: '#1d4a2d' },
+      'Registrasi':    { icon: 'fa-user-plus',      color: '#457f51' },
+      'Data Anggota':  { icon: 'fa-id-card-clip',   color: '#2a475e' },
       'Kepengurusan':  { icon: 'fa-sitemap',        color: '#8a6a12' },
-      'Hak Akses':     { icon: 'fa-user-shield',    color: '#b3462c' },
+      'Hak Akses':     { icon: 'fa-user-shield',    color: '#a94a37' },
       'Informasi':     { icon: 'fa-circle-info',    color: '#2b6cb0' },
       'Agenda':        { icon: 'fa-calendar-days',  color: '#6b46c1' },
       'Sistem':        { icon: 'fa-gears',          color: '#4a5568' },
@@ -2888,7 +2889,7 @@
         title: statusBaru === 'Aktif' ? 'Setujui Registrasi?' : 'Tolak Registrasi?',
         text: statusBaru === 'Aktif' ? 'Akun akan diaktifkan dan pengguna dapat login ke sistem.' : 'Pengguna akan diminta memperbaiki data lalu mengirim ulang.',
         icon: 'question', showCancelButton: true, confirmButtonText: 'Ya, Lanjutkan', cancelButtonText: 'Batal',
-        confirmButtonColor: statusBaru === 'Aktif' ? '#2f7d4f' : '#b3462c'
+        confirmButtonColor: statusBaru === 'Aktif' ? '#457f51' : '#a94a37'
       });
       if (!konfirmasi.isConfirmed) return;
 
@@ -2971,7 +2972,7 @@
             showCancelButton: true,
             confirmButtonText: '<i class="fa-solid fa-floppy-disk me-1"></i> Simpan',
             cancelButtonText: 'Batal',
-            confirmButtonColor: '#0f2e1a',
+            confirmButtonColor: '#12212f',
             width: '600px',
             preConfirm: () => {
                 const role = document.getElementById('swalRole').value;
@@ -3566,9 +3567,9 @@
       perBulan.forEach((v, i) => {
         const h = Math.round((v / maxVal) * chartH);
         const x = i * (barW + gap);
-        svg += `<rect x="${x}" y="${chartH - h}" width="${barW}" height="${Math.max(h,1)}" rx="4" fill="${v>0 ? '#2f7d4f' : '#e7e0cf'}"></rect>`;
-        svg += `<text x="${x + barW/2}" y="${chartH + 15}" text-anchor="middle" font-size="9" fill="#746c58">${namaBulan[i]}</text>`;
-        if (v > 0) svg += `<text x="${x + barW/2}" y="${chartH - h - 4}" text-anchor="middle" font-size="9" font-weight="700" fill="#0f2e1a">${v}</text>`;
+        svg += `<rect x="${x}" y="${chartH - h}" width="${barW}" height="${Math.max(h,1)}" rx="4" style="fill:${v>0 ? 'var(--gold-500)' : 'var(--paper-200)'}"></rect>`;
+        svg += `<text x="${x + barW/2}" y="${chartH + 15}" text-anchor="middle" font-size="9" style="fill:var(--text-muted)">${namaBulan[i]}</text>`;
+        if (v > 0) svg += `<text x="${x + barW/2}" y="${chartH - h - 4}" text-anchor="middle" font-size="9" font-weight="700" style="fill:var(--ink-900)">${v}</text>`;
       });
       svg += `</svg>`;
       const chartEl = document.getElementById('opsChartBulanan');

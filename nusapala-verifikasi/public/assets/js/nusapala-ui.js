@@ -550,7 +550,7 @@
 
     // bilah alamat di HP ikut menyesuaikan
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', pakai === 'dark' ? '#0c1510' : '#f4f7f2');
+    if (meta) meta.setAttribute('content', pakai === 'dark' ? '#0c1420' : '#f8f3e7');
 
     qsa('[data-np-theme-toggle]').forEach(function (btn) {
       btn.setAttribute('aria-pressed', String(pakai === 'dark'));
