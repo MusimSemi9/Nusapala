@@ -12,10 +12,10 @@
 <style>
   :root {
     --forest-950: #0a1810; --forest-900: #0f2e1a; --forest-800: #163b23; --forest-700: #1d4a2d;
-    --primary-color: #0f2e1a; --gold-600: #a9821c; --gold-500: #c9a227; --gold-300: #e3c360;
+    --primary-color: #0f2e1a; --gold-600: #8f6d14; --gold-500: #c9a227; --gold-300: #e3c360;
     --cream-50: #faf8f2; --cream-100: #f4efe3; --paper: #fbf9f4; --light-bg: #f6f3ea;
     --card-bg: #ffffff; --border-color: #e7e0cf; --line-soft: rgba(15, 46, 26, 0.10);
-    --ink-900: #1b1f1a; --text-main: #3c4238; --text-muted: #746c58;
+    --ink-900: #1b1f1a; --text-main: #3a4036; --text-muted: #665f4d; /* kontras dinaikkan */
     --radius-lg: 20px; --radius-md: 14px; --shadow-soft: 0 10px 30px -12px rgba(15, 30, 20, 0.14);
   }
   * { box-sizing: border-box; }
@@ -89,6 +89,9 @@
   .forecast-card:hover { transform: translateY(-2px); border-color: var(--gold-500) !important; box-shadow: var(--shadow-soft); }
 
   /* ============ Footer ============ */
+  .form-control::placeholder { color: #7d745f; opacity: 1; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; } }
+
   .site-footer { background: var(--forest-950); color: rgba(255,255,255,0.72); position: relative; overflow: hidden; }
   .site-footer::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background: linear-gradient(90deg, transparent, rgba(227,195,96,0.5), transparent); }
   .site-footer .topo-layer { position: absolute; inset: 0; pointer-events: none; opacity: 0.06; filter: invert(1); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Cg fill='none' stroke='%230f2e1a' stroke-opacity='0.06' stroke-width='1'%3E%3Cpath d='M-20 60 Q 100 10 220 60 T 460 60'/%3E%3Cpath d='M-20 110 Q 100 60 220 110 T 460 110'/%3E%3Cpath d='M-20 160 Q 100 110 220 160 T 460 160'/%3E%3Cpath d='M-20 210 Q 100 160 220 210 T 460 210'/%3E%3Cpath d='M-20 260 Q 100 210 220 260 T 460 260'/%3E%3C/g%3E%3C/svg%3E"); background-size: 480px 480px; background-repeat: repeat; }
