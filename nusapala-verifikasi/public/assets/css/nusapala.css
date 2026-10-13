@@ -1370,7 +1370,7 @@ textarea.form-control { line-height: 1.6; }
 .np-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
 /* ==========================================================================
-   25. TEMA GELAP — "Malam di Kanopi"
+   25. TEMA GELAP — "Malam Teyvat"
    Diaktifkan lewat atribut data-np-theme="dark" pada <html>.
    Semua warna diturunkan dari token, jadi cukup token yang ditukar.
    ========================================================================== */
@@ -1401,7 +1401,7 @@ textarea.form-control { line-height: 1.6; }
   --line-brass: rgba(224, 189, 104, 0.30);
 
   --gold-100: rgba(220, 199, 155, 0.14);
-  --gold-200: rgba(220, 199, 155, 0.22);
+  --gold-200: #e8d9b6;
   --gold-300: #e8d9b6;
   --gold-400: #dcc79b;
   --gold-500: #cbb07f;
@@ -2013,3 +2013,39 @@ html.np-theme-anim .form-control, html.np-theme-anim .form-select {
   .btn-forest::after, .btn-brass::after,
   .btn-outline-gold::after, .btn-portal-admin::after { display: none; }
 }
+
+/* ---------------------------------------------------------------------------
+   Teks yang di tema terang memakai navy gelap harus dibalik di tema gelap,
+   selain itu tidak terbaca. Semua aturan ini menang spesifisitas atas lapisan kulit.
+   --------------------------------------------------------------------------- */
+[data-np-theme="dark"] a { color: var(--forest-300); }
+[data-np-theme="dark"] a:hover { color: var(--gold-300); }
+[data-np-theme="dark"] .np-ridge { color: var(--forest-600); }
+[data-np-theme="dark"] .btn-outline-gold { color: var(--gold-300); }
+[data-np-theme="dark"] .btn-outline-gold:hover { background: rgba(220, 199, 155, 0.14); border-color: var(--gold-500); color: var(--gold-200); }
+[data-np-theme="dark"] .np-chip:hover { background: rgba(220, 199, 155, 0.16); color: var(--gold-200); }
+[data-np-theme="dark"] .np-chip-forest { background: rgba(107, 147, 176, 0.16); border-color: rgba(107, 147, 176, 0.32); color: var(--forest-300); }
+[data-np-theme="dark"] .badge.bg-primary-subtle { background: rgba(107, 147, 176, 0.18) !important; color: var(--forest-300) !important; }
+[data-np-theme="dark"] .nav-tabs .nav-link:hover { color: var(--gold-200) !important; background: var(--paper-100) !important; }
+[data-np-theme="dark"] .nav-tabs .nav-link.active { color: var(--gold-200) !important; background: var(--paper-100) !important; }
+[data-np-theme="dark"] .dropdown-item:hover,
+[data-np-theme="dark"] .dropdown-item:focus { background: var(--paper-200); color: var(--ink-900); }
+[data-np-theme="dark"] .nav-link-landing { color: var(--ink-700); }
+[data-np-theme="dark"] .nav-link-landing:hover,
+[data-np-theme="dark"] .nav-link-landing.active { color: var(--gold-200) !important; }
+[data-np-theme="dark"] .date-badge-day { color: var(--forest-300); }
+[data-np-theme="dark"] .np-backtotop { color: var(--pine-ink); }
+[data-np-theme="dark"] .np-backtotop:hover { background: var(--forest-800); color: var(--gold-200); border-color: var(--forest-700); }
+[data-np-theme="dark"] .password-toggle-btn:hover { background: var(--paper-100); color: var(--forest-300); }
+[data-np-theme="dark"] .stat-figure,
+[data-np-theme="dark"] .stat-card h4 { color: var(--forest-300); }
+[data-np-theme="dark"] #displayRole {
+  background: rgba(107, 147, 176, 0.18) !important;
+  color: var(--forest-300) !important;
+  border-color: rgba(107, 147, 176, 0.34) !important;
+}
+[data-np-theme="dark"] .btn-outline-primary { color: var(--pine-ink); border-color: var(--gold-500); }
+[data-np-theme="dark"] .service-grid-btn i,
+[data-np-theme="dark"] .info-mini-icon,
+[data-np-theme="dark"] .sync-icon,
+[data-np-theme="dark"] .breadcrumb-item.active { color: var(--pine-ink); }
