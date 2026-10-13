@@ -16,9 +16,7 @@
   <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.min.css" rel="stylesheet">
   <!-- Untuk favicon tab browser -->
 <link rel="icon" type="image/png" href="/Logo Nusapala.png">
-  <!-- Supabase JS Client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Supabase JS Client -->
+  <!-- Supabase JS Client (dimuat sekali; sebelumnya ganda dan memperlambat halaman) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Library QR Scanner Nusapala -->
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
@@ -2298,13 +2296,16 @@
       return `Anda login dengan role <b>${escapeHTML(role)}</b>. Hanya <b>Super Admin</b> yang dapat mengubah master data ini.`;
     }
 
+    // `label`  : nama santai untuk kalimat pesan ("Tulis nama divisi terlebih dahulu...").
+    // `judul`  : nama resmi berkapital untuk judul dialog ("Tambah Divisi").
+    // `labelInput`: label kolom isian pada dialog ("Nama Divisi").
     const KATEGORI_META = {
-      pemasukan:    { input: 'addKategoriPemasukanInput',    key: 'kategori_pemasukan',    label: 'kategori pemasukan' },
-      pengeluaran:  { input: 'addKategoriPengeluaranInput',  key: 'kategori_pengeluaran',  label: 'kategori pengeluaran' },
-      aset:         { input: 'addKategoriAsetInput',         key: 'kategori_aset',         label: 'kategori alat' },
-      surat:        { input: 'addKategoriSuratInput',        key: 'kategori_surat',        label: 'kategori surat' },
-      kepengurusan: { input: 'addKategoriKepengurusanInput', key: 'kategori_kepengurusan', label: 'kategori kepengurusan' },
-      divisi:       { input: 'addKategoriDivisiInput',       key: 'kategori_divisi',       label: 'divisi' }
+      pemasukan:    { input: 'addKategoriPemasukanInput',    key: 'kategori_pemasukan',    label: 'kategori pemasukan',    judul: 'Kategori Pemasukan',    labelInput: 'Nama Kategori' },
+      pengeluaran:  { input: 'addKategoriPengeluaranInput',  key: 'kategori_pengeluaran',  label: 'kategori pengeluaran',  judul: 'Kategori Pengeluaran',  labelInput: 'Nama Kategori' },
+      aset:         { input: 'addKategoriAsetInput',         key: 'kategori_aset',         label: 'kategori alat',         judul: 'Kategori Alat',         labelInput: 'Nama Kategori' },
+      surat:        { input: 'addKategoriSuratInput',        key: 'kategori_surat',        label: 'kategori surat',        judul: 'Kategori Surat',        labelInput: 'Nama Kategori' },
+      kepengurusan: { input: 'addKategoriKepengurusanInput', key: 'kategori_kepengurusan', label: 'kategori kepengurusan', judul: 'Kategori Kepengurusan', labelInput: 'Nama Jabatan' },
+      divisi:       { input: 'addKategoriDivisiInput',       key: 'kategori_divisi',       label: 'divisi',                judul: 'Divisi',                labelInput: 'Nama Divisi' }
     };
 
     // Tekan Enter pada kolom kategori = tombol Tambah (mempercepat kerja pengurus).
@@ -2357,13 +2358,27 @@
 
       // Jalur cadangan: jika kolom input tidak ditemukan (mis. panel belum ter-render),
       // pengurus tetap bisa menambah lewat dialog agar prosesnya tidak buntu.
+      // Tampilan dialog disamakan dengan yang familiar bagi pengurus:
+      // judul "Tambah Divisi", label "Nama Divisi", tombol Simpan / Batal.
       if (!inputEl) {
         const res = await Swal.fire({
-          title: `Tambah ${meta.label}`, input: 'text', inputPlaceholder: 'Ketik di sini...',
-          showCancelButton: true, confirmButtonText: 'Simpan', cancelButtonText: 'Batal'
+          title: `Tambah ${meta.judul || meta.label}`,
+          input: 'text',
+          inputLabel: meta.labelInput || `Nama ${meta.judul || meta.label}`,
+          inputPlaceholder: 'Ketik di sini...',
+          showCancelButton: true,
+          confirmButtonText: 'Simpan',
+          cancelButtonText: 'Batal',
+          // Validasi langsung di dalam dialog: tombol Simpan tidak menutup
+          // dialog saat isian kosong, agar tidak terasa "gagal tanpa sebab".
+          preConfirm: (nilai) => {
+            const bersih = String(nilai || '').replace(/\s+/g, ' ').trim();
+            if (!bersih) { Swal.showValidationMessage('Nama tidak boleh kosong.'); return false; }
+            return bersih;
+          }
         });
         if (!res.isConfirmed) return;
-        v = (res.value || '').replace(/\s+/g, ' ').trim();
+        v = String(res.value || '').replace(/\s+/g, ' ').trim();
       }
 
       if (!v) {
