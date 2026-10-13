@@ -519,9 +519,73 @@
     scan(container);
   }
 
-  /* ============================ 13. INIT ================================== */
+  /* ==================== 13. TEMA TERANG / GELAP =========================== */
+  /* Pilihan pengguna disimpan di localStorage; bila belum pernah memilih,
+     tema mengikuti preferensi sistem (prefers-color-scheme).                  */
+  var THEME_KEY = 'np-theme';
+
+  function systemTheme() {
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  function readStoredTheme() {
+    try { return window.localStorage.getItem(THEME_KEY); } catch (e) { return null; }
+  }
+
+  function currentTheme() {
+    return document.documentElement.getAttribute('data-np-theme') === 'dark' ? 'dark' : 'light';
+  }
+
+  function applyTheme(mode, animate) {
+    var root = document.documentElement;
+    var pakai = (mode === 'dark' || mode === 'light') ? mode : systemTheme();
+
+    if (animate && !REDUCED) {
+      root.classList.add('np-theme-anim');
+      window.setTimeout(function () { root.classList.remove('np-theme-anim'); }, 500);
+    }
+
+    if (pakai === 'dark') root.setAttribute('data-np-theme', 'dark');
+    else root.removeAttribute('data-np-theme');
+
+    // bilah alamat di HP ikut menyesuaikan
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', pakai === 'dark' ? '#0c1510' : '#f4f7f2');
+
+    qsa('[data-np-theme-toggle]').forEach(function (btn) {
+      btn.setAttribute('aria-pressed', String(pakai === 'dark'));
+      btn.setAttribute('title', pakai === 'dark' ? 'Ganti ke tema terang' : 'Ganti ke tema gelap');
+      btn.setAttribute('aria-label', pakai === 'dark' ? 'Ganti ke tema terang' : 'Ganti ke tema gelap');
+    });
+    return pakai;
+  }
+
+  function initTheme() {
+    applyTheme(readStoredTheme() || 'auto', false);
+
+    qsa('[data-np-theme-toggle]').forEach(function (btn) {
+      if (btn.dataset.npThemeBound === '1') return;
+      btn.dataset.npThemeBound = '1';
+      btn.addEventListener('click', function () {
+        var baru = currentTheme() === 'dark' ? 'light' : 'dark';
+        try { window.localStorage.setItem(THEME_KEY, baru); } catch (e) { /* mode privat */ }
+        applyTheme(baru, true);
+      });
+    });
+
+    // bila pengguna belum memilih, ikut perubahan tema sistem
+    var m = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+    if (m) {
+      var ikutSistem = function () { if (!readStoredTheme()) applyTheme('auto', true); };
+      if (m.addEventListener) m.addEventListener('change', ikutSistem);
+      else if (m.addListener) m.addListener(ikutSistem);
+    }
+  }
+
+  /* ============================ 14. INIT ================================== */
   function init() {
     document.documentElement.classList.add('np-js');
+    initTheme();
     initScrollProgress();
     initBackToTop();
     initReveal();
@@ -543,6 +607,9 @@
     buildTicker: buildTicker,
     toast: toast,
     scan: scan,
+    applyTheme: applyTheme,
+    getTheme: currentTheme,
+    initTheme: initTheme,
     initReveal: initReveal,
     initCounters: initCounters,
     esc: esc,

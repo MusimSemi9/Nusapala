@@ -179,6 +179,21 @@
   </style>
 
   <!-- ===== NUSAPALA DESIGN SYSTEM (dimuat terakhir agar menang atas gaya lama) ===== -->
+  <meta name="theme-color" content="#f4f7f2">
+  <script>
+    /* Pasang tema sebelum halaman digambar supaya tidak ada kedipan warna */
+    (function () {
+      try {
+        var t = localStorage.getItem('np-theme');
+        if (!t) t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+        if (t === 'dark') {
+          document.documentElement.setAttribute('data-np-theme', 'dark');
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.setAttribute('content', '#0c1510');
+        }
+      } catch (e) {}
+    })();
+  </script>
   <link rel="stylesheet" href="/assets/css/nusapala.css">
   <script src="/assets/js/nusapala-ui.js" defer></script>
   <script>
@@ -207,9 +222,12 @@
           <small class="text-muted brand-org-sub">Mapala Institut Bisnis Nusantara</small>
         </div>
       </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#landingNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+      <div class="d-flex align-items-center gap-2">
+        <button class="np-theme-toggle" type="button" data-np-theme-toggle aria-pressed="false" title="Ganti tema"><i class="fa-solid fa-moon np-icon-moon"></i><i class="fa-solid fa-sun np-icon-sun"></i></button>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#landingNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
       <div class="collapse navbar-collapse" id="landingNav">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-3 me-4">
           <li class="nav-item"><a class="nav-link nav-link-landing active" href="#landingPage">Beranda</a></li>
@@ -467,7 +485,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr><td colspan="2" class="text-center py-4 text-muted-soft">Akses inventaris penuh melalui <a href="/admin" style="color:var(--forest-900); font-weight:600;">Portal Admin</a></td></tr>
+                    <tr><td colspan="2" class="text-center py-4 text-muted-soft">Akses inventaris penuh melalui <a href="/admin" style="color:var(--pine-ink); font-weight:600;">Portal Admin</a></td></tr>
                   </tbody>
                 </table>
               </div>

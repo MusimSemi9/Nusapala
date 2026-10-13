@@ -18,58 +18,58 @@
 
 /* ============================ 1. TOKEN =================================== */
 :root {
-  /* --- Kanopi (hijau hutan dalam) --- */
-  --forest-950: #06120c;
-  --forest-900: #0a1f14;
-  --forest-850: #0d2718;
-  --forest-800: #123321;
-  --forest-700: #1a4a2e;
-  --forest-600: #23603b;
-  --forest-500: #2f7a4d;
-  --forest-400: #4a9a68;
-  --forest-300: #7fbf95;
+  /* --- Kanopi (hijau hutan dalam, lebih jernih & sejuk) --- */
+  --forest-950: #04140b;
+  --forest-900: #082015;
+  --forest-850: #0b2a1b;
+  --forest-800: #103722;
+  --forest-700: #175030;
+  --forest-600: #1f6a3f;
+  --forest-500: #2c8551;
+  --forest-400: #4ba571;
+  --forest-300: #86c9a0;
 
-  /* --- Kuningan / brass (aksen) --- */
-  --gold-700: #7d5f14;
-  --gold-600: #8a6712;
-  --gold-500: #b98f27;
-  --gold-400: #cfa844;
-  --gold-300: #e0c277;
-  --gold-200: #eeddb0;
-  --gold-100: #f7eed6;
+  /* --- Madu / brass (aksen, lebih hangat & berkilau) --- */
+  --gold-700: #7a5c0e;
+  --gold-600: #8f6c10;
+  --gold-500: #b8912a;
+  --gold-400: #cfa945;
+  --gold-300: #e4c67c;
+  --gold-200: #f0dfae;
+  --gold-100: #f8f0d9;
 
   /* --- Tanah / clay (peringat & bahaya) --- */
-  --clay-700: #8d3c26;
-  --clay-600: #a4482e;
-  --clay-500: #bd5a3c;
-  --clay-100: #f7e6df;
+  --clay-700: #8a3a24;
+  --clay-600: #a5462c;
+  --clay-500: #c05a3c;
+  --clay-100: #f9e8e1;
 
-  /* --- Sungai / river (info) --- */
-  --river-700: #1f5871;
-  --river-600: #276b89;
-  --river-500: #3184a5;
-  --river-100: #dfeef4;
+  /* --- Sungai / river (info, biru lebih dalam) --- */
+  --river-700: #1c5470;
+  --river-600: #24688a;
+  --river-500: #2f83a8;
+  --river-100: #dcecf3;
 
   /* --- Lumut / moss (sukses) --- */
-  --moss-700: #276241;
-  --moss-600: #2f7a4d;
-  --moss-500: #3d9160;
-  --moss-100: #e0f0e5;
+  --moss-700: #22603c;
+  --moss-600: #2c7a4b;
+  --moss-500: #3a9460;
+  --moss-100: #e2f1e6;
 
-  /* --- Kertas / paper --- */
-  --paper-0: #fffdf8;
-  --paper-50: #fbf8f1;
-  --paper-100: #f5f0e4;
-  --paper-200: #ece5d3;
-  --paper-300: #ddd4bd;
+  /* --- Kabut / mist (kanvas halaman: sejuk, bersih, tidak kusam) --- */
+  --paper-0: #ffffff;
+  --paper-50: #f4f7f2;
+  --paper-100: #ecf1e8;
+  --paper-200: #e0e8da;
+  --paper-300: #ccd7c4;
 
-  /* --- Tinta / ink — semua lolos AA di atas paper --- */
-  --ink-900: #12170f;
-  --ink-800: #1d2418;
-  --ink-700: #2c3427;
-  --text-main: #333b2d;      /* 10.9:1 di --paper-50 */
-  --text-muted: #5d6451;     /* 5.6:1  di --paper-50 */
-  --text-faint: #666d5c;     /* 5.1:1  di --paper-50 */
+  /* --- Tinta / ink — semua lolos AA di atas kanvas kabut --- */
+  --ink-900: #0f150e;
+  --ink-800: #1a2118;
+  --ink-700: #273024;
+  --text-main: #2f3a2c;      /* 11.4:1 di --paper-50 */
+  --text-muted: #5a6455;     /* 5.7:1  di --paper-50 */
+  --text-faint: #5d6757;     /* 4.6:1  di --paper-50 */
 
   /* --- Teks di atas bidang gelap --- */
   --on-dark: #f3f6f0;        /* 15.4:1 di --forest-900 */
@@ -83,13 +83,29 @@
   --secondary-color: var(--gold-400);
   --cream-50: var(--paper-50);
   --cream-100: var(--paper-100);
+
+  /* Alias untuk token lama yang masih dipakai gaya inline tiap halaman,
+     supaya semuanya ikut berubah saat tema ditukar. */
+  --light-bg: var(--paper-50);
+  --paper: var(--paper-50);
+  --primary-color: var(--forest-900);
+  --primary-hover: var(--forest-800);
+  --secondary-color: var(--gold-500);
+  --success-600: var(--moss-700);
+  --danger-600: var(--clay-600);
   --paper: var(--paper-0);
   --light-bg: var(--paper-50);
-  --card-bg: #ffffff;
-  --border-color: #e2dac6;
-  --border-strong: #cfc5ab;
-  --line-soft: rgba(18, 45, 28, 0.10);
-  --line-brass: rgba(185, 143, 39, 0.32);
+  --card-bg: var(--surface);
+  --surface: #ffffff;        /* permukaan kartu/panel */
+  --field: #fbfdfa;          /* permukaan input */
+  --glass: rgba(250, 252, 248, 0.84);
+  --glass-strong: rgba(250, 252, 248, 0.94);
+  --surface-strong: rgba(255, 255, 255, 0.97);
+  --pine-ink: #175030;       /* hijau yang aman untuk teks/ikon di permukaan terang */
+  --border-color: #d8e0d0;
+  --border-strong: #bccab2;
+  --line-soft: rgba(16, 45, 28, 0.10);
+  --line-brass: rgba(184, 145, 42, 0.34);
 
   /* --- Bahaya / sukses lama --- */
   --danger-600: var(--clay-600);
@@ -149,9 +165,10 @@ body {
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
   background-image:
-    radial-gradient(1100px 620px at 88% -8%, rgba(185, 143, 39, 0.10), transparent 62%),
-    radial-gradient(900px 520px at -6% 22%, rgba(26, 74, 46, 0.08), transparent 58%),
-    radial-gradient(700px 460px at 50% 108%, rgba(26, 74, 46, 0.06), transparent 60%);
+    radial-gradient(1200px 700px at 86% -12%, rgba(207, 169, 69, 0.16), transparent 60%),
+    radial-gradient(950px 560px at -8% 16%, rgba(31, 106, 63, 0.13), transparent 58%),
+    radial-gradient(820px 520px at 52% 112%, rgba(47, 131, 168, 0.11), transparent 62%),
+    linear-gradient(180deg, #f8fbf6 0%, var(--paper-50) 42%, #edf2e8 100%);
   background-attachment: fixed;
 }
 
@@ -219,7 +236,7 @@ select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible,
 .bg-info    { background-color: var(--river-500) !important; }
 .bg-secondary { background-color: #6b7263 !important; }
 .bg-dark { background-color: var(--forest-900) !important; }
-.bg-white { background-color: #fff !important; }
+.bg-white { background-color: var(--surface) !important; }
 
 .border-primary-subtle { border-color: rgba(26, 74, 46, 0.18) !important; }
 .border-primary { border-color: var(--forest-700) !important; }
@@ -249,7 +266,7 @@ select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible,
 }
 /* Kontur versi tinta untuk bidang terang */
 .topo-layer-ink {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='520' viewBox='0 0 520 520'%3E%3Cg fill='none' stroke='%23123321' stroke-opacity='0.055' stroke-width='1.1'%3E%3Cpath d='M-40 70 Q 120 10 260 78 T 560 70'/%3E%3Cpath d='M-40 128 Q 120 68 260 136 T 560 128'/%3E%3Cpath d='M-40 186 Q 120 126 260 194 T 560 186'/%3E%3Cpath d='M-40 244 Q 120 184 260 252 T 560 244'/%3E%3Cpath d='M-40 302 Q 120 242 260 310 T 560 302'/%3E%3Cpath d='M-40 360 Q 120 300 260 368 T 560 360'/%3E%3Cpath d='M-40 418 Q 120 358 260 426 T 560 418'/%3E%3Cpath d='M-40 476 Q 120 416 260 484 T 560 476'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='520' viewBox='0 0 520 520'%3E%3Cg fill='none' stroke='%23103722' stroke-opacity='0.055' stroke-width='1.1'%3E%3Cpath d='M-40 70 Q 120 10 260 78 T 560 70'/%3E%3Cpath d='M-40 128 Q 120 68 260 136 T 560 128'/%3E%3Cpath d='M-40 186 Q 120 126 260 194 T 560 186'/%3E%3Cpath d='M-40 244 Q 120 184 260 252 T 560 244'/%3E%3Cpath d='M-40 302 Q 120 242 260 310 T 560 302'/%3E%3Cpath d='M-40 360 Q 120 300 260 368 T 560 360'/%3E%3Cpath d='M-40 418 Q 120 358 260 426 T 560 418'/%3E%3Cpath d='M-40 476 Q 120 416 260 484 T 560 476'/%3E%3C/g%3E%3C/svg%3E");
 }
 /* Butir halus seperti kertas daur ulang */
 .np-grain::after {
@@ -311,7 +328,7 @@ select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible,
 .btn-light:hover { background: var(--paper-100); border-color: var(--border-strong); color: var(--ink-900); }
 .btn-dark { background: var(--forest-950); border-color: var(--forest-950); color: #fff; }
 
-.btn-outline-primary { color: var(--forest-800); border-color: var(--forest-700); background: transparent; }
+.btn-outline-primary { color: var(--pine-ink); border-color: var(--forest-600); background: transparent; }
 .btn-outline-primary:hover { background: var(--forest-800); border-color: var(--forest-800); color: #fff; transform: translateY(-2px); }
 .btn-outline-success { color: var(--moss-700); border-color: var(--moss-500); }
 .btn-outline-success:hover { background: var(--moss-600); border-color: var(--moss-600); color: #fff; }
@@ -357,7 +374,7 @@ select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible,
 }
 .btn-portal-admin:hover { color: #fff !important; transform: translateY(-2px); box-shadow: 0 14px 28px -14px rgba(10, 31, 20, 0.6); background: linear-gradient(160deg, var(--forest-700), var(--forest-900)); }
 
-.btn-link { color: var(--forest-700); text-decoration: none; font-weight: 600; }
+.btn-link { color: var(--pine-ink); text-decoration: none; font-weight: 600; }
 .btn-link:hover { color: var(--gold-600); text-decoration: underline; }
 .btn-link.text-primary { color: var(--forest-700) !important; }
 .btn-link.text-danger { color: var(--clay-600) !important; }
@@ -370,7 +387,7 @@ select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible,
 .card {
   border-radius: var(--radius-lg) !important;
   border: 1px solid var(--line-soft) !important;
-  background: #fff;
+  background: var(--surface);
   box-shadow: var(--shadow-sm);
   transition: transform var(--dur-base) var(--ease-smooth), box-shadow var(--dur-base) var(--ease-smooth), border-color var(--dur-base) var(--ease-smooth);
   overflow: hidden;
@@ -378,12 +395,12 @@ select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible,
 .card.shadow-sm { box-shadow: var(--shadow-sm) !important; }
 .card:hover { box-shadow: var(--shadow-md); }
 .card-header {
-  background: linear-gradient(180deg, #fff, var(--paper-50)) !important;
+  background: linear-gradient(180deg, var(--surface), var(--paper-50)) !important;
   border-bottom: 1px solid var(--line-soft) !important;
   padding: 1.05rem 1.35rem;
   font-family: var(--font-display);
 }
-.card-header.bg-white { background: linear-gradient(180deg, #fff, var(--paper-50)) !important; }
+.card-header.bg-white { background: linear-gradient(180deg, var(--surface), var(--paper-50)) !important; }
 .card-header h6, .card-header .fw-bold { font-family: var(--font-display); font-weight: 700; color: var(--ink-900); letter-spacing: -0.01em; }
 .card-title { font-family: var(--font-display); font-weight: 700; color: var(--ink-900); }
 .card-body { padding: 1.25rem 1.35rem; }
@@ -391,7 +408,7 @@ select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible,
 
 /* Kartu khas beranda */
 .landing-card {
-  background: #fff; border: 1px solid var(--line-soft); border-radius: var(--radius-lg);
+  background: var(--surface); border: 1px solid var(--line-soft); border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm); margin-bottom: 1.5rem; position: relative; overflow: hidden;
   transition: transform var(--dur-base) var(--ease-smooth), box-shadow var(--dur-base) var(--ease-smooth), border-color var(--dur-base) var(--ease-smooth);
 }
@@ -410,7 +427,7 @@ select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible,
 .landing-card-header .fw-bold { font-family: var(--font-display); font-size: 1.04rem; font-weight: 700; color: var(--ink-900); }
 
 .stat-panel {
-  background: #fff; border: 1px solid var(--line-soft); border-radius: var(--radius-lg);
+  background: var(--surface); border: 1px solid var(--line-soft); border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
 }
 .stat-panel::before {
@@ -453,7 +470,7 @@ select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible,
 .table-responsive {
   border-radius: var(--radius-md);
   border: 1px solid var(--line-soft);
-  background-color: #fff;
+  background-color: var(--surface);
   box-shadow: var(--shadow-xs);
 }
 .table { --bs-table-bg: transparent; --bs-table-color: var(--text-main); margin-bottom: 0; }
@@ -509,7 +526,7 @@ select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible,
   transition: all var(--dur-base) var(--ease-smooth);
 }
 .np-chip:hover { border-color: var(--gold-400); background: var(--gold-100); color: var(--forest-900); }
-.np-chip i { color: var(--gold-600); font-size: 0.7rem; }
+.np-chip i { color: var(--gold-700); font-size: 0.7rem; }
 .np-chip-brass { background: var(--gold-100); border-color: var(--gold-200); color: var(--gold-700); }
 .np-chip-forest { background: rgba(26, 74, 46, 0.09); border-color: rgba(26, 74, 46, 0.18); color: var(--forest-800); }
 
@@ -532,7 +549,7 @@ select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible,
 .form-control, .form-select {
   border-radius: var(--radius-sm) !important;
   border: 1px solid var(--border-color) !important;
-  background-color: #fff;
+  background-color: var(--field);
   color: var(--ink-800);
   padding: 0.62rem 0.9rem !important;
   font-size: 0.9rem;
@@ -543,7 +560,7 @@ select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible,
 .form-control:focus, .form-select:focus {
   border-color: var(--gold-500) !important;
   box-shadow: var(--ring-brass) !important;
-  background-color: #fff;
+  background-color: var(--field);
   outline: none !important;
 }
 .form-control.bg-light, .form-control.border-0 { background-color: var(--paper-100) !important; border: 1px solid var(--border-color) !important; }
@@ -576,7 +593,7 @@ textarea.form-control { line-height: 1.6; }
   display: flex; align-items: center; justify-content: center;
   transition: background var(--dur-fast) var(--ease-smooth), color var(--dur-fast) var(--ease-smooth);
 }
-.np-combo .np-combo-toggle:hover { background: var(--paper-100); color: var(--forest-800); }
+.np-combo .np-combo-toggle:hover { background: var(--paper-100); color: var(--pine-ink); }
 .np-combo input { padding-right: 2.6rem !important; }
 .np-combo-hint { font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-muted); letter-spacing: 0.04em; margin-top: 0.35rem; }
 .np-combo-hint b { color: var(--gold-700); font-weight: 500; }
@@ -587,7 +604,7 @@ textarea.form-control { line-height: 1.6; }
   overflow: hidden;
   border: none !important;
   box-shadow: var(--shadow-lg);
-  background: #fff;
+  background: var(--surface);
 }
 .modal-header {
   background: linear-gradient(140deg, var(--forest-900) 0%, var(--forest-700) 100%);
@@ -648,7 +665,7 @@ textarea.form-control { line-height: 1.6; }
 
 .breadcrumb { font-size: 0.78rem; }
 .breadcrumb-item { color: var(--text-muted); }
-.breadcrumb-item.active { color: var(--forest-800); font-weight: 600; }
+.breadcrumb-item.active { color: var(--pine-ink); font-weight: 600; }
 .breadcrumb-item + .breadcrumb-item::before { color: var(--border-strong); }
 
 .dropdown-menu {
@@ -663,7 +680,7 @@ textarea.form-control { line-height: 1.6; }
 
 /* ============================ 12. NAVBAR BERANDA ========================= */
 .landing-navbar {
-  background: rgba(251, 248, 241, 0.82);
+  background: var(--glass);
   backdrop-filter: saturate(180%) blur(16px);
   -webkit-backdrop-filter: saturate(180%) blur(16px);
   border-bottom: 1px solid var(--line-soft);
@@ -671,7 +688,7 @@ textarea.form-control { line-height: 1.6; }
   z-index: 1030;
 }
 .landing-navbar.is-scrolled {
-  background: rgba(251, 248, 241, 0.94);
+  background: var(--glass-strong);
   box-shadow: 0 10px 30px -22px rgba(10, 31, 20, 0.55);
   border-bottom-color: var(--line-brass);
 }
@@ -714,8 +731,9 @@ textarea.form-control { line-height: 1.6; }
 .hero-wrap {
   position: relative; border-radius: var(--radius-xl); overflow: hidden;
   background:
-    radial-gradient(760px 420px at 100% 0%, rgba(224, 194, 119, 0.16), transparent 58%),
-    linear-gradient(165deg, #fffdf8 0%, var(--paper-100) 58%, var(--paper-200) 100%);
+    radial-gradient(720px 400px at 100% 0%, rgba(228, 198, 124, 0.22), transparent 58%),
+    radial-gradient(560px 340px at 0% 100%, rgba(44, 133, 81, 0.12), transparent 60%),
+    linear-gradient(165deg, var(--surface) 0%, var(--paper-100) 56%, var(--paper-200) 100%);
   border: 1px solid var(--line-soft);
   box-shadow: var(--shadow-md);
 }
@@ -727,7 +745,7 @@ textarea.form-control { line-height: 1.6; }
   font-family: var(--font-display); font-size: clamp(2.15rem, 4.6vw, 3.45rem);
   font-weight: 700; line-height: 1.06; color: var(--ink-900); letter-spacing: -0.028em;
 }
-.hero-title span { color: var(--gold-600); font-style: italic; }
+.hero-title span { color: var(--gold-700); font-style: italic; }
 .hero-sub { color: var(--text-muted); font-size: 1rem; line-height: 1.7; max-width: 54ch; }
 
 .eyebrow {
@@ -749,24 +767,24 @@ textarea.form-control { line-height: 1.6; }
 
 /* Layanan cepat */
 .service-grid-btn {
-  background: linear-gradient(180deg, #fff, var(--paper-100));
+  background: linear-gradient(180deg, var(--surface), var(--paper-100));
   border: 1px solid var(--border-color); border-radius: var(--radius-md);
   padding: 1.05rem 0.6rem; text-align: center; cursor: pointer; height: 100%;
   transition: transform var(--dur-base) var(--ease-smooth), box-shadow var(--dur-base) var(--ease-smooth), border-color var(--dur-base) var(--ease-smooth), background var(--dur-base) var(--ease-smooth);
 }
 .service-grid-btn:hover {
-  background: #fff; border-color: var(--gold-400);
+  background: var(--surface); border-color: var(--gold-400);
   box-shadow: 0 16px 30px -18px rgba(10, 31, 20, 0.45);
   transform: translateY(-4px);
 }
-.service-grid-btn i { transition: transform 0.36s var(--ease-snap); color: var(--forest-700); }
+.service-grid-btn i { transition: transform 0.36s var(--ease-snap); color: var(--pine-ink); }
 .service-grid-btn:hover i { transform: scale(1.16) translateY(-2px); color: var(--gold-600); }
 .service-grid-btn span { color: var(--ink-800) !important; font-weight: 600; }
 
 /* Widget cuaca / operasional */
 .demo-widget {
   border-radius: var(--radius-md); border: 1px solid var(--line-brass);
-  background: linear-gradient(180deg, #fffdf8, var(--paper-100));
+  background: linear-gradient(180deg, var(--surface), var(--paper-100));
   padding: 1rem 1.15rem; text-decoration: none; display: block;
   transition: transform var(--dur-base) var(--ease-smooth), box-shadow var(--dur-base) var(--ease-smooth), border-color var(--dur-base) var(--ease-smooth);
 }
@@ -838,7 +856,7 @@ textarea.form-control { line-height: 1.6; }
 
 /* Panel daftar divisi versi terang (dipakai di halaman registrasi) */
 .np-divisi-panel {
-  background: linear-gradient(180deg, #fff, var(--paper-50));
+  background: linear-gradient(180deg, var(--surface), var(--paper-50));
   border: 1px solid var(--line-soft); border-radius: var(--radius-lg);
   padding: 1.35rem; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
 }
@@ -848,7 +866,7 @@ textarea.form-control { line-height: 1.6; }
 }
 .np-divisi-row {
   display: flex; align-items: center; gap: 0.85rem; padding: 0.7rem 0.8rem;
-  border: 1px solid var(--border-color); border-radius: var(--radius-md); background: #fff;
+  border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--surface);
   transition: transform var(--dur-base) var(--ease-smooth), box-shadow var(--dur-base) var(--ease-smooth), border-color var(--dur-base) var(--ease-smooth);
 }
 .np-divisi-row:hover { transform: translateX(4px); box-shadow: var(--shadow-sm); border-color: var(--gold-400); }
@@ -857,14 +875,14 @@ textarea.form-control { line-height: 1.6; }
 
 /* Kartu info mini (registrasi) */
 .info-mini-card {
-  background: #fff; border: 1px solid var(--line-soft); border-radius: var(--radius-md);
+  background: var(--surface); border: 1px solid var(--line-soft); border-radius: var(--radius-md);
   padding: 1.1rem; height: 100%; box-shadow: var(--shadow-xs);
   transition: transform var(--dur-base) var(--ease-smooth), box-shadow var(--dur-base) var(--ease-smooth), border-color var(--dur-base) var(--ease-smooth);
 }
 .info-mini-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--gold-400); }
 .info-mini-icon {
   width: 44px; height: 44px; border-radius: 13px; display: flex; align-items: center; justify-content: center;
-  font-size: 1.05rem; margin-bottom: 0.8rem; color: var(--forest-800);
+  font-size: 1.05rem; margin-bottom: 0.8rem; color: var(--pine-ink);
   background: linear-gradient(160deg, var(--paper-100), var(--paper-200));
   border: 1px solid var(--border-color);
   transition: transform var(--dur-base) var(--ease-snap), color var(--dur-base) var(--ease-smooth);
@@ -882,14 +900,14 @@ textarea.form-control { line-height: 1.6; }
   transition: transform var(--dur-base) var(--ease-snap);
 }
 .np-divisi-mini:hover { transform: rotate(-8deg) scale(1.06); }
-.np-divisi-mini.np-div-gp { background: linear-gradient(155deg, var(--forest-600), var(--forest-900)); color: var(--gold-200); }
-.np-divisi-mini.np-div-rc { background: linear-gradient(155deg, var(--clay-500), #4a1c0d); color: #ffe6d8; }
-.np-divisi-mini.np-div-or { background: linear-gradient(155deg, var(--river-500), #06202b); color: #dcf1f8; }
+.np-divisi-mini.np-div-gp { background: linear-gradient(155deg, var(--forest-500), var(--forest-900)); color: #dcf5e6; }
+.np-divisi-mini.np-div-rc { background: linear-gradient(155deg, var(--clay-500), #45190b); color: #ffe9dc; }
+.np-divisi-mini.np-div-or { background: linear-gradient(155deg, var(--river-500), #062430); color: #dff2fa; }
 
 /* Varian warna tiap divisi */
-.np-div-gp { --np-div-bg: linear-gradient(155deg, #123321 0%, #06120c 100%); }
-.np-div-rc { --np-div-bg: linear-gradient(155deg, #7d3a1f 0%, #2b1108 100%); }
-.np-div-or { --np-div-bg: linear-gradient(155deg, #1f5871 0%, #071a22 100%); }
+.np-div-gp { --np-div-bg: radial-gradient(420px 260px at 88% -10%, rgba(134, 201, 160, 0.22), transparent 62%), linear-gradient(158deg, #175030 0%, #04140b 100%); }
+.np-div-rc { --np-div-bg: radial-gradient(420px 260px at 88% -10%, rgba(228, 160, 110, 0.24), transparent 62%), linear-gradient(158deg, #8a3d1e 0%, #2c0f06 100%); }
+.np-div-or { --np-div-bg: radial-gradient(420px 260px at 88% -10%, rgba(126, 200, 230, 0.24), transparent 62%), linear-gradient(158deg, #14566f 0%, #05202b 100%); }
 
 /* ============================ 15. KEPALA SEKSI =========================== */
 .np-section { position: relative; padding: 3.25rem 0; }
@@ -905,7 +923,7 @@ textarea.form-control { line-height: 1.6; }
 /* Alur / langkah */
 .np-step {
   position: relative; padding: 1.35rem 1.25rem; border-radius: var(--radius-md);
-  background: #fff; border: 1px solid var(--line-soft); box-shadow: var(--shadow-xs); height: 100%;
+  background: var(--surface); border: 1px solid var(--line-soft); box-shadow: var(--shadow-xs); height: 100%;
   transition: transform var(--dur-base) var(--ease-smooth), box-shadow var(--dur-base) var(--ease-smooth), border-color var(--dur-base) var(--ease-smooth);
 }
 .np-step:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--line-brass); }
@@ -942,7 +960,7 @@ textarea.form-control { line-height: 1.6; }
 /* Tombol kembali ke atas */
 .np-backtotop {
   position: fixed; right: 22px; bottom: 22px; width: 46px; height: 46px; border-radius: 50%;
-  border: 1px solid var(--line-brass); background: rgba(251, 248, 241, 0.92); color: var(--forest-800);
+  border: 1px solid var(--line-brass); background: var(--glass-strong); color: var(--forest-800);
   display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1040;
   box-shadow: var(--shadow-md); backdrop-filter: blur(10px);
   opacity: 0; transform: translateY(14px) scale(0.9); pointer-events: none;
@@ -1021,7 +1039,7 @@ textarea.form-control { line-height: 1.6; }
 
 .main-content { margin-left: var(--sidebar-width); min-height: 100vh; transition: margin-left var(--dur-base) var(--ease-smooth); }
 .main-header {
-  background: rgba(251, 248, 241, 0.88); backdrop-filter: saturate(180%) blur(14px);
+  background: var(--glass); backdrop-filter: saturate(180%) blur(14px);
   -webkit-backdrop-filter: saturate(180%) blur(14px);
   border-bottom: 1px solid var(--line-soft); padding: 0.9rem 1.75rem;
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
@@ -1033,10 +1051,10 @@ textarea.form-control { line-height: 1.6; }
 
 .main-header-collapse-btn {
   width: 38px; height: 38px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);
-  background: #fff; color: var(--text-main); display: none; align-items: center; justify-content: center;
+  background: var(--surface); color: var(--text-main); display: none; align-items: center; justify-content: center;
   cursor: pointer; flex-shrink: 0; transition: all var(--dur-base) var(--ease-smooth);
 }
-.main-header-collapse-btn:hover { background: var(--paper-100); border-color: var(--gold-500); color: var(--forest-900); }
+.main-header-collapse-btn:hover { background: var(--paper-100); border-color: var(--gold-500); color: var(--ink-900); }
 .header-logout-btn {
   width: 38px; height: 38px; border-radius: var(--radius-sm); border: 1px solid rgba(164, 72, 46, 0.28);
   background: rgba(164, 72, 46, 0.09); color: var(--clay-700);
@@ -1112,7 +1130,7 @@ textarea.form-control { line-height: 1.6; }
 .login-card {
   border: 1px solid rgba(224, 194, 119, 0.16); border-radius: var(--radius-xl);
   box-shadow: 0 40px 80px -34px rgba(0, 0, 0, 0.72); width: 100%; max-width: 430px;
-  background: rgba(255, 253, 248, 0.97); position: relative; z-index: 1;
+  background: var(--surface-strong); position: relative; z-index: 1;
   animation: npCardIn 0.55s var(--ease-smooth);
 }
 @keyframes npCardIn { from { opacity: 0; transform: translateY(22px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
@@ -1130,7 +1148,7 @@ textarea.form-control { line-height: 1.6; }
 /* ============================ 19. NOTIFIKASI ADMIN ======================= */
 .notif-bell-btn {
   position: relative; width: 40px; height: 40px; border-radius: 50%;
-  border: 1px solid var(--border-color); background: #fff; color: var(--forest-800);
+  border: 1px solid var(--border-color); background: var(--surface); color: var(--pine-ink);
   display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer;
   transition: all var(--dur-base) var(--ease-smooth);
 }
@@ -1145,7 +1163,7 @@ textarea.form-control { line-height: 1.6; }
 }
 .notif-panel {
   position: absolute; top: calc(100% + 12px); right: 0; width: 384px; max-width: 92vw;
-  background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md);
+  background: var(--surface); border: 1px solid var(--border-color); border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg); z-index: 1999; overflow: hidden;
   display: flex; flex-direction: column; max-height: 72vh; transform-origin: top right;
   animation: npPop 0.2s var(--ease-smooth);
@@ -1156,7 +1174,7 @@ textarea.form-control { line-height: 1.6; }
 .notif-link-btn:hover { color: #fff; }
 .notif-panel-close { display: none; background: rgba(255, 255, 255, 0.14); border: none; color: #fff; width: 30px; height: 30px; border-radius: 50%; align-items: center; justify-content: center; cursor: pointer; }
 .notif-panel-filters { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border-color); background: var(--paper-50); flex-shrink: 0; }
-.notif-filter-tabs { display: flex; gap: 0.25rem; background: #fff; border-radius: var(--radius-pill); padding: 3px; border: 1px solid var(--border-color); }
+.notif-filter-tabs { display: flex; gap: 0.25rem; background: var(--surface); border-radius: var(--radius-pill); padding: 3px; border: 1px solid var(--border-color); }
 .notif-tab { border: none; background: none; font-size: 0.72rem; font-weight: 600; padding: 0.34rem 0.75rem; border-radius: var(--radius-pill); color: var(--text-muted); cursor: pointer; transition: all var(--dur-fast) var(--ease-smooth); white-space: nowrap; }
 .notif-tab.active { background: var(--forest-800); color: #fff; }
 .notif-panel-body { overflow-y: auto; flex: 1 1 auto; }
@@ -1181,11 +1199,11 @@ textarea.form-control { line-height: 1.6; }
 }
 
 /* Skeleton */
-.skeleton { background: linear-gradient(90deg, var(--paper-100) 25%, #fff 37%, var(--paper-100) 63%); background-size: 400% 100%; animation: npShimmer 1.5s var(--ease-inout) infinite; border-radius: var(--radius-xs); }
+.skeleton { background: linear-gradient(90deg, var(--paper-100) 25%, var(--surface) 37%, var(--paper-100) 63%); background-size: 400% 100%; animation: npShimmer 1.5s var(--ease-inout) infinite; border-radius: var(--radius-xs); }
 @keyframes npShimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
 
 /* Ceklist iuran */
-.ceklist-checkbox { width: 24px; height: 24px; cursor: pointer; appearance: none; border: 2px solid var(--border-strong); border-radius: 7px; display: inline-flex; align-items: center; justify-content: center; position: relative; background-color: #fff; transition: all var(--dur-base) var(--ease-smooth); }
+.ceklist-checkbox { width: 24px; height: 24px; cursor: pointer; appearance: none; border: 2px solid var(--border-strong); border-radius: 7px; display: inline-flex; align-items: center; justify-content: center; position: relative; background-color: var(--surface); transition: all var(--dur-base) var(--ease-smooth); }
 .ceklist-checkbox:hover { border-color: var(--moss-500); }
 .ceklist-checkbox:checked { background-color: var(--moss-600); border-color: var(--moss-600); }
 .ceklist-checkbox:checked::after { content: "\f00c"; font-family: "Font Awesome 6 Free"; font-weight: 900; color: #fff; font-size: 11px; position: absolute; }
@@ -1222,17 +1240,17 @@ textarea.form-control { line-height: 1.6; }
 .password-wrap .form-control { padding-right: 2.9rem !important; }
 
 /* ============================ 21. CUACA GUNUNG =========================== */
-.sync-banner { background: #fff; border: 1px solid var(--line-soft); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
+.sync-banner { background: var(--surface); border: 1px solid var(--line-soft); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
 .sync-banner::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--forest-700), var(--gold-500) 55%, var(--gold-300)); }
-.sync-icon { width: 48px; height: 48px; border-radius: 15px; background: var(--paper-100); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: var(--forest-800); }
-.filter-panel { background: #fff; border: 1px solid var(--line-soft); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 1.15rem 1.3rem; }
+.sync-icon { width: 48px; height: 48px; border-radius: 15px; background: var(--paper-100); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: var(--pine-ink); }
+.filter-panel { background: var(--surface); border: 1px solid var(--line-soft); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 1.15rem 1.3rem; }
 .filter-panel label { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.09em; color: var(--text-muted); }
 .page-title { font-family: var(--font-display); font-weight: 700; color: var(--ink-900); font-size: clamp(1.7rem, 3.4vw, 2.3rem); letter-spacing: -0.025em; }
-.btn-back { color: var(--forest-800) !important; font-weight: 600; font-size: 0.85rem; text-decoration: none; }
+.btn-back { color: var(--pine-ink) !important; font-weight: 600; font-size: 0.85rem; text-decoration: none; }
 .btn-back:hover { color: var(--gold-600) !important; }
 
 .gunung-card {
-  background: #fff; border: 1px solid var(--line-soft); border-radius: var(--radius-lg);
+  background: var(--surface); border: 1px solid var(--line-soft); border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xs); position: relative; overflow: hidden; cursor: pointer; height: 100%;
   transition: transform var(--dur-base) var(--ease-smooth), box-shadow var(--dur-base) var(--ease-smooth), border-color var(--dur-base) var(--ease-smooth);
 }
@@ -1248,7 +1266,7 @@ textarea.form-control { line-height: 1.6; }
 .gunung-card .badge-aktif { color: var(--clay-700); border-color: rgba(164, 72, 46, 0.35); background: var(--clay-100); }
 .gunung-card .weather-icon-wrap { width: 52px; height: 52px; border-radius: 15px; background: var(--paper-100); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--gold-700); }
 .gunung-card .err-state { font-size: 0.78rem; color: var(--clay-700); font-weight: 600; }
-.gunung-card .skeleton { background: linear-gradient(90deg, var(--paper-100) 25%, #fff 37%, var(--paper-100) 63%); background-size: 400% 100%; animation: npShimmer 1.5s var(--ease-inout) infinite; border-radius: var(--radius-xs); }
+.gunung-card .skeleton { background: linear-gradient(90deg, var(--paper-100) 25%, var(--surface) 37%, var(--paper-100) 63%); background-size: 400% 100%; animation: npShimmer 1.5s var(--ease-inout) infinite; border-radius: var(--radius-xs); }
 .empty-state { text-align: center; padding: 3.5rem 1rem; color: var(--text-muted); }
 
 /* ============================ 22. GERAK ================================== */
@@ -1352,3 +1370,240 @@ textarea.form-control { line-height: 1.6; }
   .np-ticker-track { animation: none !important; }
 }
 .np-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+/* ==========================================================================
+   25. TEMA GELAP — "Malam di Kanopi"
+   Diaktifkan lewat atribut data-np-theme="dark" pada <html>.
+   Semua warna diturunkan dari token, jadi cukup token yang ditukar.
+   ========================================================================== */
+[data-np-theme="dark"] {
+  --paper-50: #0c1510;
+  --paper-100: #121e17;
+  --paper-200: #18261e;
+  --paper-300: #223128;
+
+  --surface: #131f18;
+  --field: #0f1a14;
+  --glass: rgba(12, 20, 16, 0.82);
+  --glass-strong: rgba(12, 20, 16, 0.94);
+  --surface-strong: rgba(16, 26, 20, 0.97);
+  --card-bg: #131f18;
+
+  --ink-700: #c6d3c2;
+  --ink-800: #dfe8da;
+  --ink-900: #eef4ea;
+
+  --text-main: #d7e2d2;
+  --text-muted: #a3b3a4;
+  --text-faint: #8b9a8a;
+
+  --border-color: #26352b;
+  --border-strong: #35483a;
+  --line-soft: rgba(255, 255, 255, 0.08);
+  --line-brass: rgba(224, 189, 104, 0.30);
+
+  --gold-100: rgba(224, 189, 104, 0.14);
+  --gold-200: rgba(224, 189, 104, 0.22);
+  --gold-300: #eed49a;
+  --gold-400: #e3c377;
+  --gold-500: #d3ad55;
+  --gold-600: #c39a41;
+  --gold-700: #c39a41;
+
+  --forest-300: #8fd0aa;
+  --forest-400: #63bd8c;
+  --forest-500: #46a573;
+  --forest-600: #2f8a5c;
+  --forest-700: #247049;
+  --forest-800: #22694a;
+  --forest-900: #16472f;
+  --forest-950: #0f3323;
+  --pine-ink: #8fd0aa;
+
+  --clay-100: rgba(207, 120, 90, 0.16);
+  --clay-300: #e3977f;
+  --clay-500: #cf785a;
+  --clay-600: #b9603f;
+  --clay-700: #a8553a;
+
+  --river-100: rgba(120, 175, 205, 0.16);
+  --river-300: #9cc6dd;
+  --river-500: #5596b8;
+  --river-600: #2f6986;
+  --river-700: #2a5f7a;
+
+  --success-600: #79c795;
+  --danger-600: #e08a6d;
+
+  --moss-100: rgba(99, 189, 140, 0.16);
+  --moss-300: #93cda4;
+  --moss-500: #4fa16a;
+  --moss-600: #3d8a58;
+  --moss-700: #2f7047;
+
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 14px 34px -20px rgba(0, 0, 0, 0.85);
+  --shadow-lg: 0 26px 56px -28px rgba(0, 0, 0, 0.9);
+  --shadow-xl: 0 40px 90px -34px rgba(0, 0, 0, 0.95);
+
+  color-scheme: dark;
+}
+
+/* Latar halaman: dipasang di <body> karena body menutupi latar <html> */
+[data-np-theme="dark"] body {
+  background-color: var(--paper-50) !important;
+  background-image:
+    radial-gradient(1100px 640px at 100% -6%, rgba(211, 173, 85, 0.10), transparent 62%),
+    radial-gradient(900px 560px at -8% 26%, rgba(47, 138, 92, 0.13), transparent 62%),
+    radial-gradient(800px 600px at 50% 108%, rgba(85, 150, 184, 0.09), transparent 62%),
+    linear-gradient(180deg, #0d1712 0%, #0a120e 46%, #070d0a 100%) !important;
+  background-attachment: fixed !important;
+  color: var(--text-main) !important;
+}
+
+/* Teks utilitas Bootstrap di tema gelap */
+[data-np-theme="dark"] .text-primary { color: var(--forest-300) !important; }
+[data-np-theme="dark"] .text-success { color: var(--moss-300) !important; }
+[data-np-theme="dark"] .text-info    { color: var(--river-300) !important; }
+[data-np-theme="dark"] .text-danger  { color: var(--clay-300) !important; }
+[data-np-theme="dark"] .text-warning { color: var(--gold-300) !important; }
+[data-np-theme="dark"] .text-muted,
+[data-np-theme="dark"] .text-secondary { color: var(--text-muted) !important; }
+[data-np-theme="dark"] .text-white-50 { color: rgba(255, 255, 255, 0.72) !important; opacity: 1 !important; }
+[data-np-theme="dark"] .text-dark { color: var(--ink-900) !important; }
+
+/* Badge jadi "tinted" supaya terbaca di latar gelap */
+[data-np-theme="dark"] .badge.bg-primary,
+[data-np-theme="dark"] .badge.bg-success,
+[data-np-theme="dark"] .badge.bg-info,
+[data-np-theme="dark"] .badge.bg-danger,
+[data-np-theme="dark"] .badge.bg-secondary {
+  border: 1px solid transparent;
+}
+[data-np-theme="dark"] .badge.bg-primary   { background: rgba(99, 189, 140, 0.16) !important; color: #8fd0aa !important; border-color: rgba(99, 189, 140, 0.34) !important; }
+[data-np-theme="dark"] .badge.bg-success   { background: rgba(99, 189, 140, 0.16) !important; color: #93cda4 !important; border-color: rgba(99, 189, 140, 0.34) !important; }
+[data-np-theme="dark"] .badge.bg-info      { background: rgba(120, 175, 205, 0.16) !important; color: #9cc6dd !important; border-color: rgba(120, 175, 205, 0.34) !important; }
+[data-np-theme="dark"] .badge.bg-danger    { background: rgba(207, 120, 90, 0.16) !important; color: #e3977f !important; border-color: rgba(207, 120, 90, 0.34) !important; }
+[data-np-theme="dark"] .badge.bg-secondary { background: rgba(255, 255, 255, 0.08) !important; color: var(--text-muted) !important; border-color: rgba(255, 255, 255, 0.16) !important; }
+[data-np-theme="dark"] .badge.bg-warning   { background: var(--gold-400) !important; color: #201704 !important; }
+
+/* Kartu header berwarna */
+[data-np-theme="dark"] .card-header.bg-warning { color: var(--gold-300) !important; border-bottom-color: var(--line-brass) !important; }
+[data-np-theme="dark"] .card-header.bg-success { background: linear-gradient(135deg, var(--forest-800), var(--forest-950)) !important; }
+
+/* Komponen dengan warna inline dari halaman */
+[data-np-theme="dark"] .form-label { color: var(--text-muted) !important; }
+[data-np-theme="dark"] .form-text { color: var(--text-faint) !important; }
+[data-np-theme="dark"] .form-control::placeholder,
+[data-np-theme="dark"] .form-select::placeholder { color: #7d8a7c !important; }
+[data-np-theme="dark"] .form-check-input { background-color: var(--field); border-color: var(--border-strong); }
+[data-np-theme="dark"] .form-check-input:checked { background-color: var(--forest-600); border-color: var(--forest-600); }
+[data-np-theme="dark"] .dropdown-menu { background: var(--surface); border: 1px solid var(--border-color) !important; box-shadow: var(--shadow-lg); }
+[data-np-theme="dark"] .dropdown-item { color: var(--text-main); }
+[data-np-theme="dark"] .dropdown-item:hover,
+[data-np-theme="dark"] .dropdown-item:focus { background: var(--paper-200); color: var(--ink-900); }
+[data-np-theme="dark"] .dropdown-divider { border-color: var(--border-color); }
+[data-np-theme="dark"] .swal2-popup { background: var(--surface) !important; color: var(--text-main) !important; }
+[data-np-theme="dark"] .swal2-title { color: var(--ink-900) !important; }
+[data-np-theme="dark"] .swal2-html-container { color: var(--text-muted) !important; }
+[data-np-theme="dark"] .navbar-toggler-icon { filter: invert(1) grayscale(100%) brightness(200%); }
+
+/* Status kegiatan & operasional (warna inline di index/admin) */
+[data-np-theme="dark"] .status-selesai { color: var(--moss-300) !important; }
+[data-np-theme="dark"] .status-proses { color: var(--gold-300) !important; }
+[data-np-theme="dark"] .status-dipinjam { color: #e0a06a !important; }
+[data-np-theme="dark"] .status-telat { color: var(--clay-300) !important; }
+[data-np-theme="dark"] .ops-nomor { color: var(--text-main) !important; }
+[data-np-theme="dark"] .stat-label { color: var(--text-muted) !important; }
+[data-np-theme="dark"] .stat-value { color: var(--ink-900) !important; }
+[data-np-theme="dark"] .notif-activity { color: var(--text-main) !important; }
+[data-np-theme="dark"] .notif-time { color: var(--text-faint) !important; }
+[data-np-theme="dark"] .nav-item-custom { color: #dfe8da !important; }
+[data-np-theme="dark"] .nav-item-custom:hover { background: rgba(255, 255, 255, 0.06) !important; }
+
+/* Widget cuaca (inline di index & halaman cuaca) */
+[data-np-theme="dark"] .cuaca-hero { background: var(--surface) !important; border-color: var(--border-color) !important; }
+[data-np-theme="dark"] .cuaca-hero-title { color: var(--ink-900) !important; }
+[data-np-theme="dark"] .cuaca-hero-sub { color: var(--text-muted) !important; }
+[data-np-theme="dark"] .cuaca-hero-lokasi { color: var(--gold-300) !important; }
+[data-np-theme="dark"] .widget-cuaca-sub { color: var(--text-muted) !important; }
+[data-np-theme="dark"] #cuacaHeroIcon.cerah { color: var(--gold-400) !important; }
+[data-np-theme="dark"] #cuacaHeroIcon.awan,
+[data-np-theme="dark"] #cuacaHeroIcon.kabut { color: #b6c2b4 !important; }
+[data-np-theme="dark"] #cuacaHeroIcon.hujan,
+[data-np-theme="dark"] #cuacaHeroIcon.badai { color: var(--river-300) !important; }
+
+/* Halaman login admin (latar inline) */
+[data-np-theme="dark"] .login-page-bg {
+  background:
+    radial-gradient(1100px 600px at 50% -10%, rgba(211, 173, 85, 0.12), transparent 60%),
+    radial-gradient(760px 520px at 8% 92%, rgba(47, 138, 92, 0.14), transparent 60%),
+    linear-gradient(160deg, #08110c 0%, #0c1510 55%, #060d09 100%) !important;
+}
+[data-np-theme="dark"] .login-page-bg .text-muted { color: var(--text-muted) !important; }
+[data-np-theme="dark"] .login-eyebrow {
+  background: rgba(224, 189, 104, 0.14) !important;
+  color: var(--gold-300) !important;
+  border-color: rgba(224, 189, 104, 0.32) !important;
+}
+[data-np-theme="dark"] .login-form-title { color: var(--ink-900) !important; }
+[data-np-theme="dark"] .login-form-sub { color: var(--text-muted) !important; }
+[data-np-theme="dark"] .login-footer { border-top-color: var(--border-color) !important; }
+[data-np-theme="dark"] .login-card::before { background: linear-gradient(90deg, var(--gold-500), var(--forest-500), var(--gold-500)) !important; }
+
+/* Tombol "Login via Scan QR" jadi kuningan di tema gelap agar tidak tenggelam */
+.np-btn-qr { background-color: #0a0a0a !important; border: 1px solid #0a0a0a !important; color: #fff !important; }
+.np-btn-qr:hover { background-color: #000 !important; color: #fff !important; }
+[data-np-theme="dark"] .np-btn-qr { background-color: var(--gold-400) !important; border-color: var(--gold-400) !important; color: #201704 !important; }
+[data-np-theme="dark"] .np-btn-qr:hover { background-color: var(--gold-300) !important; border-color: var(--gold-300) !important; }
+
+/* Warna ikon cuaca datang dari data (hex), jadi diterangkan agar tetap terbaca */
+[data-np-theme="dark"] .weather-icon-wrap { filter: brightness(1.3) saturate(1.1); }
+
+/* Chip & combo: latar hijau tipis tidak terbaca di gelap */
+[data-np-theme="dark"] .np-chip { background: rgba(224, 189, 104, 0.14); border-color: rgba(224, 189, 104, 0.3); color: var(--gold-300); }
+[data-np-theme="dark"] .np-combo-chip { background: rgba(99, 189, 140, 0.16); border-color: rgba(99, 189, 140, 0.32); color: var(--forest-300); }
+[data-np-theme="dark"] .np-combo-list { box-shadow: var(--shadow-lg); }
+
+/* Tekstur topografi & kilau hero disesuaikan */
+[data-np-theme="dark"] .topo-overlay,
+[data-np-theme="dark"] #gunungListOverlay {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Cg fill='none' stroke='%23dfe8da' stroke-opacity='0.06' stroke-width='1'%3E%3Cpath d='M40 300C90 260 120 200 200 190C280 180 320 230 380 200'/%3E%3Cpath d='M20 240C80 210 130 150 210 140C290 130 330 170 390 140'/%3E%3Cpath d='M60 360C120 330 150 270 230 260C310 250 340 290 400 260'/%3E%3Cpath d='M0 180C60 150 110 90 190 80C270 70 310 110 370 80'/%3E%3C/g%3E%3C/svg%3E") !important;
+  opacity: 0.5;
+}
+[data-np-theme="dark"] .hero-wrap::after { background: linear-gradient(120deg, transparent 20%, rgba(255, 255, 255, 0.07) 50%, transparent 80%); }
+[data-np-theme="dark"] .hero-wrap { border-color: var(--border-color); }
+
+/* Tombol pengalih tema */
+.np-theme-toggle {
+  width: 38px; height: 38px; flex: 0 0 auto;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 50%; border: 1px solid var(--line-brass);
+  background: var(--glass-strong); color: var(--pine-ink);
+  cursor: pointer; font-size: 0.9rem;
+  transition: transform 0.3s var(--ease-snap), border-color 0.3s, background 0.3s, color 0.3s;
+}
+.np-theme-toggle:hover { transform: translateY(-1px) rotate(-8deg); border-color: var(--gold-500); background: var(--gold-100); color: var(--gold-700); }
+.np-theme-toggle:active { transform: scale(0.94); }
+.np-theme-toggle-login { position: absolute; top: 18px; right: 18px; z-index: 6; background: rgba(255, 255, 255, 0.10); border-color: rgba(224, 189, 104, 0.42); color: var(--gold-300); }
+.np-theme-toggle-login:hover { background: rgba(224, 189, 104, 0.20); color: var(--gold-200); }
+.np-theme-toggle .np-icon-sun { display: none; }
+[data-np-theme="dark"] .np-theme-toggle .np-icon-sun { display: inline; }
+[data-np-theme="dark"] .np-theme-toggle .np-icon-moon { display: none; }
+[data-np-theme="dark"] .np-theme-toggle { color: var(--gold-300); }
+
+/* Transisi halus saat tema berganti (dinonaktifkan bila pengguna pilih reduced motion) */
+html.np-theme-anim, html.np-theme-anim body,
+html.np-theme-anim .card, html.np-theme-anim .landing-navbar,
+html.np-theme-anim .main-header, html.np-theme-anim .btn,
+html.np-theme-anim .form-control, html.np-theme-anim .form-select {
+  transition: background-color 0.4s var(--ease-smooth), color 0.4s var(--ease-smooth), border-color 0.4s var(--ease-smooth) !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.np-theme-anim, html.np-theme-anim body, html.np-theme-anim * { transition: none !important; }
+}
+
+/* Elemen yang dulu memakai gaya inline di halaman login admin */
+.np-divider-label { background: var(--surface-strong); color: var(--pine-ink); letter-spacing: 0.04em; }
+.np-login-link { color: var(--pine-ink); font-weight: 700; text-decoration: none; transition: color var(--dur-base) var(--ease-smooth); }
+.np-login-link:hover { color: var(--gold-600); text-decoration: underline; }
