@@ -104,6 +104,31 @@ ikon & warna otomatis.
   mengetahui Nomor Angkatan dapat masuk ke Portal Admin. Lihat `REKOMENDASI.md`
   untuk langkah pengamanan lanjutan (kunci Supabase, RLS, hashing password).
 
+**6. Perbaikan menyeluruh "gabisa masukin divisi" (laporan pengguna, putaran 2)**
+- **Izin diperjelas & dilonggarkan secara aman**: selain Super Admin/Admin, akun
+  non-Admin yang **secara eksplisit diberi akses halaman Pengaturan** kini boleh
+  menambah/mengubah/menghapus divisi. Alumni tetap read-only (diblokir di inti
+  izin, termasuk sinkronisasi latar).
+- **UI konsisten dengan izin**: bila pengguna tidak berhak, kolom isian & tombol
+  *Tambah* langsung **dinonaktifkan** disertai catatan yang menjelaskan role
+  saat ini dan cara memperbaikinya. (Sebelumnya kolom terlihat aktif lalu
+  ditolak saat diklik — pengurus mengira fiturnya rusak.)
+- **Penyimpanan lebih tahan gagal**: `upsertSetting` kini punya jalur cadangan
+  (update-by-key → insert) bila `upsert(onConflict: 'key')` ditolak karena
+  tabel `settings` tidak punya unique constraint pada kolom `key`.
+- **Kegagalan tulis (RLS/jaringan) transparan**: dialog berisi pesan error
+  asli + langkah memperbaikinya, teks yang diketik pengguna **dikembalikan**,
+  data lokal di-*rollback*, dan detail lengkap dicatat di console browser.
+- **Divisi baru langsung terlihat**: baris baru otomatis di-*scroll* ke tampilan
+  dan disorot dengan animasi emas (menghormati `prefers-reduced-motion`);
+  toast sukses 2,4 detik. Baris sebelumnya memang ditambahkan di **paling
+  bawah** daftar yang bisa di-scroll — mudah terlewat sehingga terasa "gagal".
+- **Anti cache basi**: `vercel.json` kini menetapkan
+  `Cache-Control: public, max-age=0, must-revalidate` agar browser selalu
+  memuat `admin.html` terbaru (versi lama yang rusak tidak tertinggal di cache).
+- **Null-safety**: `checkAlumni` & render Pengaturan tidak lagi error saat
+  sesi login kadaluarsa/tersingkir.
+
 > ⚠️ **Catatan pemulihan**: bila Anda tidak dapat login setelah pembaruan ini,
 > perbarui kolom `password` pada tabel `members` di dashboard Supabase untuk akun
 > Anda, contoh:
