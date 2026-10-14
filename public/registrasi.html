@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrasi Akun - NUSAPALA</title>
+
+  <!-- Google Fonts: Fraunces (display) + Inter (UI) + IBM Plex Mono (mono accents) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FontAwesome 6 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <!-- SweetAlert2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.min.css" rel="stylesheet">
+  <!-- Untuk favicon tab browser -->
+<link rel="icon" type="image/png" href="/Logo Nusapala.png">
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      /* Palette premium: forest / gold / cream / ink — identik dengan index.html & admin.html */
+      --forest-950: #0b1622;
+      --forest-900: #12212f;
+      --forest-800: #1f3648;
+      --forest-700: #2a475e;
+      --primary-color: #12212f;
+      --primary-hover: #1f3648;
+      --gold-600: #86692f;
+      --gold-500: #b3945a;
+      --gold-300: #dcc79b;
+      --secondary-color: #b3945a;
+      --cream-50: #f8f3e7;
+      --cream-100: #f2ebda;
+      --paper: #fffdf7;
+      --light-bg: #f8f3e7;
+      --card-bg: #ffffff;
+      --border-color: #e0d5bd;
+      --line-soft: rgba(18, 33, 47, 0.10);
+      --ink-900: #16202c;
+      --text-main: #33404f;
+      --text-muted: #5d6874;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --shadow-soft: 0 10px 30px -12px rgba(15, 30, 20, 0.14);
+
+      --danger-600: #a94a37;
+      --success-600: #457f51;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--light-bg);
+      color: var(--text-main);
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(circle at 100% 0%, rgba(201,162,39,0.07), transparent 40%),
+        radial-gradient(circle at 0% 30%, rgba(18,33,47,0.05), transparent 45%);
+      background-attachment: fixed;
+    }
+
+    .font-display { font-family: 'Fraunces', serif; }
+    .font-mono { font-family: 'IBM Plex Mono', monospace; }
+    .text-muted-soft { color: var(--text-muted) !important; }
+
+    /* ============ Topographic accent (SVG data-uri, decorative only) ============ */
+    .topo-layer {
+      position: absolute; inset: 0; pointer-events: none; opacity: 0.5;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Cg fill='none' stroke='%230f2e1a' stroke-opacity='0.06' stroke-width='1'%3E%3Cpath d='M-20 60 Q 100 10 220 60 T 460 60'/%3E%3Cpath d='M-20 110 Q 100 60 220 110 T 460 110'/%3E%3Cpath d='M-20 160 Q 100 110 220 160 T 460 160'/%3E%3Cpath d='M-20 210 Q 100 160 220 210 T 460 210'/%3E%3Cpath d='M-20 260 Q 100 210 220 260 T 460 260'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: 480px 480px; background-repeat: repeat;
+    }
+
+    .eyebrow {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--gold-600); font-weight: 500;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .eyebrow::before { content:''; width: 22px; height: 1px; background: var(--gold-500); display: inline-block; }
+
+    /* ============ Navbar ============ */
+    .landing-navbar { background: rgba(248, 243, 231, 0.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line-soft); transition: all 0.3s ease; }
+    .brand-mark { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(155deg, var(--forest-900), var(--forest-700)); display:flex; align-items:center; justify-content:center; color: var(--gold-300); box-shadow: 0 6px 16px -6px rgba(18,33,47,0.5); position: relative; }
+    .brand-mark::after { content:''; position:absolute; inset:2px; border:1px solid rgba(220,199,155,0.35); border-radius: 9px; }
+    .brand-org-name { font-family:'Fraunces', serif; font-weight:700; font-size:1.05rem; color: var(--ink-900); line-height:1.1; }
+    .brand-org-sub { font-size:0.6rem; letter-spacing:0.08em; color: var(--text-muted); text-transform: uppercase; }
+
+    .nav-link-landing { font-weight: 500; color: var(--text-muted) !important; transition: color 0.2s ease; position: relative; padding-bottom: 4px !important; }
+    .nav-link-landing::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background: var(--gold-500); transform: scaleX(0); transform-origin: left; transition: transform 0.25s ease; }
+    .nav-link-landing:hover, .nav-link-landing.active { color: var(--forest-900) !important; }
+    .nav-link-landing:hover::after, .nav-link-landing.active::after { transform: scaleX(1); }
+
+    .btn-portal-admin { background: var(--forest-900); color: #fff !important; border-radius: 999px; padding: 0.5rem 1.35rem; font-weight: 600; font-size: 0.85rem; border: 1px solid var(--forest-900); transition: all 0.25s ease; }
+    .btn-portal-admin:hover { background: var(--forest-800); transform: translateY(-1px); box-shadow: 0 8px 18px -8px rgba(18,33,47,0.5); color:#fff; }
+
+    /* ============ Hero ============ */
+    .hero-wrap { position: relative; border-radius: var(--radius-lg); overflow: hidden; background: var(--paper); border: 1px solid var(--line-soft); }
+    .hero-title { font-family:'Fraunces', serif; font-size: 2.7rem; font-weight: 700; line-height: 1.14; color: var(--ink-900); letter-spacing: -0.01em; }
+    .hero-title span { color: var(--gold-600); font-style: italic; }
+    @media (max-width: 767.98px){ .hero-title{ font-size: 2rem; } }
+
+    .btn-forest { background: var(--forest-900); border: 1px solid var(--forest-900); color: #fff; border-radius: 12px; font-weight: 600; transition: all 0.2s ease; }
+    .btn-forest:hover { background: var(--forest-800); color:#fff; transform: translateY(-1px); box-shadow: var(--shadow-soft); }
+    .btn-forest:disabled { opacity: 0.65; transform: none; box-shadow: none; cursor: not-allowed; }
+    .btn-outline-gold { background: transparent; border: 1px solid var(--line-soft); color: var(--forest-900); border-radius: 12px; font-weight: 600; transition: all 0.2s ease; }
+    .btn-outline-gold:hover { border-color: var(--gold-500); background: rgba(201,162,39,0.08); color: var(--forest-900); }
+
+    /* ============ Cards ============ */
+    .landing-card { background: var(--card-bg); border: 1px solid var(--line-soft); border-radius: var(--radius-lg); box-shadow: 0 6px 20px -14px rgba(15,30,20,0.18); margin-bottom: 1.5rem; position: relative; overflow: hidden; }
+    .landing-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: linear-gradient(90deg, var(--gold-500), var(--gold-300) 40%, transparent); }
+    .landing-card-header { padding: 1.15rem 1.4rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: none; }
+    .landing-card-header .fw-bold { font-family:'Fraunces', serif; font-size: 1.02rem; }
+
+    .section-title { font-family:'Fraunces', serif; font-weight: 700; color: var(--ink-900); }
+
+    /* ============ Registrasi Card ============ */
+    .reg-card { background: var(--card-bg); border: 1px solid var(--line-soft); border-radius: var(--radius-lg); box-shadow: 0 20px 50px -20px rgba(15,30,20,0.22); position: relative; overflow: hidden; }
+    .reg-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background: linear-gradient(90deg, var(--gold-500), var(--gold-300) 40%, var(--forest-700)); }
+    .reg-step-badge { width: 30px; height: 30px; border-radius: 9px; background: var(--forest-900); color: var(--gold-300); display: flex; align-items: center; justify-content: center; font-family:'Fraunces', serif; font-weight: 700; font-size: 0.9rem; flex-shrink: 0; }
+    .reg-section-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-600); font-weight: 600; }
+
+    .form-label-reg { font-size: 0.8rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.4rem; display: flex; align-items: center; gap: 6px; }
+    .form-label-reg .req { color: var(--danger-600); }
+
+    .form-control, .form-select {
+      border-radius: 10px; border: 1px solid var(--border-color); padding: 0.62rem 0.9rem;
+      font-size: 0.92rem; transition: all 0.2s ease; background-color: #fff;
+    }
+    .form-control:focus, .form-select:focus { border-color: var(--gold-500); box-shadow: 0 0 0 3px rgba(201,162,39,0.15); }
+    .form-control::placeholder { color: #7d745f; opacity: 1; }
+    .form-control.is-valid-reg { border-color: var(--success-600); background-image: none; }
+    .form-control.is-invalid-reg { border-color: var(--danger-600); background-image: none; }
+
+    input[type="date"] { accent-color: var(--forest-900); }
+
+    /* Feedback realtime kecil di bawah input */
+    .reg-feedback { font-size: 0.75rem; margin-top: 0.35rem; display: none; align-items: center; gap: 6px; }
+    .reg-feedback.show { display: flex; }
+    .reg-feedback.ok { color: var(--success-600); }
+    /* Catatan: beberapa state validasi memakai warna latar krem (validity-panel),
+       jadi warna teksnya dipastikan tetap gelap agar tidak menyatu dengan latar. */
+    .validity-panel { color: var(--text-main); }
+    .reg-feedback.bad { color: var(--danger-600); }
+
+    /* ============ Searchable Dropdown (Nama Angkatan) ============ */
+    .searchable-dd { position: relative; }
+    .searchable-dd-input { cursor: pointer; background: #fff; }
+    .searchable-dd-panel {
+      position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 60;
+      background: #fff; border: 1px solid var(--border-color); border-radius: 12px;
+      box-shadow: 0 18px 40px -14px rgba(15,30,20,0.28); max-height: 260px; overflow-y: auto;
+      display: none; padding: 6px;
+    }
+    .searchable-dd-panel.show { display: block; animation: ddFadeIn 0.16s ease; }
+    @keyframes ddFadeIn { from { opacity:0; transform: translateY(-4px); } to { opacity:1; transform: translateY(0); } }
+    .searchable-dd-item { padding: 0.5rem 0.7rem; border-radius: 8px; font-size: 0.86rem; cursor: pointer; transition: background 0.15s ease; display:flex; align-items:center; justify-content:space-between; }
+    .searchable-dd-item:hover, .searchable-dd-item.active-hover { background: var(--cream-100); }
+    .searchable-dd-item.selected { color: var(--forest-900); font-weight: 700; }
+    .searchable-dd-empty { padding: 0.9rem; text-align: center; font-size: 0.8rem; color: var(--text-muted); }
+    .searchable-dd-caret { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; transition: transform 0.2s ease; }
+    .searchable-dd.open .searchable-dd-caret { transform: translateY(-50%) rotate(180deg); color: var(--gold-600); }
+
+    /* ============ Password ============ */
+    .password-wrap { position: relative; }
+    .password-toggle-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); padding: 4px 6px; cursor: pointer; }
+    .password-toggle-btn:hover { color: var(--forest-900); }
+
+    .strength-bar-track { height: 6px; border-radius: 999px; background: var(--border-color); overflow: hidden; margin-top: 0.55rem; }
+    .strength-bar-fill { height: 100%; width: 0%; border-radius: 999px; transition: width 0.25s ease, background 0.25s ease; }
+    .strength-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.03em; margin-top: 0.35rem; text-transform: uppercase; }
+
+    .pw-req-list { list-style: none; padding: 0; margin: 0.6rem 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; }
+    .pw-req-list li { font-size: 0.72rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; transition: color 0.2s ease; }
+    .pw-req-list li i { font-size: 0.68rem; width: 12px; color: #a39a83; }
+    .pw-req-list li.met { color: var(--success-600); }
+    .pw-req-list li.met i { color: var(--success-600); }
+
+    /* ============ Validasi Checklist Panel ============ */
+    .validity-panel { background: var(--cream-100); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem 1.1rem; }
+    .validity-item { font-size: 0.78rem; display: flex; align-items: center; gap: 8px; padding: 0.28rem 0; color: var(--text-muted); }
+    .validity-item i { width: 14px; font-size: 0.72rem; }
+    .validity-item.ok { color: var(--success-600); font-weight: 600; }
+    .validity-item.ok i.fa-circle { display:none; }
+    .validity-item:not(.ok) i.fa-check { display:none; }
+    .validity-item.bad { color: var(--danger-600); font-weight: 600; }
+    .validity-item.bad i.fa-circle, .validity-item.bad i.fa-check { display:none; }
+
+    /* ============ Loading Button ============ */
+    .btn-loading .btn-label { display: inline-flex; align-items: center; gap: 8px; }
+    .btn-loading .spinner-border { display: none; width: 1rem; height: 1rem; border-width: 0.16em; }
+    .btn-loading.is-loading .spinner-border { display: inline-block; }
+    .btn-loading.is-loading .btn-text { opacity: 0.85; }
+
+    /* ============ Success State ============ */
+    .success-wrap { text-align: center; padding: 2.5rem 1rem; }
+    .success-icon { width: 84px; height: 84px; border-radius: 50%; background: linear-gradient(155deg, var(--forest-900), var(--forest-700)); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.3rem; color: var(--gold-300); font-size: 2.1rem; box-shadow: 0 14px 30px -10px rgba(18,33,47,0.45); }
+    .status-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(201,162,39,0.14); color: var(--gold-600); border: 1px solid rgba(201,162,39,0.35); border-radius: 999px; padding: 0.4rem 1rem; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.02em; }
+
+    /* ============ Info Organisasi mini cards ============ */
+    .info-mini-card { background: #fff; border: 1px solid var(--line-soft); border-radius: var(--radius-md); padding: 1.1rem; height: 100%; transition: all 0.2s ease; }
+    .info-mini-card:hover { transform: translateY(-3px); box-shadow: 0 14px 28px -16px rgba(18,33,47,0.25); border-color: var(--gold-500); }
+    .info-mini-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--cream-100); color: var(--forest-800); display:flex; align-items:center; justify-content:center; font-size: 1.05rem; margin-bottom: 0.8rem; }
+
+    /* ============ Footer ============ */
+    .site-footer { background: var(--forest-950); color: rgba(255,255,255,0.72); position: relative; overflow: hidden; }
+    .site-footer::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background: linear-gradient(90deg, transparent, rgba(220,199,155,0.5), transparent); }
+    .site-footer .topo-layer { opacity: 0.06; filter: invert(1); }
+    .footer-heading { font-family:'Fraunces', serif; color: #fff; font-weight:600; font-size: 1rem; margin-bottom: 1rem; }
+    .footer-link { color: rgba(255,255,255,0.65); text-decoration: none; font-size: 0.85rem; transition: color 0.2s ease; display: block; margin-bottom: 0.55rem; }
+    .footer-link:hover { color: var(--gold-300); }
+    .footer-social { width: 36px; height:36px; border-radius: 50%; border:1px solid rgba(255,255,255,0.18); display:flex; align-items:center; justify-content:center; color:#fff; transition: all 0.2s ease; }
+    .footer-social:hover { background: var(--gold-500); border-color: var(--gold-500); color: var(--forest-950); transform: translateY(-2px); }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.78rem; }
+    .footer-badge { font-family:'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing:0.06em; border:1px solid rgba(255,255,255,0.18); border-radius: 999px; padding: 3px 10px; color: rgba(255,255,255,0.6); }
+
+    /* ============ Scroll reveal ============ */
+    .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+    /* ============ Responsif khusus form ============ */
+    @media (max-width: 991.98px) {
+      .reg-card-body { padding: 1.6rem 1.3rem !important; }
+    }
+    @media (max-width: 575.98px) {
+      .pw-req-list { grid-template-columns: 1fr; }
+      .hero-title { font-size: 1.7rem; }
+    }
+  </style>
+  <!-- ===== NUSAPALA DESIGN SYSTEM (dimuat terakhir agar menang atas gaya lama) ===== -->
+  <meta name="theme-color" content="#f8f3e7">
+  <script>
+    /* Pasang tema sebelum halaman digambar supaya tidak ada kedipan warna */
+    (function () {
+      try {
+        var t = localStorage.getItem('np-theme');
+        if (!t) t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+        if (t === 'dark') {
+          document.documentElement.setAttribute('data-np-theme', 'dark');
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.setAttribute('content', '#0c1420');
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="/assets/css/nusapala.css">
+  <script src="/assets/js/nusapala-ui.js" defer></script>
+  <script>
+    /* Jaring pengaman: bila kit UI gagal dimuat, konten tidak boleh tetap tersembunyi */
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        if (window.NusapalaUI) return;
+        document.querySelectorAll('.reveal,.np-reveal,.np-reveal-left,.np-reveal-scale,.np-stagger')
+          .forEach(function (el) { el.classList.add('is-visible'); });
+      }, 1200);
+    });
+  </script>
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <nav class="navbar navbar-expand-lg landing-navbar sticky-top">
+    <div class="container py-2">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+        <span class="brand-mark" style="background: none; box-shadow: none;">
+        <img src="/Logo Nusapala.png" alt="Logo Nusapala" style="width: 38px; height: 38px; object-fit: contain;">
+        </span>
+        <div>
+          <div class="fw-bold text-dark lh-1 brand-org-name" id="brandName">NUSAPALA</div>
+          <small class="text-muted brand-org-sub">Mapala Institut Bisnis Nusantara</small>
+        </div>
+      </a>
+      <div class="d-flex align-items-center gap-2">
+        <button class="np-theme-toggle" type="button" data-np-theme-toggle aria-pressed="false" title="Ganti tema"><i class="fa-solid fa-moon np-icon-moon"></i><i class="fa-solid fa-sun np-icon-sun"></i></button>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#registrasiNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
+      <div class="collapse navbar-collapse" id="registrasiNav">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-3 me-4">
+          <li class="nav-item"><a class="nav-link nav-link-landing" href="/">Beranda</a></li>
+          <li class="nav-item"><a class="nav-link nav-link-landing active" href="/registrasi">Daftar Akun</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-3">
+          <a href="/admin" class="btn-portal-admin">Login</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <div class="container pt-5 pb-4">
+    <div class="hero-wrap p-4 p-lg-5 mb-5 reveal is-visible">
+      <div class="topo-layer"></div>
+      <div class="np-stars" aria-hidden="true"></div>
+      <div class="row g-4 align-items-center position-relative">
+        <div class="col-12 col-lg-7">
+          <span class="eyebrow mb-3 d-inline-flex np-hero-in" style="--d:.02s">Formulir Keanggotaan Digital</span>
+          <h1 class="hero-title mb-3 mt-3 np-hero-in" style="--d:.10s">Bergabung Menjadi Bagian dari Keluarga Besar <span>Mahasiswa Pecinta Alam</span></h1>
+          <p class="text-muted-soft fs-6 mb-0 np-hero-in" style="max-width: 540px; --d:.18s">Daftarkan akun Anda untuk mengakses Dashboard Organisasi, Agenda Kegiatan, Informasi Ekspedisi, dan berbagai layanan internal NUSAPALA.</p>
+        </div>
+        <div class="col-12 col-lg-5">
+          <div class="np-divisi-panel np-hero-in" style="--d:.24s">
+            <div class="np-label np-label-brass mb-3"><i class="fa-solid fa-people-group me-1"></i> Pilih jalan petualanganmu</div>
+            <div class="d-flex flex-column gap-2" id="regDivisiPreview">
+              <!-- Diisi otomatis oleh loadDivisiOptions() dari master data divisi -->
+              <div class="np-divisi-row"><span class="skeleton" style="width:34px;height:34px;border-radius:11px;"></span><span class="skeleton" style="flex:1;height:14px;"></span></div>
+              <div class="np-divisi-row"><span class="skeleton" style="width:34px;height:34px;border-radius:11px;"></span><span class="skeleton" style="flex:1;height:14px;"></span></div>
+              <div class="np-divisi-row"><span class="skeleton" style="width:34px;height:34px;border-radius:11px;"></span><span class="skeleton" style="flex:1;height:14px;"></span></div>
+            </div>
+            <hr class="my-3" style="border-color: var(--line-soft);">
+            <div class="row g-2">
+              <div class="col-6">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-shield-halved" style="color:var(--gold-600);"></i>
+                  <small style="color:var(--text-muted); font-size:0.76rem;">Leave No Trace</small>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-graduation-cap" style="color:var(--gold-600);"></i>
+                  <small style="color:var(--text-muted); font-size:0.76rem;">Pendidikan Dasar</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Registrasi Card Section -->
+  <div class="container pb-5">
+    <div class="row g-4 g-xl-5 justify-content-center">
+
+      <!-- SIDEBAR INFO ORGANISASI (Tampil di ATAS saat Mobile, di KANAN saat Desktop) -->
+      <div class="col-12 col-xl-4 order-1 order-xl-2">
+        <div class="landing-card p-4 mb-4 reveal is-visible">
+          <div class="fw-bold text-dark mb-3 d-flex align-items-center gap-2 font-display" style="font-size:1.05rem;">
+            <i class="fa-solid fa-mountain" style="color:var(--gold-600);"></i>Tentang NUSAPALA
+          </div>
+          <p class="text-muted-soft small mb-3">Organisasi mahasiswa pecinta alam yang menjunjung nilai konservasi, Leave No Trace, dan semangat petualangan bertanggung jawab di lingkungan Institut Bisnis Nusantara.</p>
+          <ul class="list-unstyled mb-0" style="font-size:0.83rem;">
+            <li class="d-flex align-items-start gap-2 mb-2"><i class="fa-solid fa-check text-success mt-1"></i><span class="text-muted-soft">Terbuka untuk seluruh mahasiswa aktif IBN.</span></li>
+            <li class="d-flex align-items-start gap-2 mb-2"><i class="fa-solid fa-check text-success mt-1"></i><span class="text-muted-soft">Pendidikan dasar &amp; latihan keselamatan alam bebas.</span></li>
+            <li class="d-flex align-items-start gap-2 mb-0"><i class="fa-solid fa-check text-success mt-1"></i><span class="text-muted-soft">Ekspedisi gunung, susur sungai, dan panjat tebing.</span></li>
+          </ul>
+        </div>
+
+        <div class="landing-card p-4 mb-4 reveal is-visible">
+          <div class="fw-bold text-dark mb-3 d-flex align-items-center gap-2 font-display" style="font-size:1.05rem;">
+            <i class="fa-solid fa-list-check" style="color:var(--gold-600);"></i>Alur Registrasi
+          </div>
+          <div class="d-flex align-items-start gap-3 mb-3">
+            <div class="reg-step-badge" style="background:var(--cream-100); color:var(--forest-800);">1</div>
+            <div><div class="fw-semibold text-dark small">Isi Formulir</div><div class="text-muted-soft" style="font-size:0.78rem;">Lengkapi data diri &amp; buat password.</div></div>
+          </div>
+          <div class="d-flex align-items-start gap-3 mb-3">
+            <div class="reg-step-badge" style="background:var(--cream-100); color:var(--forest-800);">2</div>
+            <div><div class="fw-semibold text-dark small">Verifikasi Admin</div><div class="text-muted-soft" style="font-size:0.78rem;">Pengurus meninjau data yang diajukan.</div></div>
+          </div>
+          <div class="d-flex align-items-start gap-3">
+            <div class="reg-step-badge" style="background:var(--cream-100); color:var(--forest-800);">3</div>
+            <div><div class="fw-semibold text-dark small">Akun Aktif</div><div class="text-muted-soft" style="font-size:0.78rem;">Login ke Dashboard setelah disetujui.</div></div>
+          </div>
+        </div>
+
+        <div class="cta-banner-mini rounded-4 p-4 position-relative overflow-hidden reveal is-visible" style="background: radial-gradient(circle at 100% 0%, rgba(220,199,155,0.18), transparent 55%), linear-gradient(150deg, var(--forest-950) 0%, var(--forest-800) 100%); border: 1px solid rgba(220,199,155,0.15);">
+          <div class="topo-layer" style="opacity:0.15;"></div>
+          <div class="position-relative">
+            <h6 class="fw-bold text-white mb-2 font-display">Butuh Bantuan?</h6>
+            <p class="small text-white-50 mb-3">Hubungi Sekretariat NUSAPALA jika mengalami kendala saat registrasi.</p>
+            <a href="mailto:nusapala@ibn.ac.id" class="btn btn-light text-primary btn-sm rounded-3 fw-bold px-3 py-2"><i class="fa-solid fa-envelope me-2"></i>nusapala@ibn.ac.id</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORM REGISTRASI (Tampil di BAWAH saat Mobile, di KIRI saat Desktop) -->
+      <div class="col-12 col-xl-8 order-2 order-xl-1">
+        <div class="reg-card reveal is-visible" id="regCardWrap">
+
+          <!-- ===== FORM STATE ===== -->
+          <div id="regFormState">
+            <div class="landing-card-header">
+              <span class="fw-bold text-dark d-flex align-items-center gap-2"><i class="fa-solid fa-user-plus" style="color:var(--gold-600);"></i>Formulir Registrasi Akun</span>
+              <span class="badge rounded-pill" style="background: var(--cream-100); color: var(--forest-800); border:1px solid var(--border-color); font-size:0.7rem;">Wajib Persetujuan Admin</span>
+            </div>
+
+            <form id="registrasiForm" novalidate>
+              <div class="p-4 p-lg-5 reg-card-body">
+
+                <!-- Bagian 1: Data Diri -->
+                <div class="d-flex align-items-center gap-2 mb-3">
+                  <div class="reg-step-badge">1</div>
+                  <div>
+                    <div class="reg-section-label">Bagian Satu</div>
+                    <div class="fw-bold text-dark font-display">Data Diri Anggota</div>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label-reg">Nama Lengkap <span class="req">*</span></label>
+                  <input type="text" class="form-control" id="reg_nama" placeholder="Contoh: Fathir Ahmad Maulana" autocomplete="off" required>
+                  <div class="reg-feedback" id="fb_nama"></div>
+                </div>
+
+                <div class="row g-3 mb-1">
+                  <div class="col-12 col-md-6">
+                    <label class="form-label-reg">Nama Angkatan <span class="req">*</span></label>
+                    <div class="searchable-dd" id="ddAngkatan">
+                      <input type="text" class="form-control searchable-dd-input" id="reg_angkatan_search" placeholder="Cari &amp; pilih nama angkatan..." autocomplete="off" required>
+                      <i class="fa-solid fa-chevron-down searchable-dd-caret"></i>
+                      <input type="hidden" id="reg_angkatan">
+                      <div class="searchable-dd-panel" id="panelAngkatan"></div>
+                    </div>
+                    <div class="reg-feedback" id="fb_angkatan"></div>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label class="form-label-reg">Nomor Angkatan <span class="req">*</span></label>
+                    <input type="text" class="form-control font-mono" id="reg_nomor" placeholder="N 000 - 000 XX" autocomplete="off" required maxlength="20">
+                    <div class="reg-feedback" id="fb_nomor"></div>
+                  </div>
+                </div>
+                <p class="text-muted-soft mb-4" style="font-size:0.72rem;"><i class="fa-solid fa-circle-info me-1"></i>Format otomatis: <span class="font-mono">N 023-018 XX</span> atau <span class="font-mono">N 2024-015 XX</span>.</p>
+
+                <div class="row g-3 mb-4">
+                  <div class="col-12 col-md-6">
+                    <label class="form-label-reg">Kota Lahir <span class="req">*</span></label>
+                    <input type="text" class="form-control" id="reg_kota" placeholder="Contoh: Jakarta" autocomplete="off" required>
+                    <div class="reg-feedback" id="fb_kota"></div>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label class="form-label-reg">Tanggal Lahir <span class="req">*</span></label>
+                    <input type="date" class="form-control" id="reg_tgl_lahir" required>
+                    <div class="reg-feedback" id="fb_tgl_lahir"></div>
+                  </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                <div class="col-12 col-md-6">
+                    <label class="form-label-reg">Divisi <span class="req">*</span></label>
+                    <select class="form-select" id="reg_divisi" required>
+                      <!-- Fallback statis: tiga divisi standar Nusapala.
+                           Akan diperbarui otomatis dari master data Portal Admin (settings.kategori_divisi). -->
+                      <option value="">-- Pilih Divisi --</option>
+                      <option value="Gunung Hutan">Gunung Hutan</option>
+                      <option value="Rock Climbing">Rock Climbing</option>
+                      <option value="Olahraga Arus Deras">Olahraga Arus Deras</option>
+                    </select>
+                    <div class="np-combo-hint" id="reg_divisi_hint"><i class="fa-solid fa-compass"></i> Pilih salah satu divisi Nusapala.</div>
+                    <div class="reg-feedback" id="fb_divisi"></div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <label class="form-label-reg">No. WhatsApp <span class="req">*</span></label>
+                    <input type="tel" class="form-control font-mono" id="reg_wa" placeholder="Contoh: 62812..." autocomplete="off" required>
+                    <div class="reg-feedback" id="fb_wa"></div>
+                </div>
+                </div>
+
+                <hr class="my-4" style="border-color: var(--border-color);">
+
+                <!-- Bagian 2: Keamanan Akun -->
+                <div class="d-flex align-items-center gap-2 mb-3">
+                  <div class="reg-step-badge">2</div>
+                  <div>
+                    <div class="reg-section-label">Bagian Dua</div>
+                    <div class="fw-bold text-dark font-display">Keamanan Akun</div>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label-reg">Password <span class="req">*</span></label>
+                  <div class="password-wrap">
+                    <input type="password" class="form-control" id="reg_password" placeholder="Buat password yang kuat" autocomplete="new-password" required>
+                    <button type="button" class="password-toggle-btn" data-target="reg_password" aria-label="Tampilkan password"><i class="fa-solid fa-eye"></i></button>
+                  </div>
+                  <div class="strength-bar-track"><div class="strength-bar-fill" id="strengthBarFill"></div></div>
+                  <div class="strength-label" id="strengthLabel" style="color: var(--text-muted);">Kekuatan Password</div>
+                  <ul class="pw-req-list" id="pwReqList">
+                    <li data-req="len"><i class="fa-solid fa-circle"></i> Minimal 8 karakter</li>
+                    <li data-req="upper"><i class="fa-solid fa-circle"></i> Huruf besar (A-Z)</li>
+                    <li data-req="lower"><i class="fa-solid fa-circle"></i> Huruf kecil (a-z)</li>
+                    <li data-req="number"><i class="fa-solid fa-circle"></i> Mengandung angka</li>
+                    <li data-req="symbol"><i class="fa-solid fa-circle"></i> Karakter khusus (!@#$…)</li>
+                  </ul>
+                </div>
+
+                <div class="mb-4">
+                  <label class="form-label-reg">Konfirmasi Password <span class="req">*</span></label>
+                  <div class="password-wrap">
+                    <input type="password" class="form-control" id="reg_password_confirm" placeholder="Ulangi password Anda" autocomplete="new-password" required>
+                    <button type="button" class="password-toggle-btn" data-target="reg_password_confirm" aria-label="Tampilkan password"><i class="fa-solid fa-eye"></i></button>
+                  </div>
+                  <div class="reg-feedback" id="fb_confirm"></div>
+                </div>
+
+                <!-- Panel Validasi Realtime -->
+                <div class="validity-panel mb-4">
+                  <div class="reg-section-label mb-2">Status Validasi Formulir</div>
+                  <div class="row">
+                    <div class="col-12 col-sm-6">
+                      <div class="validity-item" id="v_nama"><i class="fa-solid fa-check"></i><i class="fa-solid fa-circle"></i> Nama lengkap valid</div>
+                      <div class="validity-item" id="v_angkatan"><i class="fa-solid fa-check"></i><i class="fa-solid fa-circle"></i> Nama angkatan dipilih</div>
+                      <div class="validity-item" id="v_nomor"><i class="fa-solid fa-check"></i><i class="fa-solid fa-circle"></i> Format nomor angkatan benar</div>
+                      <div class="validity-item" id="v_kota"><i class="fa-solid fa-check"></i><i class="fa-solid fa-circle"></i> Kota lahir diisi</div>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                      <div class="validity-item" id="v_tgl"><i class="fa-solid fa-check"></i><i class="fa-solid fa-circle"></i> Tanggal lahir dipilih</div>
+                      <div class="validity-item" id="v_divisi"><i class="fa-solid fa-check"></i><i class="fa-solid fa-circle"></i> Divisi dipilih</div>
+                      <div class="validity-item" id="v_wa"><i class="fa-solid fa-check"></i><i class="fa-solid fa-circle"></i> No. WA valid</div>
+                      <div class="validity-item" id="v_pw"><i class="fa-solid fa-check"></i><i class="fa-solid fa-circle"></i> Password kuat</div>
+                      <div class="validity-item" id="v_pwmatch"><i class="fa-solid fa-check"></i><i class="fa-solid fa-circle"></i> Password cocok</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-check mb-4">
+                  <input class="form-check-input" type="checkbox" id="reg_agree" required>
+                  <label class="form-check-label small text-muted-soft" for="reg_agree">
+                    Saya menyatakan bahwa seluruh data yang saya isi adalah benar dan bersedia mengikuti proses verifikasi oleh Pengurus NUSAPALA.
+                  </label>
+                </div>
+
+                <button type="submit" class="btn btn-forest w-100 py-3 fw-bold btn-loading" id="btnRegistrasi">
+                  <span class="btn-label">
+                    <span class="spinner-border spinner-border-sm" role="status"></span>
+                    <span class="btn-text"><i class="fa-solid fa-paper-plane me-2"></i>Daftarkan Akun Saya</span>
+                  </span>
+                </button>
+                <p class="text-center text-muted-soft mt-3 mb-0" style="font-size:0.8rem;">Sudah punya akun? <a href="/admin" style="color:var(--pine-ink); font-weight:700; text-decoration:none;">Login ke Portal Admin</a></p>
+              </div>
+            </form>
+          </div>
+
+          <!-- ===== SUCCESS STATE (disembunyikan default) ===== -->
+          <div id="regSuccessState" class="d-none">
+            <div class="success-wrap p-4 p-lg-5">
+              <div class="success-icon"><i class="fa-solid fa-check"></i></div>
+              <h3 class="font-display fw-bold text-dark mb-2">Registrasi Berhasil Dikirim!</h3>
+              <p class="text-muted-soft mb-3" style="max-width: 480px; margin-inline:auto;">Terima kasih, <span class="fw-bold text-dark" id="successNama"></span>. Akun Anda dengan Nomor Angkatan <span class="fw-bold font-mono text-dark" id="successNomor"></span> telah kami terima dan sedang menunggu verifikasi Pengurus.</p>
+              <div class="status-pill mb-4"><i class="fa-solid fa-hourglass-half"></i> Menunggu Persetujuan</div>
+              <div class="d-flex flex-wrap justify-content-center gap-2">
+                <a href="/" class="btn btn-outline-gold px-4 py-2"><i class="fa-solid fa-house me-2"></i>Kembali ke Beranda</a>
+                <a href="/admin" class="btn btn-forest px-4 py-2"><i class="fa-solid fa-right-to-bracket me-2"></i>Portal Admin</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer Section -->
+  <footer class="site-footer pt-5 pb-4 mt-3">
+    <div class="topo-layer"></div>
+    <div class="container position-relative">
+      <div class="row g-4 mb-4">
+        <div class="col-12 col-lg-4">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <span class="brand-mark" style="background: none; box-shadow: none;">
+            <img src="/Logo Nusapala.png" alt="Logo Nusapala" style="width: 38px; height: 38px; object-fit: contain;">
+            </span>
+            <div>
+              <div class="fw-bold text-white font-display">NUSAPALA</div>
+              <small class="text-white-50" style="font-size:0.65rem; letter-spacing:0.05em;">Mapala Institut Bisnis Nusantara</small>
+            </div>
+          </div>
+          <p class="small text-white-50 mb-3" style="max-width: 340px;">Organisasi mahasiswa pecinta alam yang menjunjung nilai konservasi, Leave No Trace, dan semangat petualangan bertanggung jawab.</p>
+          <div class="d-flex gap-2">
+            <a href="https://www.instagram.com/nusapalaibn/" target="_blank" class="footer-social"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="footer-social"><i class="fa-brands fa-whatsapp"></i></a>
+            <a href="#" class="footer-social"><i class="fa-brands fa-youtube"></i></a>
+          </div>
+        </div>
+
+        <div class="col-6 col-lg-2">
+          <div class="footer-heading">Navigasi</div>
+          <a href="/" class="footer-link">Beranda</a>
+          <a href="/registrasi" class="footer-link">Daftar Akun</a>
+          <a href="/admin" class="footer-link">Login</a>
+        </div>
+
+        <div class="col-6 col-lg-2">
+          <div class="footer-heading">Layanan</div>
+          <a href="/#section-jadwal" class="footer-link">Agenda</a>
+          <a href="/#section-pengumuman" class="footer-link">Galeri</a>
+          <a href="/#section-transparansi" class="footer-link">Transparansi</a>
+        </div>
+
+        <div class="col-12 col-lg-4">
+          <div class="footer-heading">Sekretariat</div>
+          <p class="small text-white-50 mb-1"><i class="fa-solid fa-location-dot me-2" style="color:var(--gold-300);"></i>Institut Bisnis Nusantara, Jakarta</p>
+          <p class="small text-white-50 mb-1"><i class="fa-solid fa-envelope me-2" style="color:var(--gold-300);"></i>nusapala@ibn.ac.id</p>
+          <p class="small text-white-50 mb-0"><i class="fa-solid fa-phone me-2" style="color:var(--gold-300);"></i>+62 812-xxxx-xxxx</p>
+        </div>
+      </div>
+
+      <div class="footer-bottom pt-3 d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <p class="text-white-50 mb-0 small" id="footerCopyright">© 2026 NUSAPALA IBN. Seluruh hak cipta dilindungi.</p>
+        <div class="d-flex align-items-center gap-2">
+          <span class="footer-badge font-mono">v1.0 — Registrasi Anggota</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
+
+  <script>
+    // =======================================================================
+    // Inisialisasi Supabase (kredensial identik dengan index.html / admin.html)
+    // =======================================================================
+    const SUPABASE_URL = 'https://ciqefdklecqgzczmzyde.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpcWVmZGtsZWNxZ3pjem16eWRlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NTI1OTkwNiwiZXhwIjoyMTAwODM1OTA2fQ.aYGy_SUjUbRUG73TPWdtGKM9B3OL05QK4Xc-gsUfCbk';
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    function escapeHTML(str) {
+      if (!str) return ''; let div = document.createElement('div'); div.appendChild(document.createTextNode(String(str))); return div.innerHTML;
+    }
+
+    // =======================================================================
+    // 1. DAFTAR NAMA ANGKATAN (Searchable Dropdown) — sesuai daftar resmi
+    // =======================================================================
+    const DAFTAR_NAMA_ANGKATAN = [
+      'PRATAMA', 'GEMURUH CISADANE', 'KABUT LEMBAH', 'BADAI KAWAH', 'TUNGGAL BENTANG',
+      'BRADJA TIRTA', 'SATYA LARVA', 'SETARA PATI', 'TAPAK GENTARA', 'ASTA ANGGASANA',
+      'DIANDRA WISESA', 'SAKHA MANDALA', 'CATRA KULAVARGA', 'ADI SEDAYA', 'DAMAR ABHINAYA',
+      'CATWARI PRANAWA', 'WAMSA SAPTADASA', 'SAHITYA RUKTI', 'SAKANTI ASWARI', 'WANGSA AKHSARA',
+      'PRIYANGGA WICAKSANA', 'DASAWIRA KARTALA', 'ADHIMUKTI WIRATAMA', 'SAMASTA NAWASENA',
+      'CAKRA MAHATMA', 'SAYLENDRA SAHWAHITA', 'GAMANANTHA NISKALA', 'ARKATAMA DWIPA', 'CAKRAWANGSA BASWARA'
+    ];
+
+    function initSearchableDropdown() {
+      const wrap = document.getElementById('ddAngkatan');
+      const input = document.getElementById('reg_angkatan_search');
+      const hidden = document.getElementById('reg_angkatan');
+      const panel = document.getElementById('panelAngkatan');
+
+      function renderPanel(query) {
+        const q = (query || '').toLowerCase().trim();
+        const filtered = DAFTAR_NAMA_ANGKATAN.filter(n => n.toLowerCase().includes(q));
+        if (filtered.length === 0) {
+          panel.innerHTML = '<div class="searchable-dd-empty"><i class="fa-solid fa-magnifying-glass mb-1 d-block"></i>Nama angkatan tidak ditemukan.</div>';
+          return;
+        }
+        panel.innerHTML = filtered.map(n => `<div class="searchable-dd-item ${hidden.value === n ? 'selected' : ''}" data-value="${escapeHTML(n)}">${escapeHTML(n)} ${hidden.value === n ? '<i class=\"fa-solid fa-check\"></i>' : ''}</div>`).join('');
+      }
+
+      function openPanel() { renderPanel(input.value); panel.classList.add('show'); wrap.classList.add('open'); }
+      function closePanel() { panel.classList.remove('show'); wrap.classList.remove('open'); }
+
+      input.addEventListener('focus', openPanel);
+      input.addEventListener('click', openPanel);
+      input.addEventListener('input', () => { hidden.value = ''; renderPanel(input.value); panel.classList.add('show'); wrap.classList.add('open'); runValidation(); });
+
+      panel.addEventListener('click', (e) => {
+        const item = e.target.closest('.searchable-dd-item');
+        if (!item) return;
+        const val = item.getAttribute('data-value');
+        hidden.value = val; input.value = val;
+        closePanel();
+        runValidation();
+      });
+
+      document.addEventListener('click', (e) => { if (!wrap.contains(e.target)) closePanel(); });
+    }
+
+    // =======================================================================
+    // 2. INPUT MASK NOMOR ANGKATAN — Format: N 000-000 XX / N 0000-000 XX
+    // =======================================================================
+    function initInputMaskNomor() {
+      const el = document.getElementById('reg_nomor');
+      el.addEventListener('input', () => {
+        let raw = el.value.toUpperCase().replace(/[^0-9A-Z]/g, '');
+        if (raw.startsWith('N')) raw = raw.substring(1);
+
+        let digits = raw.replace(/[^0-9]/g, '');
+        let letters = raw.replace(/[^A-Z]/g, '');
+
+        // Maksimal 4 digit angkatan + 3 digit urut = potong sisanya sebagai huruf akhir
+        let angkatanDigits = digits.slice(0, 4);
+        let urutDigits = digits.slice(4, 7);
+        let kodeHuruf = letters.slice(0, 2);
+
+        let out = 'N';
+        if (angkatanDigits) out += ' ' + angkatanDigits;
+        if (urutDigits) out += ' - ' + urutDigits;
+        if (kodeHuruf) out += ' ' + kodeHuruf;
+
+        el.value = out;
+        runValidation();
+      });
+      el.addEventListener('blur', checkNomorAngkatanUnik);
+    }
+
+    function isNomorAngkatanFormatValid(val) {
+      return /^N \d{3,4} - \d{3} [A-Z]{2}$/.test((val || '').trim());
+    }
+
+    let nomorUnikTimeout = null;
+    async function checkNomorAngkatanUnik() {
+      const el = document.getElementById('reg_nomor');
+      const fb = document.getElementById('fb_nomor');
+      const val = el.value.trim();
+
+      if (!isNomorAngkatanFormatValid(val)) return;
+
+      try {
+        // 1. Ekstrak hanya angka dan huruf
+        let raw = val.replace(/[^A-Z0-9]/g, ''); 
+        let angkatan = raw.replace(/[^0-9]/g, '').slice(0, -3); // Cth: 3126
+        let urut = raw.replace(/[^0-9]/g, '').slice(-3);        // Cth: 193
+        let huruf = raw.replace(/[^A-Z]/g, '').replace('N', '');// Cth: CB
+
+        // 2. Buat pattern pencarian fuzzy: N%3126%193%CB%
+        let pattern = `N%${angkatan}%${urut}%${huruf}%`;
+
+        const { data, error } = await db.from('members')
+          .select('"Nomor Angkatan"')
+          .ilike('Nomor Angkatan', pattern)
+          .limit(1);
+
+        if (error) return;
+
+        if (data && data.length > 0) {
+          fb.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Nomor Angkatan sudah terdaftar.';
+          fb.className = 'reg-feedback show bad';
+          el.classList.add('is-invalid-reg'); el.classList.remove('is-valid-reg');
+          el.dataset.unique = 'false';
+        } else {
+          el.dataset.unique = 'true';
+        }
+        runValidation();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    // =======================================================================
+    // 3. NAMA LENGKAP — Auto Kapital Setiap Awal Kata
+    // =======================================================================
+    function initAutoCapitalize() {
+      const el = document.getElementById('reg_nama');
+      el.addEventListener('input', () => {
+        const pos = el.selectionStart;
+        el.value = el.value.replace(/\b\w/g, c => c.toUpperCase());
+        try { el.setSelectionRange(pos, pos); } catch(e) {}
+        runValidation();
+      });
+    }
+
+    function initInputMaskWA() {
+        const el = document.getElementById('reg_wa');
+        el.addEventListener('input', function() {
+            // Hanya biarkan angka
+            let val = this.value.replace(/[^0-9]/g, '');
+            
+            // Auto konversi jika user mengetik angka '0' di awal menjadi '62'
+            if (val.startsWith('0')) {
+            val = '62' + val.substring(1);
+            }
+            
+            // Paksa agar selalu mulai dari 628 jika sudah ada input
+            if (val.length > 0 && !val.startsWith('62')) {
+            val = '62' + val;
+            }
+            
+            this.value = val;
+            runValidation();
+        });
+        }
+
+    // =======================================================================
+    // =======================================================================
+    // 4. DROPDOWN DIVISI
+    //    Sumber utama: master data Portal Admin (settings.kategori_divisi).
+    //    Bila barisnya belum ada / gagal dibaca, dipakai tiga divisi standar
+    //    Nusapala supaya pendaftaran TIDAK PERNAH buntu karena masalah data.
+    // =======================================================================
+    const DIVISI_STANDAR = ['Gunung Hutan', 'Rock Climbing', 'Olahraga Arus Deras'];
+    const DIVISI_ALIAS = {
+      'rafting': 'Olahraga Arus Deras', 'orad': 'Olahraga Arus Deras', 'rafting/orad': 'Olahraga Arus Deras',
+      'arus deras': 'Olahraga Arus Deras', 'olahraga arus deras (orad)': 'Olahraga Arus Deras',
+      'rockclimbing': 'Rock Climbing', 'panjat tebing': 'Rock Climbing'
+    };
+
+    // Master data dari Portal Admin adalah sumber kebenaran: nama divisi
+    // ditampilkan APA ADANYA. Alias penulisan lama sengaja TIDAK diterapkan di
+    // sini — sebelumnya divisi baru bernama "Panjat Tebing"/"Rafting"/"ORAD"
+    // otomatis diganti lalu dibuang sebagai duplikat, sehingga hilang dari
+    // dropdown pendaftaran tanpa pesan apa pun.
+    function rapikanDaftarDivisi(list) {
+      const hasil = [];
+      (Array.isArray(list) ? list : []).forEach(item => {
+        const nama = String(item == null ? '' : item).replace(/\s+/g, ' ').trim();
+        if (!nama) return;
+        if (!hasil.some(d => d.toLowerCase() === nama.toLowerCase())) hasil.push(nama);
+      });
+      return hasil.length ? hasil : DIVISI_STANDAR.slice();
+    }
+
+    // Menafsirkan divisi warisan milik anggota lama (mis. "Rafting/Orad") agar
+    // tetap dikenali sebagai divisi resminya.
+    function aliasDivisiLama(nama) {
+      const n = String(nama == null ? '' : nama).replace(/\s+/g, ' ').trim();
+      if (!n) return '';
+      return DIVISI_ALIAS[n.toLowerCase()] || n;
+    }
+
+async function loadDivisiOptions() {
+  const sel = document.getElementById('reg_divisi');
+  if (!sel) return;
+
+  let daftar = DIVISI_STANDAR.slice();
+  try {
+    // .maybeSingle() dipakai agar 0 baris bukan dianggap error (penyebab utama
+    // dropdown sebelumnya menampilkan "Gagal memuat data Divisi").
+    const { data, error } = await db.from('settings').select('value').eq('key', 'kategori_divisi').maybeSingle();
+    if (error) throw error;
+    if (data && data.value) daftar = rapikanDaftarDivisi(JSON.parse(data.value || '[]'));
+  } catch (err) {
+    console.warn('[Nusapala] Master divisi tidak dapat dibaca, memakai divisi standar:', err && err.message);
+  }
+
+  const terpilih = sel.value;
+  sel.innerHTML = '<option value="">-- Pilih Divisi --</option>' +
+    daftar.map(d => `<option value="${escapeHTML(d)}">${escapeHTML(d)}</option>`).join('');
+  if (terpilih) sel.value = terpilih;
+
+
+  // ---- Sentuhan visual Nusapala (sumber data divisi tetap milik logika di atas) ----
+  const updateHint = () => {
+    const hint = document.getElementById('reg_divisi_hint');
+    if (!hint) return;
+    const meta = window.NusapalaUI ? NusapalaUI.normalizeDivisi(sel.value) : null;
+    const sama = !!(meta && String(meta.nama).toLowerCase() === String(sel.value).trim().toLowerCase());
+    hint.innerHTML = sel.value
+      ? `<i class="fa-solid ${sama ? meta.icon : 'fa-compass'}"></i> <b>${escapeHTML(sel.value)}</b> — ${escapeHTML(sama ? meta.tagline : 'Bidang kegiatan Nusapala')}`
+      : '<i class="fa-solid fa-compass"></i> Pilih salah satu divisi Nusapala.';
+  };
+
+  sel.addEventListener('change', function () {
+    updateHint();
+    if (typeof runValidation === 'function') runValidation();
+  });
+  updateHint();
+
+  // Pratinjauan divisi di hero formulir — nama master data ditampilkan apa adanya
+  const preview = document.getElementById('regDivisiPreview');
+  if (preview) {
+    preview.innerHTML = daftar.slice(0, 4).map(d => {
+      const meta = window.NusapalaUI ? NusapalaUI.normalizeDivisi(d) : null;
+      const sama = !!(meta && String(meta.nama).toLowerCase() === String(d).trim().toLowerCase());
+      return `<div class="np-divisi-row">
+        <span class="np-divisi-mini${sama ? ' ' + meta.theme : ''}"><i class="fa-solid ${sama ? meta.icon : 'fa-compass'}"></i></span>
+        <div style="min-width:0;">
+          <div class="np-divisi-nama">${escapeHTML(d)}</div>
+          <div class="np-divisi-desc">${escapeHTML(sama ? meta.tagline : 'Bidang kegiatan yang dikelola pengurus')}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  if (typeof runValidation === 'function') runValidation();
+}
+
+    // =======================================================================
+    // 5. PASSWORD: Show/Hide, Strength Indicator, Konfirmasi Realtime
+    // =======================================================================
+    function initPasswordToggle() {
+      document.querySelectorAll('.password-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.getAttribute('data-target');
+          const input = document.getElementById(targetId);
+          const icon = btn.querySelector('i');
+          if (input.type === 'password') { input.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); }
+          else { input.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }
+        });
+      });
+    }
+
+    function evaluatePasswordRequirements(pw) {
+      return {
+        len: pw.length >= 8,
+        upper: /[A-Z]/.test(pw),
+        lower: /[a-z]/.test(pw),
+        number: /[0-9]/.test(pw),
+        symbol: /[^A-Za-z0-9]/.test(pw)
+      };
+    }
+
+    function initPasswordStrength() {
+      const el = document.getElementById('reg_password');
+      const fill = document.getElementById('strengthBarFill');
+      const label = document.getElementById('strengthLabel');
+
+      el.addEventListener('input', () => {
+        const pw = el.value;
+        const req = evaluatePasswordRequirements(pw);
+        const metCount = Object.values(req).filter(Boolean).length;
+
+        document.querySelectorAll('#pwReqList li').forEach(li => {
+          const key = li.getAttribute('data-req');
+          li.classList.toggle('met', !!req[key]);
+        });
+
+        const pct = pw.length === 0 ? 0 : (metCount / 5) * 100;
+        fill.style.width = pct + '%';
+
+        // 'bar' = warna batang indikator (boleh terang), 'teks' = warna label
+        // yang sudah memenuhi kontras WCAG AA di atas kertas krem.
+        let bar = '#a4482e', teks = '#8d3a2b', text = 'Sangat Lemah';
+        if (pw.length === 0) { text = 'Kekuatan Password'; bar = '#ddd4bd'; teks = 'var(--text-muted)'; }
+        else if (metCount <= 1) { text = 'Sangat Lemah'; bar = '#bd5a3c'; teks = '#8d3a2b'; }
+        else if (metCount === 2) { text = 'Lemah'; bar = '#86692f'; teks = '#8a5a0e'; }
+        else if (metCount === 3) { text = 'Cukup'; bar = '#b3945a'; teks = '#7d5f14'; }
+        else if (metCount === 4) { text = 'Kuat'; bar = '#3d9160'; teks = '#276241'; }
+        else if (metCount === 5) { text = 'Sangat Kuat'; bar = '#457f51'; teks = '#1d5135'; }
+
+        fill.style.background = bar;
+        label.textContent = text;
+        label.style.color = teks;
+
+        checkPasswordMatch();
+        runValidation();
+      });
+    }
+
+    function checkPasswordMatch() {
+      const pw = document.getElementById('reg_password').value;
+      const confirm = document.getElementById('reg_password_confirm').value;
+      const fb = document.getElementById('fb_confirm');
+      const el = document.getElementById('reg_password_confirm');
+
+      if (confirm.length === 0) {
+        fb.classList.remove('show'); el.classList.remove('is-valid-reg', 'is-invalid-reg');
+        return false;
+      }
+      if (pw === confirm) {
+        fb.innerHTML = '<i class="fa-solid fa-circle-check"></i> Password cocok';
+        fb.className = 'reg-feedback show ok';
+        el.classList.add('is-valid-reg'); el.classList.remove('is-invalid-reg');
+        return true;
+      } else {
+        fb.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Password tidak cocok';
+        fb.className = 'reg-feedback show bad';
+        el.classList.add('is-invalid-reg'); el.classList.remove('is-valid-reg');
+        return false;
+      }
+    }
+
+    // =======================================================================
+    // 6. VALIDASI REALTIME KESELURUHAN FORM
+    // =======================================================================
+    function setValidityItem(id, ok) {
+      const el = document.getElementById(id);
+      el.classList.remove('ok', 'bad');
+      el.classList.add(ok ? 'ok' : 'bad');
+    }
+
+    function runValidation() {
+      const nama = document.getElementById('reg_nama').value.trim();
+      const angkatan = document.getElementById('reg_angkatan').value.trim();
+      const nomor = document.getElementById('reg_nomor').value.trim();
+      const kota = document.getElementById('reg_kota').value.trim();
+      const tgl = document.getElementById('reg_tgl_lahir').value;
+      const divisi = document.getElementById('reg_divisi').value;
+      const pw = document.getElementById('reg_password').value;
+      const confirm = document.getElementById('reg_password_confirm').value;
+
+      const wa = document.getElementById('reg_wa').value.trim();
+        const okWa = wa.length >= 10 && wa.startsWith('628'); 
+
+      const okNama = nama.length >= 3;
+      const okAngkatan = angkatan.length > 0;
+      const okNomor = isNomorAngkatanFormatValid(nomor) && document.getElementById('reg_nomor').dataset.unique !== 'false';
+      const okKota = kota.length >= 2;
+      const okTgl = tgl.length > 0;
+      const okDivisi = divisi.length > 0;
+      const reqPw = evaluatePasswordRequirements(pw);
+      const okPw = Object.values(reqPw).every(Boolean);
+      const okMatch = pw.length > 0 && pw === confirm;
+
+      setValidityItem('v_nama', okNama);
+      setValidityItem('v_angkatan', okAngkatan);
+      setValidityItem('v_nomor', okNomor);
+      setValidityItem('v_kota', okKota);
+      setValidityItem('v_tgl', okTgl);
+      setValidityItem('v_divisi', okDivisi);
+      setValidityItem('v_pw', okPw);
+      setValidityItem('v_pwmatch', okMatch);
+      setValidityItem('v_wa', okWa);
+
+        const fbWa = document.getElementById('fb_wa');
+        if (wa.length > 0) {
+        fbWa.className = 'reg-feedback show ' + (okWa ? 'ok' : 'bad');
+        fbWa.innerHTML = okWa ? '<i class="fa-solid fa-circle-check"></i> No. WhatsApp valid' : '<i class="fa-solid fa-circle-xmark"></i> Minimal 10 angka (diawali 628)';
+        } else { fbWa.classList.remove('show'); }
+
+      // Feedback kecil di bawah field nama
+      const fbNama = document.getElementById('fb_nama');
+      if (nama.length > 0) {
+        fbNama.className = 'reg-feedback show ' + (okNama ? 'ok' : 'bad');
+        fbNama.innerHTML = okNama ? '<i class="fa-solid fa-circle-check"></i> Nama lengkap valid' : '<i class="fa-solid fa-circle-xmark"></i> Nama minimal 3 karakter';
+      } else { fbNama.classList.remove('show'); }
+
+      const fbNomor = document.getElementById('fb_nomor');
+      if (nomor.length > 0 && document.getElementById('reg_nomor').dataset.unique !== 'false') {
+        fbNomor.className = 'reg-feedback show ' + (okNomor ? 'ok' : 'bad');
+        fbNomor.innerHTML = okNomor ? '<i class="fa-solid fa-circle-check"></i> Format nomor angkatan benar' : '<i class="fa-solid fa-circle-xmark"></i> Format belum sesuai (N 000-000 XX)';
+      }
+
+      return okNama && okAngkatan && okNomor && okKota && okTgl && okDivisi && okWa && okPw && okMatch;
+    }
+
+    // =======================================================================
+    // 7. SUBMIT REGISTRASI KE SUPABASE
+    // =======================================================================
+    function formatTanggalIndo(isoDate) {
+      if (!isoDate) return '';
+      const [y, m, d] = isoDate.split('-');
+      return `${d}-${m}-${y}`;
+    }
+
+    document.getElementById('registrasiForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const valid = runValidation();
+      const agree = document.getElementById('reg_agree').checked;
+
+      if (!valid) {
+        return Swal.fire({ icon: 'warning', title: 'Formulir Belum Lengkap', text: 'Mohon periksa kembali data pada Status Validasi Formulir di atas.', confirmButtonColor: '#12212f' });
+      }
+      if (!agree) {
+        return Swal.fire({ icon: 'warning', title: 'Persetujuan Diperlukan', text: 'Anda perlu menyetujui pernyataan data sebelum mendaftar.', confirmButtonColor: '#12212f' });
+      }
+
+      const btn = document.getElementById('btnRegistrasi');
+      btn.classList.add('is-loading'); btn.disabled = true;
+      btn.querySelector('.btn-text').innerHTML = 'Memproses Registrasi...';
+
+      const nama = document.getElementById('reg_nama').value.trim();
+      const nomor = document.getElementById('reg_nomor').value.trim();
+
+      const payload = {
+        'Nama Lengkap': nama,
+        'Nama Angkatan': document.getElementById('reg_angkatan').value.trim(),
+        'Nomor Angkatan': nomor,
+        'Kota Lahir': undefined, // dikirim via kolom kota_lahir di bawah
+        'Tanggal Lahir': formatTanggalIndo(document.getElementById('reg_tgl_lahir').value),
+        'Divisi': document.getElementById('reg_divisi').value,
+        'Timestamp': new Date().toISOString(),
+        kota_lahir: document.getElementById('reg_kota').value.trim(),
+        no_wa: document.getElementById('reg_wa').value.trim(),
+        password: document.getElementById('reg_password').value,
+        status_anggota: 'Menunggu Persetujuan',
+        role: null,
+        is_pengurus: false,
+        jabatan: null,
+        permissions: []
+      };
+      delete payload['Kota Lahir'];
+
+      try {
+        // Pengecekan akhir keunikan Nomor Angkatan sebelum insert (mencegah race condition)
+        const { data: existing } = await db.from('members').select('id').eq('Nomor Angkatan', nomor).limit(1);
+        if (existing && existing.length > 0) {
+          throw new Error('Nomor Angkatan sudah terdaftar di sistem. Silakan periksa kembali.');
+        }
+
+        const { error } = await db.from('members').insert([payload]);
+        if (error) throw error;
+
+        // Tampilkan Success State
+        document.getElementById('successNama').innerText = nama;
+        document.getElementById('successNomor').innerText = nomor;
+        document.getElementById('regFormState').classList.add('d-none');
+        document.getElementById('regSuccessState').classList.remove('d-none');
+        document.getElementById('regCardWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      } catch (err) {
+        Swal.fire({ icon: 'error', title: 'Registrasi Gagal', text: err.message || 'Terjadi kesalahan pada server. Silakan coba lagi.', confirmButtonColor: '#12212f' });
+      } finally {
+        btn.classList.remove('is-loading'); btn.disabled = false;
+        btn.querySelector('.btn-text').innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Daftarkan Akun Saya';
+      }
+    });
+
+    // =======================================================================
+    // 8. PENGATURAN DINAMIS (Nama Organisasi & Footer) — dari tabel settings
+    // =======================================================================
+    async function fetchSupabaseSettingsRegistrasi() {
+      try {
+        const { data, error } = await db.from('settings').select('*');
+        if (error) throw error;
+        let settings = {};
+        data.forEach(item => { settings[item.key] = item.value; });
+        if (settings.rt_name) document.getElementById('brandName').innerHTML = settings.rt_name;
+        if (settings.footer_copyright) document.getElementById('footerCopyright').innerHTML = settings.footer_copyright;
+      } catch (err) { /* gunakan nilai default jika gagal */ }
+    }
+
+    // =======================================================================
+    // INIT
+    // =======================================================================
+    window.onload = function () {
+      initSearchableDropdown();
+      initInputMaskNomor();
+      initAutoCapitalize();
+      initInputMaskWA();
+      initPasswordToggle();
+      initPasswordStrength();
+      loadDivisiOptions();
+      fetchSupabaseSettingsRegistrasi();
+
+      ['reg_nama','reg_kota','reg_tgl_lahir','reg_password_confirm'].forEach(id => {
+        document.getElementById(id).addEventListener('input', runValidation);
+        document.getElementById(id).addEventListener('change', runValidation);
+      });
+      document.getElementById('reg_tgl_lahir').addEventListener('change', runValidation);
+      document.getElementById('reg_password_confirm').addEventListener('input', () => { checkPasswordMatch(); runValidation(); });
+
+      runValidation();
+    };
+  </script>
+</body>
+</html>

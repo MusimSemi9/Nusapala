@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="CIkXZ9jIowD99AwyML63CMQGZYfmS2q2pu0qgmXNqng" />  <title>Dashboard Digital Nusapala</title>
+
+  <!-- Google Fonts: Fraunces (display) + Inter (UI) + IBM Plex Mono (mono accents) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FontAwesome 6 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <!-- SweetAlert2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.min.css" rel="stylesheet">
+  <!-- Untuk favicon tab browser -->
+<link rel="icon" type="image/png" href="/Logo Nusapala.png">
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      /* Palette premium: forest / gold / cream / ink */
+      --forest-950: #0b1622;
+      --forest-900: #12212f;
+      --forest-800: #1f3648;
+      --forest-700: #2a475e;
+      --primary-color: #12212f;
+      --primary-hover: #1f3648;
+      --gold-600: #86692f;
+      --gold-500: #b3945a;
+      --gold-300: #dcc79b;
+      --secondary-color: #b3945a;
+      --cream-50: #f8f3e7;
+      --cream-100: #f2ebda;
+      --paper: #fffdf7;
+      --light-bg: #f8f3e7;
+      --card-bg: #ffffff;
+      --border-color: #e0d5bd;
+      --line-soft: rgba(18, 33, 47, 0.10);
+      --ink-900: #16202c;
+      --text-main: #33404f;
+      --text-muted: #5d6874;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --shadow-soft: 0 10px 30px -12px rgba(15, 30, 20, 0.14);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--light-bg);
+      color: var(--text-main);
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(circle at 100% 0%, rgba(201,162,39,0.07), transparent 40%),
+        radial-gradient(circle at 0% 30%, rgba(18,33,47,0.05), transparent 45%);
+      background-attachment: fixed;
+    }
+
+    .font-display { font-family: 'Fraunces', serif; }
+    .font-mono { font-family: 'IBM Plex Mono', monospace; }
+    .text-muted-soft { color: var(--text-muted) !important; }
+
+    /* ============ Topographic accent (SVG data-uri, decorative only) ============ */
+    .topo-layer {
+      position: absolute; inset: 0; pointer-events: none; opacity: 0.5;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Cg fill='none' stroke='%230f2e1a' stroke-opacity='0.06' stroke-width='1'%3E%3Cpath d='M-20 60 Q 100 10 220 60 T 460 60'/%3E%3Cpath d='M-20 110 Q 100 60 220 110 T 460 110'/%3E%3Cpath d='M-20 160 Q 100 110 220 160 T 460 160'/%3E%3Cpath d='M-20 210 Q 100 160 220 210 T 460 210'/%3E%3Cpath d='M-20 260 Q 100 210 220 260 T 460 260'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: 480px 480px; background-repeat: repeat;
+    }
+
+    .eyebrow {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--gold-600); font-weight: 500;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .eyebrow::before { content:''; width: 22px; height: 1px; background: var(--gold-500); display: inline-block; }
+
+    /* ============ Navbar ============ */
+    .landing-navbar { background: rgba(248, 243, 231, 0.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line-soft); transition: all 0.3s ease; }
+    .brand-mark { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(155deg, var(--forest-900), var(--forest-700)); display:flex; align-items:center; justify-content:center; color: var(--gold-300); box-shadow: 0 6px 16px -6px rgba(18,33,47,0.5); position: relative; }
+    .brand-mark::after { content:''; position:absolute; inset:2px; border:1px solid rgba(220,199,155,0.35); border-radius: 9px; }
+    .brand-org-name { font-family:'Fraunces', serif; font-weight:700; font-size:1.05rem; color: var(--ink-900); line-height:1.1; }
+    .brand-org-sub { font-size:0.6rem; letter-spacing:0.08em; color: var(--text-muted); text-transform: uppercase; }
+
+    .nav-link-landing { font-weight: 500; color: var(--text-muted) !important; transition: color 0.2s ease; position: relative; padding-bottom: 4px !important; }
+    .nav-link-landing::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background: var(--gold-500); transform: scaleX(0); transform-origin: left; transition: transform 0.25s ease; }
+    .nav-link-landing:hover, .nav-link-landing.active { color: var(--forest-900) !important; }
+    .nav-link-landing:hover::after, .nav-link-landing.active::after { transform: scaleX(1); }
+
+    .btn-portal-admin { background: var(--forest-900); color: #fff !important; border-radius: 999px; padding: 0.5rem 1.35rem; font-weight: 600; font-size: 0.85rem; border: 1px solid var(--forest-900); transition: all 0.25s ease; }
+    .btn-portal-admin:hover { background: var(--forest-800); transform: translateY(-1px); box-shadow: 0 8px 18px -8px rgba(18,33,47,0.5); }
+
+    /* ============ Hero ============ */
+    .hero-wrap { position: relative; border-radius: var(--radius-lg); overflow: hidden; background: var(--paper); border: 1px solid var(--line-soft); }
+    .hero-title { font-family:'Fraunces', serif; font-size: 3rem; font-weight: 700; line-height: 1.12; color: var(--ink-900); letter-spacing: -0.01em; }
+    .hero-title span { color: var(--gold-600); font-style: italic; }
+    @media (max-width: 767.98px){ .hero-title{ font-size: 2.1rem; } }
+
+    .btn-forest { background: var(--forest-900); border: 1px solid var(--forest-900); color: #fff; border-radius: 12px; font-weight: 600; transition: all 0.2s ease; }
+    .btn-forest:hover { background: var(--forest-800); color:#fff; transform: translateY(-1px); box-shadow: var(--shadow-soft); }
+    .btn-outline-gold { background: transparent; border: 1px solid var(--line-soft); color: var(--forest-900); border-radius: 12px; font-weight: 600; transition: all 0.2s ease; }
+    .btn-outline-gold:hover { border-color: var(--gold-500); background: rgba(201,162,39,0.08); color: var(--forest-900); }
+
+    /* ============ Cards ============ */
+    .landing-card { background: var(--card-bg); border: 1px solid var(--line-soft); border-radius: var(--radius-lg); box-shadow: 0 6px 20px -14px rgba(15,30,20,0.18); margin-bottom: 1.5rem; position: relative; overflow: hidden; }
+    .landing-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: linear-gradient(90deg, var(--gold-500), var(--gold-300) 40%, transparent); }
+    .landing-card-header { padding: 1.15rem 1.4rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: none; }
+    .landing-card-header .fw-bold { font-family:'Fraunces', serif; font-size: 1.02rem; }
+
+    .stat-panel { background: var(--card-bg); border: 1px solid var(--line-soft); border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); position: relative; overflow: hidden; }
+    .stat-panel::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: linear-gradient(90deg, var(--gold-500), var(--gold-300) 40%, transparent); }
+    .stat-figure { font-family:'Fraunces', serif; }
+
+    .service-grid-btn { background: var(--cream-100); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.1rem 0.75rem; text-align: center; transition: all 0.22s cubic-bezier(.4,0,.2,1); cursor: pointer; }
+    .service-grid-btn:hover { background: #ffffff; box-shadow: 0 12px 24px -14px rgba(18,33,47,0.28); border-color: var(--gold-500); transform: translateY(-3px); }
+    .service-grid-btn i { transition: transform 0.25s ease; }
+    .service-grid-btn:hover i { transform: scale(1.12) translateY(-1px); }
+
+    .cta-banner { background: radial-gradient(circle at 100% 0%, rgba(220,199,155,0.18), transparent 55%), linear-gradient(150deg, var(--forest-950) 0%, var(--forest-800) 100%); border-radius: var(--radius-lg); color: #ffffff; overflow: hidden; position: relative; border: 1px solid rgba(220,199,155,0.15); }
+
+    .hover-bg-light { transition: background-color 0.2s ease; border-radius: 10px; }
+    .hover-bg-light:hover { background-color: var(--cream-100); }
+
+    /* Date badge for agenda */
+    .date-badge { width: 52px; text-align:center; background: var(--cream-100); border:1px solid var(--border-color); border-radius: 10px; padding: 6px 4px; display:flex; flex-direction:column; align-items:center; }
+    .date-badge-day { font-family:'Fraunces', serif; font-weight:700; font-size: 1.15rem; color: var(--forest-900); line-height:1; }
+    .date-badge-month { font-size: 0.6rem; letter-spacing:0.05em; text-transform:uppercase; margin-top:2px; }
+
+    /* ============ Weather / Expedition demo widget ============ */
+    .demo-widget { border-radius: var(--radius-md); border: 1px dashed rgba(201,162,39,0.4); background: linear-gradient(180deg, #fffdf7, var(--cream-100)); padding: 0.9rem 1rem; }
+    .demo-widget .demo-tag { font-family:'IBM Plex Mono', monospace; font-size: 0.6rem; letter-spacing: 0.06em; color: var(--gold-600); text-transform: uppercase; }
+
+    /* Widget Status Operasional — live, sumber data: Panel Admin (kegiatan_operasional) */
+    #widgetOperasional.is-live { border-style: solid; }
+    #widgetOperasional.status-berlangsung { border-color: rgba(69,127,81,0.45); background: linear-gradient(180deg, #f2f7f0, var(--cream-100)); }
+    #widgetOperasional.status-darurat { border-color: rgba(169,74,55,0.5); background: linear-gradient(180deg, #fbf2ee, var(--cream-100)); animation: opsPulseBorder 2.2s ease-in-out infinite; }
+    @keyframes opsPulseBorder { 0%,100% { box-shadow: 0 0 0 0 rgba(169,74,55,0.0); } 50% { box-shadow: 0 0 0 4px rgba(169,74,55,0.10); } }
+    .ops-widget-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0.35rem 1rem; margin-top: 0.55rem; }
+    .ops-widget-grid .ops-label { font-size: 0.62rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-muted-soft, #8a8168); display: block; }
+    .ops-widget-grid .ops-value { font-size: 0.82rem; font-weight: 600; color: #26301f; }
+    .ops-security-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; }
+
+    /* ============ Section titles ============ */
+    .section-title { font-family:'Fraunces', serif; font-weight: 700; color: var(--ink-900); }
+
+    /* ============ Footer ============ */
+    .site-footer { background: var(--forest-950); color: rgba(255,255,255,0.72); position: relative; overflow: hidden; }
+    .site-footer::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background: linear-gradient(90deg, transparent, rgba(220,199,155,0.5), transparent); }
+    .site-footer .topo-layer { opacity: 0.06; filter: invert(1); }
+    .footer-heading { font-family:'Fraunces', serif; color: #fff; font-weight:600; font-size: 1rem; margin-bottom: 1rem; }
+    .footer-link { color: rgba(255,255,255,0.65); text-decoration: none; font-size: 0.85rem; transition: color 0.2s ease; display: block; margin-bottom: 0.55rem; }
+    .footer-link:hover { color: var(--gold-300); }
+    .footer-social { width: 36px; height:36px; border-radius: 50%; border:1px solid rgba(255,255,255,0.18); display:flex; align-items:center; justify-content:center; color:#fff; transition: all 0.2s ease; }
+    .footer-social:hover { background: var(--gold-500); border-color: var(--gold-500); color: var(--forest-950); transform: translateY(-2px); }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.78rem; }
+    .footer-badge { font-family:'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing:0.06em; border:1px solid rgba(255,255,255,0.18); border-radius: 999px; padding: 3px 10px; color: rgba(255,255,255,0.6); }
+
+    /* ============ Modals ============ */
+    .modal-content { border-radius: var(--radius-lg); overflow:hidden; border:none; }
+    .modal-header-premium { background: linear-gradient(135deg, var(--forest-900), var(--forest-700)); color:#fff; border-bottom: none; }
+    .modal-header-premium .modal-title { font-family:'Fraunces', serif; font-weight:600; }
+    .modal .form-label { font-size: 0.78rem; font-weight:600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; }
+    .modal .form-control, .modal .form-select { border-radius: 10px; border:1px solid var(--border-color); padding: 0.6rem 0.85rem; }
+    .modal .form-control:focus, .modal .form-select:focus { border-color: var(--gold-500); box-shadow: 0 0 0 3px rgba(201,162,39,0.15); }
+
+    @keyframes nusaFadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+    }
+
+    /* ============ Divisi cards (baru) ============ */
+    .divisi-card { background: var(--card-bg); border: 1px solid var(--line-soft); border-radius: var(--radius-lg); padding: 1.4rem 1.35rem; height: 100%; position: relative; overflow: hidden; transition: transform .25s cubic-bezier(.4,0,.2,1), box-shadow .25s ease, border-color .25s ease; }
+    .divisi-card:hover { transform: translateY(-4px); box-shadow: 0 18px 34px -20px rgba(15,46,26,0.35); border-color: var(--gold-500); }
+    .divisi-card .divisi-icon { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; color: #fff; margin-bottom: .9rem; }
+    .divisi-card .divisi-nama { font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.05rem; color: var(--ink-900); }
+    .divisi-card .divisi-ket { font-size: 0.83rem; color: var(--text-main); line-height: 1.55; margin-bottom: .85rem; }
+    .divisi-card .divisi-stat { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; letter-spacing: .04em; text-transform: uppercase; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: .7rem; }
+
+    /* ============ Scroll reveal ============ */
+    .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+    .btn-primary { background-color: var(--primary-color); border-color: var(--primary-color); color: #fff; }
+    .btn-primary:hover { background-color: var(--primary-hover); border-color: var(--primary-hover); }
+    .btn-outline-primary { color: var(--primary-color); border-color: var(--primary-color); }
+    .btn-outline-primary:hover { background-color: var(--primary-color); color: #fff; }
+    .text-primary { color: var(--primary-color) !important; }
+    .bg-primary { background-color: var(--primary-color) !important; }
+  </style>
+
+  <!-- ===== NUSAPALA DESIGN SYSTEM (dimuat terakhir agar menang atas gaya lama) ===== -->
+  <meta name="theme-color" content="#f8f3e7">
+  <script>
+    /* Pasang tema sebelum halaman digambar supaya tidak ada kedipan warna */
+    (function () {
+      try {
+        var t = localStorage.getItem('np-theme');
+        if (!t) t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+        if (t === 'dark') {
+          document.documentElement.setAttribute('data-np-theme', 'dark');
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.setAttribute('content', '#0c1420');
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="/assets/css/nusapala.css">
+  <script src="/assets/js/nusapala-ui.js" defer></script>
+  <script>
+    /* Jaring pengaman: bila kit UI gagal dimuat, konten tidak boleh tetap tersembunyi */
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        if (window.NusapalaUI) return;
+        document.querySelectorAll('.reveal,.np-reveal,.np-reveal-left,.np-reveal-scale,.np-stagger')
+          .forEach(function (el) { el.classList.add('is-visible'); });
+      }, 1200);
+    });
+  </script>
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <nav class="navbar navbar-expand-lg landing-navbar sticky-top">
+    <div class="container py-2">
+      <!-- Ubah pada bagian brand-mark navbar beranda -->
+      <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+        <span class="brand-mark" style="background: none; box-shadow: none;">
+          <img src="/Logo Nusapala.png" alt="Logo Nusapala" style="width: 38px; height: 38px; object-fit: contain;">
+        </span>
+        <div>
+          <div class="fw-bold text-dark lh-1 brand-org-name">NUSAPALA</div>
+          <small class="text-muted brand-org-sub">Mapala Institut Bisnis Nusantara</small>
+        </div>
+      </a>
+      <div class="d-flex align-items-center gap-2">
+        <button class="np-theme-toggle" type="button" data-np-theme-toggle aria-pressed="false" title="Ganti tema"><i class="fa-solid fa-moon np-icon-moon"></i><i class="fa-solid fa-sun np-icon-sun"></i></button>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#landingNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
+      <div class="collapse navbar-collapse" id="landingNav">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-3 me-4">
+          <li class="nav-item"><a class="nav-link nav-link-landing active" href="#landingPage">Beranda</a></li>
+          <li class="nav-item"><a class="nav-link nav-link-landing" href="#section-divisi">Divisi</a></li>
+          <li class="nav-item"><a class="nav-link nav-link-landing" href="#section-jadwal">Agenda</a></li>
+          <li class="nav-item"><a class="nav-link nav-link-landing" href="#section-pengumuman">Galeri</a></li>
+          <li class="nav-item"><a class="nav-link nav-link-landing" href="/cuaca-gunung">Cuaca Gunung</a></li>
+          <li class="nav-item"><a class="nav-link nav-link-landing" href="/registrasi">Daftar Akun</a></li>        </ul>
+        <div class="d-flex align-items-center gap-3">
+          <a href="/admin" class="btn-portal-admin">Login</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section & Grid Content -->
+  <div class="container py-4 py-lg-5">
+
+    <!-- Ticker agenda berjalan (diisi dari tabel kegiatan) -->
+    <div class="np-ticker mb-4 np-reveal" id="agendaTicker" style="display:none;"></div>
+
+    <div class="hero-wrap p-4 p-lg-5 mb-5 np-grain">
+      <div class="topo-layer topo-layer-ink"></div>
+      <div class="np-stars" aria-hidden="true"></div>
+
+      <!-- Siluet punggungan gunung -->
+      <div class="np-hero-ridge" aria-hidden="true">
+        <svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 150 L0 104 L118 62 L214 96 L330 34 L452 100 L566 58 L690 112 L806 70 L934 118 L1052 66 L1180 108 L1296 52 L1440 110 L1440 150 Z" fill="#1f3648" fill-opacity="0.10"/>
+          <path d="M0 150 L0 126 L142 96 L268 128 L402 84 L520 130 L660 98 L796 136 L920 104 L1064 140 L1206 100 L1330 134 L1440 116 L1440 150 Z" fill="#0b1622" fill-opacity="0.16"/>
+        </svg>
+      </div>
+
+      <div class="row g-4 g-lg-5 align-items-stretch position-relative">
+        <!-- Left Hero Area -->
+        <div class="col-12 col-lg-7 d-flex flex-column justify-content-center">
+          <div class="mb-2">
+            <span class="eyebrow mb-3 d-inline-flex np-hero-in" style="--d:.02s">Mahasiswa Pecinta Alam · IBN</span>
+            <h1 class="hero-title mb-3 mt-3 np-hero-in" id="heroTitle" style="--d:.10s">Tumbuh di Alam,<br><span>Bertanggung Jawab</span> atas Jejak.</h1>
+            <p class="hero-sub text-muted-soft fs-6 mb-4 np-hero-in" id="heroSubtitle" style="max-width: 540px; --d:.18s">Pusat informasi kegiatan, transparansi kas, inventaris alat, dan peminjaman logistik Nusapala — satu pintu untuk seluruh anggota.</p>
+
+            <!-- Chip tiga divisi -->
+            <div class="d-flex flex-wrap gap-2 mb-4 np-hero-in" id="heroDivisiChips" style="--d:.26s">
+              <span class="np-chip"><i class="fa-solid fa-mountain"></i> Gunung Hutan</span>
+              <span class="np-chip"><i class="fa-solid fa-person-hiking"></i> Rock Climbing</span>
+              <span class="np-chip"><i class="fa-solid fa-water"></i> Olahraga Arus Deras</span>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 mb-2 np-hero-in" style="--d:.34s">
+              <a href="#section-divisi" class="btn btn-forest px-4 py-2 d-flex align-items-center gap-2"><i class="fa-solid fa-compass"></i> Jelajahi Divisi</a>
+              <a href="#section-jadwal" class="btn btn-outline-gold px-4 py-2 d-flex align-items-center gap-2"><i class="fa-solid fa-calendar-day"></i> Agenda Kegiatan</a>
+              <button onclick="openPublicPeminjamanModal()" class="btn btn-brass px-4 py-2 d-flex align-items-center gap-2"><i class="fa-solid fa-boxes-packing"></i> Pinjam Alat</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Stats Area -->
+        <div class="col-12 col-lg-5 d-flex flex-column justify-content-between">
+          <div class="stat-panel p-4 h-100 mb-0 d-flex flex-column justify-content-between np-hero-in" style="--d:.22s">
+            <div>
+              <div class="fw-bold text-dark mb-3 d-flex align-items-center gap-2 font-display"><i class="fa-solid fa-users text-primary"></i>Keanggotaan Nusapala</div>
+              <div class="row g-3">
+                <div class="col-6 col-sm-6 border-end">
+                  <small class="np-label d-block mb-1">Anggota Terdaftar</small>
+                  <span id="pub_anggota_total" class="fw-bold text-dark stat-figure fs-3">…</span> <small class="text-muted">Orang</small>
+                </div>
+                <div class="col-6 col-sm-6">
+                  <small class="np-label d-block mb-1">Pengurus Aktif</small>
+                  <span id="pub_anggota_admin" class="fw-bold stat-figure fs-3" style="color:var(--gold-600);">…</span> <small class="text-muted">Orang</small>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <hr class="my-3" style="border-color: var(--line-soft);">
+              <div class="fw-semibold text-dark mb-3 font-display" style="font-size:0.92rem;"><i class="fa-solid fa-bolt me-2" style="color:var(--gold-500);"></i>Layanan Cepat</div>
+              <div class="row g-2">
+                <div class="col-4" onclick="openPublicSuratModal()" role="button" tabindex="0" aria-label="Ajukan persuratan">
+                  <div class="service-grid-btn">
+                    <i class="fa-solid fa-file-signature fa-lg d-block mb-2"></i>
+                    <span style="font-size: 0.72rem;" class="fw-medium text-dark d-block text-truncate">Persuratan</span>
+                  </div>
+                </div>
+                <div class="col-4" onclick="openPublicPengaduanModal()" role="button" tabindex="0" aria-label="Buat laporan">
+                  <div class="service-grid-btn">
+                    <i class="fa-solid fa-headset fa-lg d-block mb-2"></i>
+                    <span style="font-size: 0.72rem;" class="fw-medium text-dark d-block text-truncate">Laporan</span>
+                  </div>
+                </div>
+                <div class="col-4" onclick="openPublicPeminjamanModal()" role="button" tabindex="0" aria-label="Pinjam alat">
+                  <div class="service-grid-btn">
+                    <i class="fa-solid fa-boxes-packing fa-lg d-block mb-2"></i>
+                    <span style="font-size: 0.72rem;" class="fw-medium text-dark d-block text-truncate">Pinjam Alat</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Demo widgets: Cuaca Gunung & Status Ekspedisi -->
+    <div class="row g-3 mb-5 reveal">
+      <div class="col-12 col-md-6">
+        <a href="/cuaca-gunung" class="demo-widget d-flex align-items-center justify-content-between h-100 text-decoration-none" id="widgetCuacaGunung">
+          <div>
+            <span class="demo-tag">Cuaca Gunung · Live</span>
+            <div class="fw-bold text-dark mt-1" id="widgetCuacaKondisi"><span class="spinner-border spinner-border-sm text-warning me-1" role="status"></span>Memuat cuaca live...</div>
+            <small class="text-muted-soft" id="widgetCuacaSub">Menghubungi layanan cuaca...</small>
+          </div>
+          <i class="fa-solid fa-mountain-sun fa-2x" style="color: var(--gold-300);" id="widgetCuacaIcon"></i>
+        </a>
+      </div>
+      <div class="col-12 col-md-6">
+        <div class="demo-widget h-100" id="widgetOperasional">
+          <div class="d-flex align-items-center justify-content-between h-100">
+            <div>
+              <span class="demo-tag">Status Operasional · Live</span>
+              <div class="fw-bold text-dark mt-1"><span class="spinner-border spinner-border-sm text-success me-1" role="status"></span>Memuat status operasional...</div>
+              <small class="text-muted-soft">Menghubungi Panel Admin...</small>
+            </div>
+            <i class="fa-solid fa-signal fa-2x" style="color: var(--forest-700);"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lower Section -->
+    <div class="row g-4 reveal">
+      <div class="col-12 col-md-4">
+        <div id="section-jadwal" class="landing-card h-100">
+          <div class="landing-card-header">
+            <span class="fw-bold text-dark"><i class="fa-solid fa-calendar-day text-primary me-2"></i>Agenda Kegiatan</span>
+          </div>
+          <div class="card-body p-3" id="publicAgendaContainer">
+            <div class="text-center text-muted-soft py-4"><span class="spinner-border spinner-border-sm"></span> Memuat...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div id="section-pengumuman" class="landing-card h-100">
+          <div class="landing-card-header">
+            <span class="fw-bold text-dark"><i class="fa-solid fa-camera-retro text-primary me-2"></i>Galeri & Ekspedisi</span>
+          </div>
+          <div class="card-body p-3" id="publicPengumumanContainer" style="max-height: 400px; overflow-y: auto;">
+            <div class="text-center text-muted-soft py-4"><span class="spinner-border spinner-border-sm"></span> Memuat...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div class="cta-banner p-4 h-100 d-flex flex-column justify-content-between">
+          <div class="topo-layer" style="opacity:0.15;"></div>
+          <div class="position-relative">
+            <h5 class="fw-bold text-white mb-2 font-display">Laporan Kegiatan</h5>
+            <p class="small text-white-50 mb-4">Laporkan kegiatan ekspedisi, kerusakan alat, atau aspirasi keanggotaan ke pengurus Nusapala.</p>
+          </div>
+          <div class="position-relative">
+            <button onclick="openPublicPengaduanModal()" class="btn btn-light text-primary btn-sm rounded-3 fw-bold px-4 py-2 w-100">Buat Laporan</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SEKSI DIVISI (Gunung Hutan · Rock Climbing · ORAD) ============ -->
+    <div id="section-divisi" class="np-section reveal">
+      <div class="np-section-head text-center">
+        <span class="eyebrow justify-content-center d-inline-flex mb-2">Bidang Kegiatan</span>
+        <h2 class="np-section-title mb-2">Tiga Divisi, Satu Semangat Jelajah</h2>
+        <p class="np-section-sub mx-auto">Setiap anggota Nusapala menempuh pendidikan dasar lalu mendalami salah satu divisi. Data jumlah anggota di bawah ini diambil langsung dari database keanggotaan.</p>
+      </div>
+      <!-- Kartu divisi dirender oleh fetchDivisiPublik() dari master data Portal Admin -->
+      <div class="row g-4" id="publicDivisiContainer">
+        <div class="col-12 text-center text-muted-soft py-4"><span class="spinner-border spinner-border-sm me-2"></span>Memuat data divisi...</div>
+      </div>
+    </div>
+
+    <!-- ============ SEKSI ALUR PEMINJAMAN ALAT ============ -->
+    <div id="section-peminjaman" class="np-section reveal">
+      <div class="row g-4 align-items-center">
+        <div class="col-12 col-lg-4">
+          <span class="eyebrow mb-2 d-inline-flex">Inventaris Logistik</span>
+          <h2 class="np-section-title mb-2">Alur Peminjaman Alat</h2>
+          <p class="np-section-sub">Empat langkah sederhana. Permohonan masuk ke Panel Admin dan diverifikasi oleh pengurus bidang logistik.</p>
+          <div class="d-flex flex-wrap gap-2 mt-3">
+            <button onclick="openPublicPeminjamanModal()" class="btn btn-forest d-flex align-items-center gap-2"><i class="fa-solid fa-boxes-packing"></i> Ajukan Peminjaman</button>
+            <a href="#section-transparansi" class="btn btn-outline-gold d-flex align-items-center gap-2"><i class="fa-solid fa-boxes-stacked"></i> Lihat Inventaris</a>
+          </div>
+        </div>
+        <div class="col-12 col-lg-8">
+          <div class="row g-3 np-stagger">
+            <div class="col-12 col-sm-6 col-lg-3">
+              <div class="np-step">
+                <div class="np-step-num">1</div>
+                <h6>Ajukan</h6>
+                <p>Isi formulir "Pinjam Alat", pilih alat dari daftar inventaris beserta jumlahnya.</p>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+              <div class="np-step">
+                <div class="np-step-num">2</div>
+                <h6>Verifikasi</h6>
+                <p>Pengurus mengecek ketersediaan stok dan kelengkapan syarat kegiatan.</p>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+              <div class="np-step">
+                <div class="np-step-num">3</div>
+                <h6>Ambil</h6>
+                <p>Alat diambil di sekretariat dengan berita acara serah terima kondisi alat.</p>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+              <div class="np-step">
+                <div class="np-step-num">4</div>
+                <h6>Kembali</h6>
+                <p>Alat dikembalikan, dicek ulang, lalu status peminjaman ditutup di sistem.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transparansi Keuangan & Aset Section -->
+    <div id="section-transparansi" class="mt-5 pt-3 reveal">
+      <div class="text-center mb-4">
+        <span class="eyebrow justify-content-center d-flex mb-2">Keterbukaan Organisasi</span>
+        <h3 class="section-title mb-2" style="font-size:1.9rem;">Transparansi Kas & Inventaris Alat</h3>
+        <p class="text-muted-soft small">Laporan keterbukaan anggaran dana kas serta status peminjaman inventaris logistik.</p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-12 col-lg-6">
+          <div class="landing-card p-4 h-100 mb-0">
+            <div class="fw-bold text-dark mb-4 d-flex align-items-center gap-2" style="font-size: 1.1rem;"><i class="fa-solid fa-wallet" style="color:var(--gold-600);"></i>Arus Kas Internal</div>
+            <div class="rounded-4 p-4 text-center mb-3" style="background: linear-gradient(160deg, var(--forest-950), var(--forest-800)); border-left: 4px solid var(--gold-500) !important;">
+              <span class="text-white-50 small fw-bold d-block mb-1 text-uppercase" style="letter-spacing:0.05em; font-size:0.7rem;">Sisa Saldo Kas Nusapala</span>
+              <span class="fw-bold d-block my-2 font-display" style="font-size: 2.1rem; color:var(--gold-300); letter-spacing:0.05em;">••• Rahasia •••</span>
+              <small class="text-white-50" style="font-size: 0.7rem;">Login ke Portal Admin untuk melihat rincian kas</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+          <div class="landing-card p-4 h-100 mb-0 d-flex flex-column justify-content-between">
+            <div>
+              <div class="fw-bold text-dark mb-3 d-flex align-items-center gap-2" style="font-size: 1.1rem;"><i class="fa-solid fa-boxes-stacked" style="color:var(--gold-600);"></i>Inventaris Alat & Logistik</div>
+              <div class="table-responsive">
+                <table class="table align-middle text-nowrap table-hover mb-0" style="font-size: 0.85rem;">
+                  <thead>
+                    <tr class="text-muted-soft">
+                      <th class="border-0 ps-0">Nama Alat</th>
+                      <th class="border-0 text-end pe-0">Akses</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td colspan="2" class="text-center py-4 text-muted-soft">Akses inventaris penuh melalui <a href="/admin" style="color:var(--pine-ink); font-weight:600;">Portal Admin</a></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="mt-3 text-muted-soft small border-top pt-3" style="font-size: 0.775rem; border-color: var(--border-color) !important;">
+              <i class="fa-solid fa-circle-info me-1"></i> Anggota yang ingin meminjam alat dipersilakan mengajukan via formulir "Pinjam Alat" di Layanan Cepat.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Section -->
+  <footer class="site-footer pt-5 pb-4 mt-5">
+    <div class="topo-layer"></div>
+    <div class="np-stars" aria-hidden="true"></div>
+    <div class="container position-relative">
+      <div class="row g-4 mb-4">
+        <div class="col-12 col-lg-4">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <span class="brand-mark" style="background: none; box-shadow: none;">
+              <img src="/Logo Nusapala.png" alt="Logo Nusapala" style="width: 38px; height: 38px; object-fit: contain;">
+            </span>
+            <div>
+              <div class="fw-bold text-white font-display">NUSAPALA</div>
+              <small class="text-white-50" style="font-size:0.65rem; letter-spacing:0.05em;">Mapala Institut Bisnis Nusantara</small>
+            </div>
+          </div>
+          <p class="small text-white-50 mb-3" style="max-width: 340px;">Organisasi mahasiswa pecinta alam yang menjunjung nilai konservasi, Leave No Trace, dan semangat petualangan bertanggung jawab.</p>
+          <div class="d-flex gap-2">
+            <a href="https://www.instagram.com/nusapalaibn/" target="_blank" class="footer-social"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="footer-social"><i class="fa-brands fa-whatsapp"></i></a>
+            <a href="#" class="footer-social"><i class="fa-brands fa-youtube"></i></a>
+          </div>
+        </div>
+
+        <div class="col-6 col-lg-2">
+          <div class="footer-heading">Navigasi</div>
+          <a href="#landingPage" class="footer-link">Beranda</a>
+          <a href="#section-divisi" class="footer-link">Divisi</a>
+          <a href="#section-jadwal" class="footer-link">Agenda</a>
+          <a href="#section-pengumuman" class="footer-link">Galeri</a>
+          <a href="/registrasi" class="footer-link">Daftar Akun</a>
+          <a href="/admin" class="footer-link">Login</a>
+        </div>
+
+        <div class="col-6 col-lg-2">
+          <div class="footer-heading">Layanan</div>
+          <a href="javascript:void(0)" onclick="openPublicSuratModal()" class="footer-link">Persuratan</a>
+          <a href="javascript:void(0)" onclick="openPublicPeminjamanModal()" class="footer-link">Pinjam Alat</a>
+          <a href="javascript:void(0)" onclick="openPublicPengaduanModal()" class="footer-link">Laporan</a>
+          <a href="/cuaca-gunung" class="footer-link">Cuaca Gunung</a>
+        </div>
+
+        <div class="col-12 col-lg-4">
+          <div class="footer-heading">Sekretariat</div>
+          <p class="small text-white-50 mb-1"><i class="fa-solid fa-location-dot me-2" style="color:var(--gold-300);"></i>Institut Bisnis Nusantara, Jakarta</p>
+          <p class="small text-white-50 mb-1"><i class="fa-solid fa-envelope me-2" style="color:var(--gold-300);"></i>nusapala@ibn.ac.id</p>
+          <p class="small text-white-50 mb-0"><i class="fa-solid fa-phone me-2" style="color:var(--gold-300);"></i>+62 812-xxxx-xxxx</p>
+        </div>
+      </div>
+
+      <div class="footer-bottom pt-3 d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <p class="text-white-50 mb-0 small" id="footerCopyright"></p>
+        <div class="d-flex align-items-center gap-2">
+          <span class="footer-badge font-mono">v4.0 — Parchment &amp; Teyvat</span>
+          <span class="text-white-50 small">· Dirancang oleh N 3126 - 008 AM</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+<!-- MODAL: PUBLIC PERMOHONAN SURAT -->
+  <div class="modal fade" id="publicSuratModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content shadow-lg">
+        <div class="modal-header modal-header-premium">
+          <h5 class="modal-title"><i class="fa-solid fa-file-invoice me-2"></i>Permohonan Administrasi</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="publicSuratForm">
+          <div class="modal-body p-4">
+            <div class="mb-3">
+              <label class="form-label">Nama Lengkap</label>
+              <input type="text" class="form-control" id="pub_surat_nama" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">NPA / ID Angkatan</label>
+              <input type="text" class="form-control" id="pub_surat_nik" placeholder="Contoh: N 3126 - 193 AM" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Keperluan Administrasi</label>
+              <select class="form-select" id="pub_surat_keperluan" required>
+                <option value="Surat Izin Kegiatan">Surat Izin Kegiatan</option>
+                <option value="Surat Peminjaman Tempat">Surat Peminjaman Tempat</option>
+                <option value="Lainnya">Lainnya</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer border-top-0 d-flex justify-content-end gap-2" style="background: var(--cream-100);">
+            <button type="button" class="btn btn-outline-gold px-4 fw-medium" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-forest px-4 fw-medium" id="btnSubmitSurat">Kirim Permohonan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PUBLIC PEMINJAMAN ASET -->
+  <div class="modal fade" id="publicPeminjamanModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content shadow-lg">
+        <div class="modal-header modal-header-premium">
+          <h5 class="modal-title"><i class="fa-solid fa-boxes-packing me-2"></i>Peminjaman Alat Logistik</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="publicPeminjamanForm">
+          <div class="modal-body p-4">
+            <!-- Dropdown Asal Peminjam -->
+            <div class="mb-3">
+              <label class="form-label">Asal Peminjam</label>
+              <select class="form-select" id="pub_pinjam_asal" onchange="changePinjamAsal()" required>
+                <option value="Anggota">Anggota Nusapala</option>
+                <option value="Mahasiswa IBN">Mahasiswa IBN (UKM / HIMA)</option>
+                <option value="Instansi Eksternal">Instansi Eksternal</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Nama Peminjam</label>
+              <input type="text" class="form-control" id="pub_pinjam_nama" placeholder="Nama lengkap penanggung jawab" required>
+            </div>
+
+            <!-- Input Identitas Dinamis -->
+            <div class="mb-3">
+              <label class="form-label" id="label_identitas">ID Angkatan / NPA</label>
+              <input type="text" class="form-control" id="pub_pinjam_identitas" placeholder="Contoh: N 3126 - 193 AM" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">No. WhatsApp / Kontak</label>
+              <input type="text" class="form-control" id="pub_pinjam_wa" placeholder="Contoh: 08123xxxx" required>
+            </div>
+
+            <!-- Input Alat Datalist (Searchable) -->
+            <div class="mb-3 p-3 rounded-3" style="background: var(--cream-100); border:1px solid var(--border-color);">
+              <label class="form-label mb-1" style="color: var(--forest-800);">Alat yang Dipinjam</label>
+              <p class="small text-muted-soft mb-2" style="font-size: 0.75rem;">Ketik nama alat, lalu pilih dari daftar yang tersedia.</p>
+
+              <input class="form-control fw-semibold" list="datalistAset" id="pub_pinjam_barang" placeholder="Ketik: Tenda, Carabiner, dll..." oninput="onPublicPinjamBarangChange(this)" autocomplete="off" required>
+              <datalist id="datalistAset">
+                <!-- Akan diisi otomatis dari Supabase -->
+              </datalist>
+              <div id="info_stok_alat" class="form-text small fw-bold mt-2 d-none"></div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-6">
+                <label class="form-label">Tgl Pinjam</label>
+                <input type="date" class="form-control" id="pub_pinjam_tgl_pinjam" required>
+              </div>
+              <div class="col-6">
+                <label class="form-label">Tgl Kembali</label>
+                <input type="date" class="form-control" id="pub_pinjam_tgl_kembali" required>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Jumlah Unit</label>
+              <input type="number" class="form-control" id="pub_pinjam_jumlah" min="1" placeholder="Masukkan jumlah unit" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" id="label_detail_keperluan">Detail Keperluan Ekspedisi</label>
+              <textarea class="form-control" id="pub_pinjam_detail" rows="2" placeholder="Jelaskan secara rinci..." required></textarea>
+            </div>
+          </div>
+          <div class="modal-footer" style="background: var(--cream-100);">
+            <button type="button" class="btn btn-outline-gold" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-forest" id="btnSubmitPinjam">Ajukan Peminjaman</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PUBLIC PENGADUAN & SARAN -->
+  <div class="modal fade" id="publicPengaduanModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content shadow-lg">
+        <div class="modal-header modal-header-premium">
+          <h5 class="modal-title"><i class="fa-solid fa-headset me-2"></i>Laporan Kegiatan / Kerusakan</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="publicPengaduanForm">
+          <div class="modal-body p-4">
+            <div class="mb-3">
+              <label class="form-label">Nama Pelapor</label>
+              <input type="text" class="form-control" id="pub_aduan_nama" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">No. WhatsApp / Kontak</label>
+              <input type="text" class="form-control" id="pub_aduan_wa" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Jenis Laporan</label>
+              <select class="form-select" id="pub_aduan_jenis" required>
+                <option value="Laporan Kegiatan">Laporan Kegiatan</option>
+                <option value="Laporan Kerusakan Alat">Laporan Kerusakan Alat</option>
+                <option value="Aspirasi Anggota">Aspirasi Anggota</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Lokasi Terkait</label>
+              <input type="text" class="form-control" id="pub_aduan_lokasi" placeholder="Contoh: Sekretariat / Gn. Gede" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Detail Laporan</label>
+              <textarea class="form-control" id="pub_aduan_detail" rows="3" placeholder="Jelaskan secara rinci..." required></textarea>
+            </div>
+          </div>
+          <div class="modal-footer" style="background: var(--cream-100);">
+            <button type="button" class="btn btn-outline-gold" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-danger" id="btnSubmitAduan">Kirim Laporan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DETAIL POST / GALERI -->
+  <div class="modal fade" id="publicPostDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content shadow">
+        <div class="modal-header" style="background: var(--cream-100); border-bottom: 1px solid var(--border-color);">
+          <div class="d-flex align-items-center gap-2">
+            <span id="post_detail_kategori" class="badge" style="background: var(--forest-900);"></span>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body px-4 pb-4">
+          <img id="post_detail_img" src="" class="img-fluid rounded-3 mb-3 d-none" alt="Gambar">
+          <h4 id="post_detail_judul" class="fw-bold text-dark mb-3 font-display"></h4>
+          <div id="post_detail_isi" class="text-secondary lh-lg" style="white-space: pre-wrap; font-size: 0.95rem;"></div>
+          <div class="mt-4 pt-3 border-top small text-muted-soft" style="border-color: var(--border-color) !important;">
+            Oleh: <span id="post_detail_pembuat" class="fw-bold text-dark"></span> (<span id="post_detail_npa"></span>)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
+  <!-- Data referensi gunung & layanan cuaca live (Open-Meteo, tanpa data hardcoded) -->
+  <script src="js/gunung-database.js"></script>
+  <script src="js/weather-service.js"></script>
+
+  <script>
+    // Inisialisasi Supabase
+    const SUPABASE_URL = 'https://ciqefdklecqgzczmzyde.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpcWVmZGtsZWNxZ3pjem16eWRlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NTI1OTkwNiwiZXhwIjoyMTAwODM1OTA2fQ.aYGy_SUjUbRUG73TPWdtGKM9B3OL05QK4Xc-gsUfCbk';
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    window.onload = function() {
+      fetchSupabaseSettings(); // Tarik pengaturan dinamis terlebih dahulu
+      fetchSupabaseStats();
+      fetchSupabaseDivisi();   // Sebaran anggota per divisi (Gunung Hutan / Rock Climbing / ORAD)
+      fetchSupabaseKegiatan();
+      fetchSupabasePosts();
+      fetchDivisiPublik();
+      initScrollReveal();
+      loadWidgetCuacaGunung();
+      fetchWidgetOperasional();
+      subscribeWidgetOperasionalRealtime();
+    };
+
+    // ============ Animasi angka (dipakai statistik keanggotaan) ============
+    function animateNumber(el, target) {
+      if (!el) return;
+      const n = parseInt(target, 10) || 0;
+      if (!window.NusapalaUI || window.NusapalaUI.reducedMotion) { el.innerText = n; return; }
+      const dur = 900; let start = null;
+      function step(ts) {
+        if (!start) start = ts;
+        const p = Math.min(1, (ts - start) / dur);
+        el.innerText = Math.round(n * (1 - Math.pow(1 - p, 3)));
+        if (p < 1) requestAnimationFrame(step); else el.innerText = n;
+      }
+      requestAnimationFrame(step);
+    }
+
+    // =======================================================================
+    // CHIP DIVISI DI HERO — mengikuti master data Portal Admin (nama apa adanya).
+    // Kartu divisi pada #section-divisi dirender oleh fetchDivisiPublik(); fungsi
+    // ini hanya mengurus hiasan chip di hero, bukan logika data keanggotaan.
+    // =======================================================================
+    async function fetchSupabaseDivisi() {
+      const chips = document.getElementById('heroDivisiChips');
+      if (!chips) return;
+
+      let daftar = DIVISI_STANDAR.map(d => d.nama);
+      try {
+        const { data } = await db.from('settings').select('value').eq('key', 'kategori_divisi').maybeSingle();
+        if (data && data.value) {
+          const parsed = JSON.parse(data.value);
+          if (Array.isArray(parsed) && parsed.length) daftar = parsed.map(d => String(d).trim()).filter(Boolean);
+        }
+      } catch (e) { /* pakai tiga divisi standar */ }
+
+      chips.innerHTML = daftar.slice(0, 5).map(d => {
+        const meta = metaDivisiPublik(d);
+        return `<a href="#section-divisi" class="np-chip text-decoration-none"><i class="fa-solid ${meta.icon}"></i> ${escapeHTML(meta.nama)}</a>`;
+      }).join('');
+    }
+
+    // ============ Widget Cuaca Gunung (live, Open-Meteo) ============
+    const WIDGET_GUNUNG_ID = 'gede'; // gunung yang ditonjolkan di beranda
+    async function loadWidgetCuacaGunung() {
+      const elKondisi = document.getElementById('widgetCuacaKondisi');
+      const elSub = document.getElementById('widgetCuacaSub');
+      const elIcon = document.getElementById('widgetCuacaIcon');
+      if (!elKondisi || !window.GUNUNG_DATABASE || !window.NusapalaWeather) return;
+
+      const gunung = window.GUNUNG_DATABASE.find(g => g.id === WIDGET_GUNUNG_ID);
+      if (!gunung) return;
+
+      try {
+        const cuaca = await window.NusapalaWeather.ambilCuacaSatu(gunung, false);
+        if (!cuaca || !cuaca.tersedia) {
+          elKondisi.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-warning me-2"></i>Cuaca sementara tidak tersedia';
+          elSub.textContent = gunung.nama + ' — coba lagi nanti';
+          return;
+        }
+        const suhuTxt = cuaca.suhu !== null ? Math.round(cuaca.suhu) + '°C' : '—';
+        const kondisiTxt = cuaca.kondisi || 'Kondisi tidak diketahui';
+        elKondisi.innerHTML = `<i class="fa-solid ${cuaca.ikon || 'fa-cloud-sun'} text-warning me-2"></i>${kondisiTxt}, ${suhuTxt}`;
+        elSub.textContent = gunung.nama + ' — diperbarui ' + window.NusapalaWeather.formatWaktuRelatif(cuaca.fetchedAt);
+        if (elIcon) elIcon.className = 'fa-solid ' + (cuaca.ikon || 'fa-mountain-sun') + ' fa-2x';
+      } catch (e) {
+        elKondisi.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-warning me-2"></i>Cuaca tidak dapat dimuat';
+        elSub.textContent = 'Periksa koneksi internet Anda';
+      }
+    }
+
+    function escapeHTML(str) {
+      if (!str) return ''; let div = document.createElement('div'); div.appendChild(document.createTextNode(String(str))); return div.innerHTML;
+    }
+
+    function opsFormatWaktuRelatif(dateStr) {
+      if (!dateStr) return '-';
+      const then = new Date(dateStr).getTime();
+      if (isNaN(then)) return '-';
+      const diffMin = Math.max(0, Math.round((Date.now() - then) / 60000));
+      if (diffMin < 1) return 'Baru saja';
+      if (diffMin < 60) return diffMin + ' Menit Lalu';
+      const diffJam = Math.round(diffMin / 60);
+      if (diffJam < 24) return diffJam + ' Jam Lalu';
+      const diffHari = Math.round(diffJam / 24);
+      return diffHari + ' Hari Lalu';
+    }
+
+    // =======================================================================
+    // Widget Status Operasional (LIVE) — sumber tunggal: Panel Admin
+    // Tabel: public.kegiatan_operasional. Tidak ada data hardcoded di sini;
+    // seluruh isi widget mengikuti apa yang diinput/diubah Admin secara real-time.
+    // =======================================================================
+    const OPS_STATUS_KEAMANAN_COLOR = {
+      'Aman': '#276241', 'Perlu Perhatian': '#96721c', 'Kendala Lapangan': '#a45a12', 'Darurat': '#a4482e'
+    };
+
+    async function fetchWidgetOperasional() {
+      const box = document.getElementById('widgetOperasional');
+      if (!box) return;
+      try {
+        const { data, error } = await db.from('kegiatan_operasional')
+          .select('*')
+          .eq('diarsipkan', false)
+          .order('updated_at', { ascending: false });
+        if (error) throw error;
+
+        const prioritas = { 'Darurat': 0, 'Berlangsung': 1, 'Persiapan': 2, 'Ditunda': 3, 'Perencanaan': 4 };
+        const kandidat = (data || [])
+          .filter(k => prioritas.hasOwnProperty(k.status_kegiatan))
+          .sort((a, b) => (prioritas[a.status_kegiatan] - prioritas[b.status_kegiatan]) || (new Date(b.updated_at) - new Date(a.updated_at)));
+
+        const aktif = kandidat[0];
+        box.classList.add('is-live');
+        box.classList.remove('status-berlangsung', 'status-darurat');
+
+        if (!aktif) {
+          box.innerHTML = `
+            <div class="d-flex align-items-center justify-content-between h-100">
+              <div>
+                <span class="demo-tag">Status Operasional · Live</span>
+                <div class="fw-bold text-dark mt-1"><i class="fa-solid fa-circle text-success me-2" style="font-size:0.55rem; vertical-align: middle;"></i>NORMAL</div>
+                <small class="text-muted-soft">Tidak ada kegiatan lapangan yang sedang berlangsung. Seluruh anggota berada dalam kondisi aman.</small>
+              </div>
+              <i class="fa-solid fa-signal fa-2x" style="color: var(--forest-700);"></i>
+            </div>`;
+          return;
+        }
+
+        if (aktif.status_kegiatan === 'Darurat') box.classList.add('status-darurat');
+        else if (aktif.status_kegiatan === 'Berlangsung') box.classList.add('status-berlangsung');
+
+        const warnaKeamanan = OPS_STATUS_KEAMANAN_COLOR[aktif.status_keamanan] || '#5d6874';
+        const jumlahAnggota = Array.isArray(aktif.anggota_tim) ? aktif.anggota_tim.length : (aktif.jumlah_anggota || 0);
+
+        box.innerHTML = `
+          <div>
+            <div class="d-flex align-items-center justify-content-between">
+              <span class="demo-tag">Status Operasional · Live</span>
+              <i class="fa-solid fa-route" style="color: var(--forest-700);"></i>
+            </div>
+            <div class="fw-bold text-dark mt-1" style="font-size:0.95rem;">
+              <i class="fa-solid fa-circle me-2" style="font-size:0.55rem; vertical-align:middle; color:${warnaKeamanan};"></i>${escapeHTML((aktif.status_kegiatan||'').toUpperCase())}
+            </div>
+            <small class="text-muted-soft d-block">${escapeHTML(aktif.nama_kegiatan)}</small>
+            <div class="ops-widget-grid">
+              <div><span class="ops-label">Lokasi</span><span class="ops-value">${escapeHTML(aktif.gunung_lokasi || aktif.lokasi_kegiatan || '-')}</span></div>
+              <div><span class="ops-label">Tim</span><span class="ops-value">${jumlahAnggota} Orang</span></div>
+              <div><span class="ops-label">Ketua Tim</span><span class="ops-value">${escapeHTML(aktif.ketua_tim_nama || '-')}</span></div>
+              <div><span class="ops-label">Status Keamanan</span><span class="ops-value"><span class="ops-security-dot" style="background:${warnaKeamanan};"></span>${escapeHTML(aktif.status_keamanan || '-')}</span></div>
+            </div>
+            <small class="text-muted-soft d-block mt-1" style="font-size:0.68rem;"><i class="fa-regular fa-clock me-1"></i>Update Terakhir: ${opsFormatWaktuRelatif(aktif.updated_at)}</small>
+          </div>`;
+      } catch (err) {
+        box.innerHTML = `
+          <div class="d-flex align-items-center justify-content-between h-100">
+            <div>
+              <span class="demo-tag">Status Operasional</span>
+              <div class="fw-bold text-dark mt-1"><i class="fa-solid fa-triangle-exclamation text-warning me-2"></i>Status Tidak Dapat Dimuat</div>
+              <small class="text-muted-soft">Periksa koneksi internet Anda</small>
+            </div>
+            <i class="fa-solid fa-signal fa-2x" style="color: var(--forest-700);"></i>
+          </div>`;
+      }
+    }
+
+    // Auto-update real-time: setiap perubahan di Panel Admin langsung tercermin di sini
+    // tanpa reload halaman, memanfaatkan Supabase Realtime pada tabel kegiatan_operasional.
+    function subscribeWidgetOperasionalRealtime() {
+      try {
+        db.channel('public:kegiatan_operasional:landing')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'kegiatan_operasional' }, fetchWidgetOperasional)
+          .subscribe();
+      } catch (e) { /* Realtime opsional; auto-refresh berkala tetap berjalan di bawah */ }
+      // Fallback auto-refresh berkala (30 detik) apabila koneksi realtime terputus
+      setInterval(fetchWidgetOperasional, 30000);
+    }
+
+    // =======================================================================
+    // 1. FETCH PENGATURAN (MENGUBAH TAMPILAN INDEX SECARA DINAMIS)
+    // =======================================================================
+    async function fetchSupabaseSettings() {
+      try {
+        const { data, error } = await db.from('settings').select('*');
+        if (error) throw error;
+
+        let settings = {};
+        data.forEach(item => { settings[item.key] = item.value; });
+
+        // Update Teks Landing Page dari Database
+        if(settings.rt_name) {
+          const brandNames = document.querySelectorAll('.fw-bold.text-dark.lh-1');
+          brandNames.forEach(el => el.innerHTML = settings.rt_name);
+        }
+        if(settings.hero_title) {
+          const hero = document.getElementById('heroTitle');
+          if(hero) hero.innerHTML = settings.hero_title;
+        }
+        if(settings.hero_subtitle) {
+          const sub = document.getElementById('heroSubtitle');
+          if(sub) sub.innerHTML = settings.hero_subtitle;
+        }
+        if(settings.footer_copyright) {
+          const copy = document.getElementById('footerCopyright');
+          if(copy) copy.innerHTML = settings.footer_copyright;
+        }
+
+        // Update Kategori Surat di Form Publik
+        if(settings.kategori_surat) {
+          try {
+            const kSurat = JSON.parse(settings.kategori_surat);
+            const selSurat = document.getElementById('pub_surat_keperluan');
+            if(selSurat) {
+               selSurat.innerHTML = '';
+               kSurat.forEach(s => selSurat.innerHTML += `<option value="${s}">${s}</option>`);
+            }
+          } catch(e) {}
+        }
+      } catch (err) {
+        console.warn("Gagal load settings:", err.message);
+      }
+    }
+
+    // =======================================================================
+    // 2. FETCH STATISTIK, AGENDA, GALERI
+    // =======================================================================
+    async function fetchSupabaseStats() {
+      try {
+        const { data, error } = await db.from('members').select('role');
+        if (error) throw error;
+        let totalAdmin = 0;
+        data.forEach(m => { if(m.role === 'Admin' || m.role === 'Super Admin') totalAdmin++; });
+        animateNumber(document.getElementById('pub_anggota_total'), data.length);
+        animateNumber(document.getElementById('pub_anggota_admin'), totalAdmin);
+      } catch (err) {}
+    }
+
+    async function fetchSupabaseKegiatan() {
+      const container = document.getElementById('publicAgendaContainer');
+      try {
+        const { data, error } = await db.from('kegiatan').select('*').order('tanggal_kegiatan', { ascending: true });
+        if (error) throw error;
+        if (data.length === 0) { container.innerHTML = '<div class="text-muted-soft text-center py-3 small">Belum ada jadwal kegiatan.</div>'; return; }
+
+        let html = '';
+        data.forEach(item => {
+          html += `
+            <div class="d-flex align-items-start gap-3 p-3 border-bottom hover-bg-light">
+              <div class="date-badge flex-shrink-0">
+                <span class="date-badge-day">${item.tanggal_kegiatan ? item.tanggal_kegiatan.split('-')[2] : '--'}</span>
+                <span class="date-badge-month text-muted-soft">${item.tanggal_kegiatan ? item.tanggal_kegiatan.split('-')[1] : '--'}</span>
+              </div>
+              <div>
+                <h6 class="fw-bold mb-1 text-dark" style="font-size: 0.95rem;">${escapeHTML(item.judul)}</h6>
+                <div class="d-flex flex-wrap gap-2 text-muted-soft mb-2" style="font-size: 0.75rem;">
+                  <span><i class="fa-solid fa-layer-group me-1"></i>${escapeHTML(item.divisi || 'Umum')}</span>
+                  <span><i class="fa-solid fa-user-tie me-1"></i>PJ: ${escapeHTML(item.penanggung_jawab || '-')}</span>
+                </div>
+                <p class="mb-0 text-muted-soft small" style="font-size: 0.8rem;">${escapeHTML(item.deskripsi || '')}</p>
+              </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+
+        // Ticker agenda berjalan di bagian atas beranda
+        if (window.NusapalaUI) {
+          window.NusapalaUI.buildTicker(document.getElementById('agendaTicker'), data.slice(0, 8).map(item => ({
+            icon: 'calendar-day',
+            title: item.judul,
+            meta: (item.tanggal_kegiatan || '-') + ' · ' + (item.divisi || 'Umum')
+          })));
+        }
+      } catch (err) { container.innerHTML = '<div class="text-danger text-center py-3 small">Gagal memuat jadwal.</div>'; }
+    }
+
+    async function fetchSupabasePosts() {
+      const container = document.getElementById('publicPengumumanContainer');
+      try {
+        const { data, error } = await db.from('posts').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+        if (data.length === 0) { container.innerHTML = '<div class="text-muted-soft text-center py-3 small">Belum ada galeri/postingan.</div>'; return; }
+
+        window.postsData = data;
+        let html = '';
+        data.forEach((post, index) => {
+          const imgHtml = post.foto_url
+            ? `<div class="me-3 flex-shrink-0"><img src="${escapeHTML(post.foto_url)}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;"></div>`
+            : `<div class="me-3 flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; border-radius: 8px; background: var(--cream-100);"><i class="fa-solid fa-image text-muted-soft"></i></div>`;
+          html += `
+            <div class="d-flex align-items-center p-2 border-bottom cursor-pointer hover-bg-light" onclick="openPostModal(${index})" style="cursor:pointer;">
+              ${imgHtml}
+              <div class="flex-grow-1 min-w-0">
+                <span class="badge mb-1" style="font-size: 0.65rem; background: var(--cream-100); color: var(--forest-800); border:1px solid var(--border-color);">${escapeHTML(post.kategori || 'Ekspedisi')}</span>
+                <h6 class="fw-bold mb-1 text-dark text-truncate" style="font-size: 0.85rem;">${escapeHTML(post.judul)}</h6>
+                <div class="text-muted-soft text-truncate" style="font-size: 0.75rem;">Oleh: ${escapeHTML(post.nama_pembuat)}</div>
+              </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+      } catch (err) { container.innerHTML = '<div class="text-danger text-center py-3 small">Gagal memuat galeri.</div>'; }
+    }
+
+    window.openPostModal = function(index) {
+      if(!window.postsData || !window.postsData[index]) return;
+      const post = window.postsData[index];
+      document.getElementById('post_detail_judul').innerText = post.judul;
+      document.getElementById('post_detail_kategori').innerText = post.kategori || 'Ekspedisi';
+      document.getElementById('post_detail_isi').innerText = post.deskripsi || '-';
+      document.getElementById('post_detail_pembuat').innerText = post.nama_pembuat;
+      document.getElementById('post_detail_npa').innerText = post.nomor_angkatan;
+
+      const imgEl = document.getElementById('post_detail_img');
+      if (post.foto_url) { imgEl.src = post.foto_url; imgEl.classList.remove('d-none'); }
+      else { imgEl.src = ''; imgEl.classList.add('d-none'); }
+      new bootstrap.Modal(document.getElementById('publicPostDetailModal')).show();
+    }
+
+    window.openPublicSuratModal = function() { new bootstrap.Modal(document.getElementById('publicSuratModal')).show(); };
+    window.openPublicPengaduanModal = function() { new bootstrap.Modal(document.getElementById('publicPengaduanModal')).show(); };
+
+    // =======================================================================
+    // 3. LOGIKA PEMINJAMAN ALAT PUBLIK (DINAMIS & AUTOCOMPLETE STOK)
+    // =======================================================================
+    let publicAvailableAssets = [];
+
+    window.changePinjamAsal = function() {
+      const asal = document.getElementById('pub_pinjam_asal').value;
+      const lblIdentitas = document.getElementById('label_identitas');
+      const inputIdentitas = document.getElementById('pub_pinjam_identitas');
+      const lblDetail = document.getElementById('label_detail_keperluan');
+
+      if (asal === 'Anggota') {
+        lblIdentitas.innerText = 'ID Angkatan / NPA'; inputIdentitas.placeholder = 'Contoh: N 3126 - 193 AM'; lblDetail.innerText = 'Detail Keperluan Ekspedisi';
+      } else if (asal === 'Mahasiswa IBN') {
+        lblIdentitas.innerText = 'Asal UKM / Hima'; inputIdentitas.placeholder = 'Contoh: BEM FEB / UKM Musik / Perorangan'; lblDetail.innerText = 'Detail Keperluan Kegiatan';
+      } else {
+        lblIdentitas.innerText = 'Alamat Instansi / Organisasi'; inputIdentitas.placeholder = 'Contoh: Sispala SMAN 1 / Jl. Sudirman...'; lblDetail.innerText = 'Detail Keperluan Kegiatan';
+      }
+    };
+
+    window.openPublicPeminjamanModal = async function() {
+      document.getElementById('publicPeminjamanForm').reset();
+      changePinjamAsal();
+      document.getElementById('info_stok_alat').classList.add('d-none');
+      document.getElementById('pub_pinjam_jumlah').removeAttribute('max');
+
+      Swal.fire({title: 'Memuat Inventaris...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+      try {
+        const { data, error } = await db.from('aset').select('*');
+        if (error) throw error;
+
+        publicAvailableAssets = [];
+        const datalist = document.getElementById('datalistAset');
+        datalist.innerHTML = '';
+
+        data.forEach(item => {
+          let baik = 0, ringan = 0;
+          try {
+            const details = JSON.parse(item.kondisi_fisik);
+            details.forEach(d => { if (d.kondisi === 'Baik') baik++; else if (d.kondisi === 'Rusak Ringan') ringan++; });
+          } catch(e) {
+            if (item.kondisi_fisik === 'Baik') baik = parseInt(item.jumlah_tersedia || 0);
+            else if (item.kondisi_fisik === 'Rusak Ringan') ringan = parseInt(item.jumlah_tersedia || 0);
+          }
+          const totalBisaDipinjam = Math.min(parseInt(item.jumlah_tersedia || 0), baik + ringan);
+
+          if (totalBisaDipinjam > 0) {
+            publicAvailableAssets.push({ nama: item.nama_barang, tersedia: totalBisaDipinjam, baik: baik, ringan: ringan });
+            const opt = document.createElement('option'); opt.value = item.nama_barang; opt.text = `Sisa Stok: ${totalBisaDipinjam} Unit`; datalist.appendChild(opt);
+          }
+        });
+
+        Swal.close();
+        new bootstrap.Modal(document.getElementById('publicPeminjamanModal')).show();
+      } catch (err) { Swal.fire('Gagal', 'Tidak dapat memuat inventaris alat dari server.', 'error'); }
+    };
+
+    window.onPublicPinjamBarangChange = function(input) {
+      const val = input.value; const asset = publicAvailableAssets.find(a => a.nama === val);
+      const info = document.getElementById('info_stok_alat'); const jmlInput = document.getElementById('pub_pinjam_jumlah');
+
+      if (asset) {
+        info.innerHTML = `<i class="fa-solid fa-check-circle me-1"></i> Tersedia: <span class="fs-6">${asset.tersedia}</span> Unit (Baik: ${asset.baik} | R.Ringan: ${asset.ringan})`;
+        info.classList.remove('d-none', 'text-danger'); info.classList.add('text-success');
+        jmlInput.max = asset.tersedia; jmlInput.placeholder = `Maks. pinjam ${asset.tersedia} unit`;
+      } else {
+        info.innerHTML = `<i class="fa-solid fa-triangle-exclamation me-1"></i> Alat tidak ditemukan atau stok habis.`;
+        info.classList.remove('d-none', 'text-success'); info.classList.add('text-danger');
+        jmlInput.removeAttribute('max'); jmlInput.placeholder = 'Masukkan jumlah unit';
+      }
+    };
+
+    // =======================================================================
+    // 4. SUBMIT FORM PUBLIK KE SUPABASE
+    // =======================================================================
+    document.getElementById('publicSuratForm')?.addEventListener('submit', async function(e) {
+      e.preventDefault(); const btn = document.getElementById('btnSubmitSurat'); btn.disabled = true; btn.innerText = 'Mengirim...';
+      const payload = {
+        id_tiket: 'SRT-' + Date.now().toString().slice(-6), tanggal: new Date().toISOString().substring(0, 10),
+        jenis_layanan: document.getElementById('pub_surat_keperluan').value, nama_pemohon: document.getElementById('pub_surat_nama').value,
+        id_angkatan: document.getElementById('pub_surat_nik').value, no_wa: '-', detail_permintaan: 'Permohonan dari Web Publik', status: 'Pending'
+      };
+      try {
+        const { error } = await db.from('permohonan_surat').insert([payload]); if (error) throw error;
+        Swal.fire('Terkirim!', `Permohonan Anda berhasil dikirim. ID Tiket: ${payload.id_tiket}`, 'success');
+        this.reset(); bootstrap.Modal.getInstance(document.getElementById('publicSuratModal')).hide();
+      } catch (err) { Swal.fire('Gagal', err.message, 'error'); } finally { btn.disabled = false; btn.innerText = 'Kirim Permohonan'; }
+    });
+
+    document.getElementById('publicPeminjamanForm')?.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const valBarang = document.getElementById('pub_pinjam_barang').value;
+      const asset = publicAvailableAssets.find(a => a.nama === valBarang);
+      const jml = parseInt(document.getElementById('pub_pinjam_jumlah').value);
+
+      if (!asset) return Swal.fire('Peringatan', 'Harap pilih alat yang valid dari daftar dropdown.', 'warning');
+      if (jml > asset.tersedia) return Swal.fire('Stok Kurang', `Stok ${valBarang} yang tersedia hanya ${asset.tersedia} unit.`, 'warning');
+
+      const btn = document.getElementById('btnSubmitPinjam'); btn.disabled = true; btn.innerText = 'Memproses...';
+      const asal = document.getElementById('pub_pinjam_asal').value;
+      const identitas = document.getElementById('pub_pinjam_identitas').value;
+      const formatIdentitas = `[${asal}] ${identitas}`;
+
+      const payload = {
+        id_tiket: 'AST-' + Date.now().toString().slice(-6), tanggal: new Date().toISOString().substring(0, 10),
+        nama_peminjam: document.getElementById('pub_pinjam_nama').value, no_wa: document.getElementById('pub_pinjam_wa').value,
+        id_angkatan: formatIdentitas, barang: valBarang, jumlah_unit: jml,
+        tanggal_pinjam: document.getElementById('pub_pinjam_tgl_pinjam').value, tanggal_kembali: document.getElementById('pub_pinjam_tgl_kembali').value,
+        detail_peminjaman: document.getElementById('pub_pinjam_detail').value, status: 'Pending'
+      };
+      try {
+        const { error } = await db.from('peminjaman_aset').insert([payload]); if (error) throw error;
+        Swal.fire('Terkirim!', `Permohonan pinjam alat Anda berhasil dikirim ke Pengurus. ID Tiket: ${payload.id_tiket}`, 'success');
+        this.reset(); bootstrap.Modal.getInstance(document.getElementById('publicPeminjamanModal')).hide();
+      } catch (err) { Swal.fire('Gagal', err.message, 'error'); } finally { btn.disabled = false; btn.innerText = 'Ajukan Peminjaman'; }
+    });
+
+    document.getElementById('publicPengaduanForm')?.addEventListener('submit', async function(e) {
+      e.preventDefault(); const btn = document.getElementById('btnSubmitAduan'); btn.disabled = true; btn.innerText = 'Mengirim...';
+      const payload = {
+        id_tiket: 'LAP-' + Date.now().toString().slice(-6), tanggal: new Date().toISOString().substring(0, 10),
+        jenis_layanan: document.getElementById('pub_aduan_jenis').value, nama_pengadu: document.getElementById('pub_aduan_nama').value,
+        no_wa: document.getElementById('pub_aduan_wa').value, lokasi_kejadian: document.getElementById('pub_aduan_lokasi').value,
+        detail_pengaduan: document.getElementById('pub_aduan_detail').value, bukti_foto: '', status: 'Pending'
+      };
+      try {
+        const { error } = await db.from('pengaduan_saran').insert([payload]); if (error) throw error;
+        Swal.fire('Terkirim!', `Laporan berhasil dikirim ke pengurus. ID Tiket: ${payload.id_tiket}`, 'success');
+        this.reset(); bootstrap.Modal.getInstance(document.getElementById('publicPengaduanModal')).hide();
+      } catch (err) { Swal.fire('Gagal', err.message, 'error'); } finally { btn.disabled = false; btn.innerText = 'Kirim Laporan'; }
+    });
+
+    // =======================================================================
+    // 4b. SEKSI DIVISI NUSAPALA (Gunung Hutan / Rock Climbing / Olahraga Arus Deras)
+    //     Sumber data: tabel settings (kategori_divisi) + jumlah anggota per divisi
+    //     dari tabel members. Bila master data belum ada, tampil 3 divisi standar.
+    // =======================================================================
+    const DIVISI_STANDAR = [
+      { nama: 'Gunung Hutan',        icon: 'fa-mountain',     warna: '#1f6b41', ket: 'Pendakian, navigasi darat, survival, dan konservasi gunung.' },
+      { nama: 'Rock Climbing',       icon: 'fa-mountain-sun', warna: '#8a5a00', ket: 'Panjat tebing, bouldering, dan pengamanan jalur.' },
+      { nama: 'Olahraga Arus Deras', icon: 'fa-water',        warna: '#0b5566', ket: 'Arung jeram, susur sungai, dan penyelamatan air.' }
+    ];
+    const DIVISI_ALIAS_PUBLIK = {
+      'rafting': 'olahraga arus deras', 'orad': 'olahraga arus deras', 'rafting/orad': 'olahraga arus deras',
+      'arus deras': 'olahraga arus deras', 'olahraga arus deras (orad)': 'olahraga arus deras',
+      'rockclimbing': 'rock climbing', 'panjat tebing': 'rock climbing'
+    };
+    let hitungSementara = {};
+
+    // Jumlah anggota sebuah divisi: nama persis + penulisan lama yang setara
+    // (hanya bila penulisan lama itu sendiri tidak terdaftar sebagai divisi).
+    function jumlahDivisiPublik(nama, daftarMaster) {
+      const target = String(nama || '').toLowerCase();
+      const terdaftar = (daftarMaster || []).map(d => String(d).toLowerCase());
+      return Object.keys(hitungSementara).reduce((total, kunci) => {
+        if (kunci === target) return total + hitungSementara[kunci];
+        const alias = DIVISI_ALIAS_PUBLIK[kunci];
+        if (alias === target && !terdaftar.includes(kunci)) return total + hitungSementara[kunci];
+        return total;
+      }, 0);
+    }
+    function metaDivisiPublik(nama) {
+      const n = String(nama || '').toLowerCase().trim();
+      const std = DIVISI_STANDAR.find(d => d.nama.toLowerCase() === n);
+      if (std) return std;
+      return { nama: nama || 'Divisi', icon: 'fa-layer-group', warna: '#2c5f8a', ket: 'Divisi tambahan yang dikelola pengurus melalui Portal Admin.' };
+    }
+    async function fetchDivisiPublik() {
+      const box = document.getElementById('publicDivisiContainer');
+      if (!box) return;
+
+      let daftar = DIVISI_STANDAR.map(d => d.nama);
+      const hitung = {};
+      try {
+        const [setRes, memRes] = await Promise.all([
+          db.from('settings').select('value').eq('key', 'kategori_divisi').maybeSingle(),
+          db.from('members').select('*')
+        ]);
+        if (setRes && setRes.data && setRes.data.value) {
+          const parsed = JSON.parse(setRes.data.value || '[]');
+          if (Array.isArray(parsed) && parsed.length) daftar = parsed.map(d => String(d).trim()).filter(Boolean);
+        }
+        if (memRes && Array.isArray(memRes.data)) {
+          // Hitung apa adanya berdasarkan nama yang tertulis pada data anggota.
+          // Penulisan lama baru dialihkan saat ditampilkan (lihat jumlahDivisi),
+          // supaya divisi tambahan pengurus tidak "dicuri" jumlahnya.
+          memRes.data.forEach(m => {
+            const d = String(m['Divisi'] || '').replace(/\s+/g, ' ').trim();
+            if (!d) return;
+            const kunci = d.toLowerCase();
+            hitung[kunci] = (hitung[kunci] || 0) + 1;
+          });
+        }
+      } catch (e) { /* fallback: tampilkan tiga divisi standar */ }
+
+      hitungSementara = hitung;
+      const totalAnggota = Object.values(hitung).reduce((a, b) => a + b, 0);
+      box.innerHTML = daftar.map((nama, i) => {
+        const meta = metaDivisiPublik(nama);
+        const jumlah = jumlahDivisiPublik(nama, daftar);
+        const persen = totalAnggota ? Math.round(jumlah / totalAnggota * 100) : 0;
+        return `<div class="col-12 col-md-4" style="animation: nusaFadeUp .5s ease both; animation-delay: ${i * 90}ms;">
+            <div class="divisi-card">
+              <div class="topo-layer"></div>
+              <div class="position-relative">
+                <div class="divisi-icon" style="background: linear-gradient(150deg, ${meta.warna}, ${meta.warna}cc);">
+                  <i class="fa-solid ${meta.icon}"></i>
+                </div>
+                <div class="divisi-nama mb-1">${escapeHTML(meta.nama)}</div>
+                <p class="divisi-ket">${escapeHTML(meta.ket)}</p>
+                <div class="divisi-stat">${jumlah} anggota · ${persen}%</div>
+              </div>
+            </div>
+          </div>`;
+      }).join('') || '<div class="col-12 text-center text-muted-soft py-4">Data divisi belum tersedia.</div>';
+    }
+
+    // =======================================================================
+    // 5. SCROLL REVEAL (murni animasi visual, tidak menyentuh logika data)
+    // =======================================================================
+    function initScrollReveal() {
+      const els = document.querySelectorAll('.reveal');
+      if (!('IntersectionObserver' in window) || els.length === 0) { els.forEach(el => el.classList.add('is-visible')); return; }
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) { entry.target.classList.add('is-visible'); io.unobserve(entry.target); }
+        });
+      }, { threshold: 0.1 });
+      els.forEach(el => io.observe(el));
+    }
+  </script>
+</body>
+</html>
